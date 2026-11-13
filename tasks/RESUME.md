@@ -2,9 +2,14 @@
 
 更新时间：2026-11-13。远端：https://github.com/arthur618/kidedu 。以本文件和 tasks/STATUS.md 为当前进度；docs/HANDOFF.md 保留原始交接背景。
 
+
+## 当前执行（2026-11-14）
+
+C7已正式派发给独立agent /root/implement_c7_sol，模型gpt-6.1-sol high；任务分支task/C7，从e945337开始，复用原C2的干净独立worktree。总设计师仍不写实现，交付后在独立克隆复验。契约2.2新增src/contracts/session.ts，类型检查及9项边界探针通过；具体设计与验收1–24见C7-addendum.md。真实模型评测仍延后。
+
 ## 当前完成状态
 
-main 已合入 C1、D2、D1、C3、C5、C4、C6、C2，契约仍为 2.1。
+main 已合入 C1、D2、D1、C3、C5、C4、C6、C2，既有业务契约维持原义；整体已升至2.2，新增HTTP响应契约。
 
 | 本轮任务 | 验收交付 | 合并提交 | 结论 |
 | --- | --- | --- | --- |
@@ -16,7 +21,7 @@ main 已合入 C1、D2、D1、C3、C5、C4、C6、C2，契约仍为 2.1。
 
 ## 下一项工作
 
-1. C7 尚未开始。先读 tasks/codex/C7-integration.md、C7-preflight.md，完成总设计师的响应契约及请求重试设计，再派独立实现 agent。当前服务端仍有待 C7 替换的占位依赖，不能把通过单包测试等同于真实全链路已跑通。
+1. C7 正在独立实现。下一轮先看 task/C7 最新提交和 reports/C7.md；未交付时不要另起实现覆盖现有工作。任务见 C7-integration.md、C7-addendum.md。当前 main 的生产接线尚未完成，不能把通过单包测试等同于真实全链路已跑通。
 2. 负责人已明确真实 DeepSeek 评测稍后进行。C6 只完成脚本验收，无真实模型通过率、费用或图片能力结论，不搜索密钥、不造结果。
 3. C8–C11 的任务文件等 C7 验收后再写；语音供应商等未决项仍保留。
 4. 原依赖审计欠账另行安排，不因本轮测试通过而宣称已全部消除。
@@ -32,4 +37,4 @@ main 已合入 C1、D2、D1、C3、C5、C4、C6、C2，契约仍为 2.1。
 
 ## 模型分配
 
-C2 使用 gpt-6.1-terra high；C4 使用 gpt-6.1-sol medium；C6 使用 gpt-6.1-sol high。本轮均完成返工并由总设计师独立验收。C7 复杂度高，计划使用 gpt-6.1-sol high；暂未派发。详见 tasks/MODEL-ROUTING.md，不对未测得的实际费用作保证。
+C2 使用 gpt-6.1-terra high；C4 使用 gpt-6.1-sol medium；C6 使用 gpt-6.1-sol high。本轮均完成返工并由总设计师独立验收。C7 复杂度高，计划使用 gpt-6.1-sol high；已按该分配派发。详见 tasks/MODEL-ROUTING.md，不对未测得的实际费用作保证。
