@@ -1,0 +1,27 @@
+{
+  "id": "card-明",
+  "char": "明",
+  "pinyin": "míng",
+  "radical": "日",
+  "explain": "明的左边是日，右边是月。明可以表示亮，朋的左右都是月。",
+  "words": [
+    "明天",
+    "明亮",
+    "明白"
+  ],
+  "confusable": [
+    "朋"
+  ],
+  "dictationContext": "明，明天的明",
+  "audioUrl": null,
+  "source": "",
+  "status": "draft",
+  "_draft": {
+    "provider": "openai"
+  },
+  "_check": {
+    "hash": "a179bb46b0f74ba7f1bde97a082cc4d7033a6ce6c3f5ef5ce5329ceefd210970",
+    "passed": true,
+    "issues": []
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "card-采",
+  "char": "采",
+  "pinyin": "cǎi",
+  "radical": "采",
+  "explain": "采的上面是爫，下面是木。采可以表示摘取，彩比采多了右边的彡。",
+  "words": [
+    "采花",
+    "采茶",
+    "采摘"
+  ],
+  "confusable": [
+    "彩"
+  ],
+  "dictationContext": "采，采花的采",
+  "audioUrl": null,
+  "source": "",
+  "status": "draft",
+  "_draft": {
+    "provider": "openai"
+  },
+  "_check": {
+    "hash": "f6bd6e0469513172acbdf27d81491764ec2e01a4f232066090ae4101785a1135",
+    "passed": true,
+    "issues": []
+  }
+}
