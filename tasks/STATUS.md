@@ -8,11 +8,11 @@
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
-| C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 待合并 | `reviews/C3.md`：37f04cf 通过，由负责人合并 |
+| C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 已合并 | `reviews/C3.md`：37f04cf 通过；合并fe42e9f，main 519个测试与构建通过 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
-| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 未开始 | |
-| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 未开始 | |
-| C4 | 内容生产流水线 | Codex | 3 | D2 | 未开始 | |
+| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 进行中 | 独立agent implement_c2；task/C2 |
+| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 进行中 | 独立agent implement_c6；另见C6-addendum，真实模型运行待本机配置 |
+| C4 | 内容生产流水线 | Codex | 3 | D2 | 进行中 | 独立agent implement_c4；task/C4 |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
@@ -40,3 +40,11 @@
 - C5：b9052c6已删除递归自查测试，第二次验收通过；负责人授权Codex执行合并（d83a064），main自查405个测试通过。
 - D1：226341a第二次验收通过并合并（24ca021）；原分支404个测试、合并后main 439个测试及构建通过，事务回滚独立探针通过。C7需把模型及护栏外部调用放在数据库事务提交之后。
 - 依赖审计仍有11项（含运行时Zod、旧测试工具链及新增Prisma CLI配置链）；Next告警已消除，后续另行安排依赖专项。
+
+
+## 当前并行派发（2026-11-13）
+
+- C2：独立worktree yuwen-c2-ui，按/learn入口实现，避免与D1的根首页冲突；接口数据缺口在报告列明，由总设计师统一交C7接线。
+- C4：独立worktree yuwen-c4-content，离线流水线和示例使用假客户端，不调用真实模型。
+- C6：待C3合并后从统一main基准派发独立worktree；只读准备已完成。样例与private结果隔离规则见tasks/codex/C6-addendum.md。当前环境没有已配置的DEEPSEEK_API_KEY，不伪造真实评测证据。
+- 实现agent不改契约、验证脚本、reviews和看板，不合并、不推送。总设计师在独立克隆复验并写review，按负责人授权执行通过后的本地合并。
