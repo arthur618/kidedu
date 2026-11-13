@@ -13,7 +13,7 @@
 | C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 已合并 | f92b99d / main 9a30e66; 635 tests + 9 browser tests; reviews/C2.md |
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
-| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 进行中 | Sol high独立实现；契约2.2与C7-addendum已冻结；不调真实模型 |
+| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 需修改 | reviews/C7.md: c0e8ed0; 661 tests + 10 browser passed; F1 replay/snapshot, F2 cancellation latency |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
 
