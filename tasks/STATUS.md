@@ -5,7 +5,7 @@
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
 | T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 类型检查通过 |
-| C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 需修改 | `reviews/C1.md`；按 `tasks/codex/C1-rework.md` 返工 |
+| C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 验收通过，待合并 | `reviews/C1.md`，第二次验收通过（22b09dc） |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 进行中 | 另见 `tasks/deepseek/D1-addendum.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 需修改 | `reviews/D2.md`，四项小修改 |
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 未开始 | |
