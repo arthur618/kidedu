@@ -13,9 +13,9 @@
 | C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 已合并 | f92b99d / main 9a30e66; 635 tests + 9 browser tests; reviews/C2.md |
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
-| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 需修改 | reviews/C7.md: c0e8ed0; 661 tests + 10 browser passed; F1 replay/snapshot, F2 cancellation latency |
+| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 已合并 | reviews/C7.md：1baf3be通过，合并d149377；main666测试/构建、独立浏览器10项 |
 
-## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
+## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
 | 任务 | 内容 | 里程碑 |
 | --- | --- | --- |
@@ -76,3 +76,9 @@ GitHub远端：git@github.com:arthur618/kidedu.git。负责人已授权同步主
 ## C7正式派发与契约2.2（2026-11-13）
 
 只新增src/contracts/session.ts，原三个契约不变：共享屏幕数据、Packet、正常unavailable/notice、稳定操作ID规则和100秒服务端/120秒客户端预算。C7获精确UI适配路径及两个内部运行时表/迁移的范围，明确幂等检查点、事务外模型、照片不落盘与重启恢复，新增验收18–24。实现使用Sol high、单agent，其他非必要工作不并行。总设计师仅改契约/任务/验收，不代写集成实现。真实模型评测仍延后。
+
+## C7最终合并（2026-11-14）
+
+C7@1baf3be第二次独立验收通过，F1/F2关闭，已合并d149377。独立克隆四项自查：35文件666测试、实际构建、33文件范围、报告均通过；浏览器10项及六组自编探针通过。真实main重新npm ci与verify后666测试/构建通过。无任务号时范围/报告按设计跳过，各分支已独立检查。真实模型评测仍延后。
+
+C8–C11任务书已按集成情况建立，尚未派发；各任务开工前由总设计师补齐契约与精确scope。语音供应商尚未明确，先规划C8A接口/测试，不发真实音频。当前接续状态以tasks/RESUME.md为准；此前进行中/需修改段落均为历史。
