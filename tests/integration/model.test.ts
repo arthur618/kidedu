@@ -32,15 +32,17 @@ it("[23] 真实D2 onTurn与当前请求配对，准确保存token；Turn写失�
   })).rejects.toThrow("fictional_storage_failure");
 });
 it("[22] 真实fetch绑定整体预算取消信号，超时记录仍保留实际路由模型名", async () => {
-  let signal: AbortSignal | undefined; let cancel: (() => void) | undefined;
+  let signal: AbortSignal | undefined; let cancel: (() => void) | undefined; let clock = 1000;
   vi.stubGlobal("fetch", vi.fn((_url: unknown, init: RequestInit) => new Promise((_resolve, reject) => { signal = init.signal!; signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true }); })));
-  const runtime = deps(); runtime.modelOptions.setTimer = ((callback: () => void) => { cancel = callback; return 1 as unknown as ReturnType<typeof setTimeout>; }); runtime.modelOptions.clearTimer = () => {};
+  const runtime = deps(); runtime.modelOptions.nowMs = () => clock; runtime.modelOptions.setTimer = ((callback: () => void) => { cancel = callback; return 1 as unknown as ReturnType<typeof setTimeout>; }); runtime.modelOptions.clearTimer = () => {};
   const turns: PendingTurn[] = [];
   const pending = withinBudget(runtime.modelOptions, [], async () => {
     const result = await measuredClient(runtime.llm, runtime.modelOptions, turns).call({ agent: "char_coach", system: "编造规则", user: "编造资料", schema: CharCoachOutput });
     await persistTurns("fictional-budget-session", turns, "pass", runtime.now); return result;
   });
-  while (!signal) await new Promise(resolve => setTimeout(resolve, 1)); cancel!();
+  while (!signal) await new Promise(resolve => setTimeout(resolve, 1)); clock = 1037; cancel!();
   expect((await pending).ok).toBe(false); expect(signal.aborted).toBe(true);
-  expect((await getPrisma().turn.findFirst())?.model).toBe(configJson.char_coach.model);
+  const turn = await getPrisma().turn.findFirst();
+  expect(turn?.model).toBe(configJson.char_coach.model); expect(turn?.latencyMs).toBe(37);
+  const count = await getPrisma().turn.count(); await new Promise(resolve => setTimeout(resolve, 10)); expect(await getPrisma().turn.count()).toBe(count);
 });

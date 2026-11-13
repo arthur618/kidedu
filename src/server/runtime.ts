@@ -9,7 +9,7 @@ import { runVisionHomework } from "../agents";
 import { fallback as coachFallback } from "../agents/char_coach/fallback";
 import { handleEvent, startSession, SessionNotFoundError, type StartSessionInput } from "./session";
 import type { RuntimeDeps } from "./deps";
-import { coachOutput, executeEffects, incident, snapshot, restorePhoto, unavailable } from "./effects";
+import { coachOutput, executeEffects, incident, snapshot, restorePhoto, unavailable, type PhotoCommandReference } from "./effects";
 import { measuredClient, persistTurns, redact, withinBudget, type PendingTurn } from "./model";
 
 export class RequestConflict extends Error { constructor() { super("这次操作已经用过，请重新试一次。"); } }
@@ -33,7 +33,7 @@ function fingerprint(kind: CommandKind, scope: string, body: unknown): string {
   return createHash("sha256").update(canonical({ method: "POST", path: kind === "start" ? "/api/session" : `/api/session/${scope}/${kind}`, body })).digest("hex");
 }
 export function createSessionService(deps: RuntimeDeps) {
-  const photos = new Map<string, { url: string; fingerprint: string }>();
+  const photos = new Map<string, PhotoCommandReference & { url: string; fingerprint: string }>();
   async function complete(command: SessionCommand, packet: SessionPacket, coach?: CoachRuntime): Promise<SessionPacket> {
     const parsed = SessionPacketSchema.parse(packet);
     await withTransaction(async () => {
@@ -61,10 +61,16 @@ export function createSessionService(deps: RuntimeDeps) {
   async function finishEffects(command: SessionCommand, photo?: string): Promise<SessionPacket> {
     const effects = (command.pending as Pending).effects ?? [];
     const needsPhoto = effects.some(effect => effect.type === "call_agent" && effect.agent === "vision_dictation");
-    const currentPhoto = needsPhoto ? photo : photos.get(command.sessionId!)?.url;
-    const result = await executeEffects(deps, command.sessionId!, effects, currentPhoto);
-    if (needsPhoto && photo) photos.set(command.sessionId!, { url: photo, fingerprint: command.fingerprint });
-    return complete(command, result.packet, result.coach);
+    // 旧照片命令保留当时的结果，不能借当前状态重跑旧效果。
+    if (needsPhoto && (await deps.getSessionRuntime(command.sessionId!))?.state !== "dictation_compare") {
+      return complete(command, unavailable(command.sessionId!, "dictation_compare", "photo_not_available"));
+    }
+    const held = photos.get(command.sessionId!);
+    const currentPhoto = needsPhoto ? photo : held?.url;
+    const result = await executeEffects(deps, command.sessionId!, effects, currentPhoto, needsPhoto ? command : held);
+    const packet = await complete(command, result.packet, result.coach);
+    if (needsPhoto && photo) photos.set(command.sessionId!, { url: photo, fingerprint: command.fingerprint, scope: command.scope, key: command.key });
+    return packet;
   }
   async function runPrepared(command: SessionCommand, body: unknown, photo?: string): Promise<SessionPacket> {
     const id = command.sessionId!;
@@ -146,8 +152,10 @@ export function createSessionService(deps: RuntimeDeps) {
     if (command.phase === "complete") {
       const ownsPhoto = ((command.pending as Pending).effects ?? []).some(effect => effect.type === "call_agent" && effect.agent === "vision_dictation");
       const saved = command.response as SessionPacket;
-      if (ownsPhoto && photo && saved.unavailable?.reason === "photo_not_available") return finishEffects(command, photo);
-      if (ownsPhoto && photo && (await deps.getSessionRuntime(command.sessionId!))?.state === "dictation_compare") photos.set(command.sessionId!, { url: photo, fingerprint: command.fingerprint });
+      // 只有当前仍在这次对照时才恢复缺图效果；退出后的重放只读历史结果。
+      const isCurrentCompare = ownsPhoto && (await deps.getSessionRuntime(command.sessionId!))?.state === "dictation_compare";
+      if (isCurrentCompare && photo && saved.unavailable?.reason === "photo_not_available") return finishEffects(command, photo);
+      if (isCurrentCompare && photo) photos.set(command.sessionId!, { url: photo, fingerprint: command.fingerprint, scope: command.scope, key: command.key });
       return restorePhoto(saved, ownsPhoto ? photo : (command.sessionId ? photos.get(command.sessionId)?.url : undefined));
     }
     if (command.phase === "transitioned") {
@@ -194,7 +202,7 @@ export function createSessionService(deps: RuntimeDeps) {
     },
     async get(sessionId: string): Promise<SessionPacket & { context: unknown; homework: unknown }> {
       return serial(`session:${sessionId}`, async () => {
-        const packet = await snapshot(deps, sessionId, photos.get(sessionId)?.url);
+        const packet = await snapshot(deps, sessionId, photos.get(sessionId)?.url, true, photos.get(sessionId));
         const runtime = await deps.getSessionRuntime(sessionId);
         if (!runtime) throw new SessionNotFoundError(sessionId);
         return { ...packet, context: runtime.context, homework: runtime.context.homework };

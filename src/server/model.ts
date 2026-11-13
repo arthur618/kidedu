@@ -53,14 +53,16 @@ export function measuredClient(base: LlmClient, options: ModelOptions, turns: Pe
       return { ok: false, error: "timeout", model: options.modelName?.(request.agent) ?? "budget", latencyMs: 0 };
     }
     const slot: CallCapture = {};
-    const failed: LlmResult<T> = { ok: false, error: "timeout", model: options.modelName?.(request.agent) ?? "budget", latencyMs: 0 };
+    const startedAt = options.nowMs();
+    const elapsed = () => Math.max(0, Math.round(options.nowMs() - startedAt));
+    const timedOut = (): LlmResult<T> => ({ ok: false, error: "timeout", model: options.modelName?.(request.agent) ?? "budget", latencyMs: elapsed() });
     let listener: (() => void) | undefined;
     const stopped = new Promise<LlmResult<T>>(resolve => {
-      if (current) { listener = () => resolve(failed); current.abort.signal.addEventListener("abort", listener, { once: true }); }
+      if (current) { listener = () => resolve(timedOut()); current.abort.signal.addEventListener("abort", listener, { once: true }); }
     });
     let result: LlmResult<T>;
     try {
-      const pending = capture.run(slot, () => base.call(request)).catch((): LlmResult<T> => ({ ok: false, error: "provider_error", model: "unavailable", latencyMs: 0 }));
+      const pending = capture.run(slot, () => base.call(request)).catch((): LlmResult<T> => ({ ok: false, error: "provider_error", model: options.modelName?.(request.agent) ?? "unavailable", latencyMs: elapsed() }));
       result = current ? await Promise.race([pending, stopped]) : await pending;
     } finally { if (listener) current?.abort.signal.removeEventListener("abort", listener); }
     turns.push({ request: redact({ ...request, schema: undefined }) as LlmRequest<unknown>, result: redact(result) as LlmResult<unknown>, record: slot.record });
@@ -75,7 +77,7 @@ export async function persistTurns(sessionId: string, turns: PendingTurn[], verd
       inputTokens: record?.inputTokens ?? (result.ok ? result.inputTokens : 0),
       cachedInputTokens: record?.cachedInputTokens ?? (result.ok ? result.cachedInputTokens : 0),
       outputTokens: record?.outputTokens ?? (result.ok ? result.outputTokens : 0),
-      latencyMs: record?.latencyMs ?? result.latencyMs,
+      latencyMs: Math.max(record?.latencyMs ?? 0, result.latencyMs),
       guardVerdict: request.agent === "guard" ? "skipped" : verdict, createdAt: now().toISOString() });
   }
 }

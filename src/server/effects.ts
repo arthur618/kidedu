@@ -8,7 +8,7 @@ import { fallback as dictationFallback } from "../agents/vision_dictation/fallba
 import { withGuard } from "../guard";
 import { insertIncident } from "../db/incident";
 import { getCoachRuntime, type CoachRuntime } from "../db/coachRuntime";
-import { latestCompletedCommand, unfinishedCommands } from "../db/sessionCommand";
+import { getCommand, latestCompletedCommand, unfinishedCommands } from "../db/sessionCommand";
 import type { RuntimeDeps } from "./deps";
 import { measuredClient, persistTurns, type PendingTurn } from "./model";
 import { SessionNotFoundError } from "./session";
@@ -36,8 +36,9 @@ export async function coachOutput(deps: RuntimeDeps, sessionId: string, input: C
   return result.output;
 }
 export interface EffectResult { packet: SessionPacket; coach?: CoachRuntime }
+export interface PhotoCommandReference { scope: string; key: string }
 /** 只运行已提交效果；本函数不 reduce、不写学习阶段。 */
-export async function executeEffects(deps: RuntimeDeps, sessionId: string, effects: Effect[], photo?: string): Promise<EffectResult> {
+export async function executeEffects(deps: RuntimeDeps, sessionId: string, effects: Effect[], photo?: string, photoCommand?: PhotoCommandReference): Promise<EffectResult> {
   const runtime = await deps.getSessionRuntime(sessionId);
   if (!runtime) throw new SessionNotFoundError(sessionId);
   const ctx = runtime.context;
@@ -71,10 +72,10 @@ export async function executeEffects(deps: RuntimeDeps, sessionId: string, effec
     const cards = await deps.getCharCards(ctx.writeQueue);
     if (cards.length !== ctx.writeQueue.length) { await incident(deps, "knowledge", "报词所需字卡尚未准备好。"); return { packet: unavailable(sessionId, runtime.state) }; }
   }
-  return { packet: await snapshot(deps, sessionId, photo, effects.length === 0) };
+  return { packet: await snapshot(deps, sessionId, photo, effects.length === 0, photoCommand) };
 }
 /** 刷新只读快照或可信内容，不调模型，也不推进 coach。 */
-export async function snapshot(deps: RuntimeDeps, sessionId: string, photo?: string, usePrevious = true): Promise<SessionPacket> {
+export async function snapshot(deps: RuntimeDeps, sessionId: string, photo?: string, usePrevious = true, photoCommand?: PhotoCommandReference): Promise<SessionPacket> {
   const runtime = await deps.getSessionRuntime(sessionId);
   if (!runtime) throw new SessionNotFoundError(sessionId);
   const { state, context: ctx } = runtime;
@@ -83,7 +84,8 @@ export async function snapshot(deps: RuntimeDeps, sessionId: string, photo?: str
   const pending = await unfinishedCommands(sessionId);
   const pendingPacket = pending.map(command => (command.pending as { packet?: SessionPacket }).packet).find(packet => packet?.state === state);
   if (pendingPacket) return SessionPacketSchema.parse(pendingPacket);
-  const previous = await latestCompletedCommand(sessionId);
+  // 当前原图和显示按原命令绑定，不能让较新的无图命令遮蔽已恢复的快照。
+  const previous = state === "dictation_compare" && photoCommand ? await getCommand(photoCommand.scope, photoCommand.key) : await latestCompletedCommand(sessionId);
   if (usePrevious && previous?.response && !pending.some(command => command.phase === "transitioned" && ((command.pending as { effects?: Effect[] }).effects?.length ?? 0) > 0)) {
     const packet = restorePhoto(previous.response as SessionPacket, photo);
     if (packet.state === state && SessionPacketSchema.safeParse(packet).success) return packet;
@@ -121,7 +123,9 @@ export async function snapshot(deps: RuntimeDeps, sessionId: string, photo?: str
   return SessionPacketSchema.parse({ sessionId, state, effects: [{ type: "show", screen: state, ...(data === undefined ? {} : { data }) }] });
 }
 export function restorePhoto(packet: SessionPacket, photo?: string): SessionPacket {
-  if (packet.state !== "dictation_compare") return packet;
+  // 无图历史包仍然无图，不能只清掉 unavailable 而留下空 effects。
+  if (packet.state !== "dictation_compare" || packet.unavailable) return packet;
   if (!photo) return unavailable(packet.sessionId ?? "session", packet.state, "photo_not_available");
-  return { ...packet, unavailable: undefined, effects: packet.effects.map(effect => effect.screen === "dictation_compare" && effect.data && typeof effect.data === "object" ? { ...effect, data: { ...effect.data, imageUrl: photo } } : effect) };
+  const restored = { ...packet, effects: packet.effects.map(effect => effect.screen === "dictation_compare" && effect.data && typeof effect.data === "object" ? { ...effect, data: { ...effect.data, imageUrl: photo } } : effect) };
+  return SessionPacketSchema.safeParse(restored).success ? restored : unavailable(packet.sessionId ?? "session", packet.state, "photo_not_available");
 }

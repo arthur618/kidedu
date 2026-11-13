@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { SessionEventSchema } from "../contracts/orchestrator";
-import { SESSION_REQUEST_ID_HEADER, SessionRequestIdSchema } from "../contracts/session";
+import { SESSION_REQUEST_ID_HEADER, SessionRequestIdSchema, SessionPacketSchema } from "../contracts/session";
 import type { RuntimeDeps } from "./deps";
 import { ChildNotFoundError, LessonNotFoundError, SessionNotFoundError } from "./session";
 import { createSessionService, CoachConflict, RequestConflict, type CommandKind } from "./runtime";
@@ -33,11 +33,11 @@ export function createHttpHandlers(deps: RuntimeDeps) {
       const body = parsed.data;
       const photo = "imageDataUrl" in body ? body.imageDataUrl : "imageUrl" in body ? body.imageUrl : undefined;
       if (typeof photo === "string" && !validPhoto(photo)) return json({ error: "请选一张不超过2MB的 JPG 或 PNG 图片。" }, 400);
-      try { return json(await service.post(kind, kind === "start" ? (body as z.infer<typeof startSchema>).childId : sessionId!, key.data, body)); }
+      try { return json(SessionPacketSchema.parse(await service.post(kind, kind === "start" ? (body as z.infer<typeof startSchema>).childId : sessionId!, key.data, body))); }
       catch (error) { return errorResponse(error); }
     },
     async get(sessionId: string): Promise<Response> {
-      try { return json(await service.get(sessionId)); } catch (error) { return errorResponse(error); }
+      try { const result = await service.get(sessionId); SessionPacketSchema.parse(result); return json(result); } catch (error) { return errorResponse(error); }
     },
   };
 }
