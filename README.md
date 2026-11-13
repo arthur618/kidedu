@@ -5,8 +5,8 @@
 这个仓库用多个编码 Agent 协作开发：
 
 - **总设计师**（Claude）：写契约和任务文件，验收每个任务。
-- **Codex**：做逻辑密、交互多的任务包（`tasks/codex/`）。
-- **DeepSeek harness**：做模式固定的任务包（`tasks/deepseek/`）。
+- **Codex**：做绝大部分任务包（`tasks/codex/`）。
+- **DeepSeek harness**：只做 D1 和 D2 两个任务包（`tasks/deepseek/`）。
 
 ## 从哪里开始
 
@@ -35,8 +35,6 @@ bash scripts/verify.sh          # 类型检查和测试
 bash scripts/verify.sh C1       # 加上任务 C1 的范围检查和报告检查
 ```
 
-## 第一批任务（现在就可以并行开始）
+## 当前进度
 
-- `tasks/codex/C1-orchestrator.md`
-- `tasks/deepseek/D1-backend.md`
-- `tasks/deepseek/D2-llm-client.md`
+见 `tasks/STATUS.md`。

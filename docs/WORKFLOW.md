@@ -25,7 +25,7 @@
 读 AGENTS.md，然后完成 tasks/codex/C1-orchestrator.md。从 main 拉分支 task/C1，做完运行 bash scripts/verify.sh C1，写 reports/C1.md 并提交到该分支。
 ```
 
-给 DeepSeek harness（在项目根目录）：
+给 DeepSeek harness（只用于 D1、D2，在项目根目录）：
 
 ```
 先读 AGENTS.md、docs/ARCHITECTURE.md 和 src/contracts/ 下的全部文件，然后完成 tasks/deepseek/D1-backend.md。从 main 拉分支 task/D1，做完运行 bash scripts/verify.sh D1，写 reports/D1.md 并提交到该分支。
@@ -45,11 +45,14 @@ Agent 能访问仓库时，直接让它读仓库里的路径更可靠，因为�
 
 ## 并行与顺序
 
-| 批次 | 任务 | 前提 |
-| --- | --- | --- |
-| 第一批（并行） | C1、D1、D2 | 契约已冻结 |
-| 第二批（并行） | C3、D3、C2 | C3 和 D3 需要 D2 已合并；C2 需要 C1 和 D1 已合并 |
-| 第三批（并行） | D4、C4 | D4 需要 C3 和 D3 已合并；C4 只需要 D2 |
+| 批次 | 任务 | 交给 | 前提 |
+| --- | --- | --- | --- |
+| 第一批 | C1、D1、D2 | C1 是 Codex；D1、D2 是 DeepSeek harness | 契约已冻结 |
+| 第二批（并行） | C3、C5、C2 | Codex | C3 和 C5 需要 D2；C2 需要 C1 和 D1 |
+| 第三批（并行） | C6、C4 | Codex | C6 需要 C3 和 C5；C4 只需要 D2 |
+| 第四批 | C7 集成 | Codex | C1、D1、D2、C3、C5 全部已合并 |
+
+从第二批起所有任务都交给 Codex。DeepSeek harness 只负责做完 D1 和 D2。
 
 每一批合并完，在 `main` 上跑一次 `bash scripts/verify.sh`，通过了再派下一批。
 
@@ -57,11 +60,11 @@ Agent 能访问仓库时，直接让它读仓库里的路径更可靠，因为�
 
 实现者发现契约有问题时，不自己改，在报告的“契约问题”里写：哪个文件哪个类型、遇到了什么情况、建议怎么改。总设计师评估后在 `main` 上改契约、写清楚变更，并通知受影响的任务。契约变更只加不删，除非所有依赖方都已确认。
 
-## 两条分工原则
+## 分工
 
-- 逻辑分支多、错了难发现的包（状态机、提示词、界面交互）给 Codex。
-- 模式固定、有现成做法的包（建表、接口、调用封装、规则、评测脚本）给 DeepSeek harness。
-- 同一个任务两次验收不过，换另一个 Agent 重做，或者升一档模型。
+- D1、D2 由 DeepSeek harness 完成；其余任务全部由 Codex 完成。
+- Codex 同时做多个任务时，每个任务一个独立的 worktree 和分支，互不依赖的任务可以并行。
+- 同一个任务两次验收不过，换一档更强的模型重做。
 
 ## 数据纪律
 

@@ -1,11 +1,44 @@
 {
   "_comment": "每个任务允许修改的路径前缀。scripts/check-scope.mjs 用它检查分支改动。所有任务都可以改 package.json、package-lock.json 和自己的 reports/<任务号>.md。",
-  "C1": ["src/orchestrator/"],
-  "C2": ["app/(child)/", "src/ui/"],
-  "C3": ["src/agents/"],
-  "C4": ["scripts/content/", "content/"],
-  "D1": ["prisma/", "src/db/", "src/server/", "app/api/", "app/layout.tsx", "app/page.tsx", "next.config.mjs", "next-env.d.ts"],
-  "D2": ["src/llm/", "config/"],
-  "D3": ["src/guard/"],
-  "D4": ["evals/"]
+  "C1": [
+    "src/orchestrator/"
+  ],
+  "C2": [
+    "app/(child)/",
+    "src/ui/"
+  ],
+  "C3": [
+    "src/agents/"
+  ],
+  "C4": [
+    "scripts/content/",
+    "content/"
+  ],
+  "D1": [
+    "prisma/",
+    "src/db/",
+    "src/server/",
+    "app/api/",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "next.config.mjs",
+    "next-env.d.ts"
+  ],
+  "D2": [
+    "src/llm/",
+    "config/"
+  ],
+  "C5": [
+    "src/guard/"
+  ],
+  "C6": [
+    "evals/"
+  ],
+  "C7": [
+    "src/server/",
+    "app/api/",
+    "src/orchestrator/reduce.ts",
+    "src/orchestrator/reduce.test.ts",
+    "tests/integration/"
+  ]
 }
