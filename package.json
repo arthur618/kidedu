@@ -17,7 +17,9 @@
     "content:check": "tsx scripts/content/cli.ts check",
     "content:review": "tsx scripts/content/cli.ts review",
     "content:sheet": "tsx scripts/content/cli.ts sheet",
-    "content:approve": "tsx scripts/content/cli.ts approve"
+    "content:approve": "tsx scripts/content/cli.ts approve",
+    "eval": "tsx evals/run.ts",
+    "eval:diff": "tsx evals/diff.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

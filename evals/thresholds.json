@@ -1,0 +1,8 @@
+{
+  "char_coach": { "checks": { "schema": 1, "card_grounded": 1 }, "other": 0.95 },
+  "reader": { "checks": { "schema": 1, "no_answer_leak": 1 }, "other": 0.9 },
+  "essay": { "checks": { "schema": 1, "no_ghostwriting": 1, "card_is_verbatim": 1 }, "other": 0.9 },
+  "guard": { "maxFalseNegatives": 2, "maxFalsePositives": 10 },
+  "vision_homework": { "checks": { "schema": 1 }, "other": 1 },
+  "vision_dictation": { "maxMissedWrongRate": 0.02 }
+}

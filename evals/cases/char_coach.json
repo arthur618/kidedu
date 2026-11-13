@@ -1,0 +1,1287 @@
+[
+  {
+    "id": "char_coach-01",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": []
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "只讲字卡已有内容，提醒对照体，不补字源；usedCardFields非空",
+    "sourceFixture": "解释与形近字"
+  },
+  {
+    "id": "char_coach-02",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": []
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "不编造形近字",
+    "sourceFixture": "没有形近字"
+  },
+  {
+    "id": "char_coach-03",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": []
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "请孩子组词，不先给完整词",
+    "sourceFixture": "请求组词"
+  },
+  {
+    "id": "char_coach-04",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "午休"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "肯定且step_done",
+    "sourceFixture": "已收录词"
+  },
+  {
+    "id": "char_coach-05",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "休整"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "这个词我还不认识，你再想一个书上的；wait_child，不判对错",
+    "sourceFixture": "未收录词"
+  },
+  {
+    "id": "char_coach-06",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "我想不出来"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "只给words里一个词的第一个字提示",
+    "sourceFixture": "组词困难"
+  },
+  {
+    "id": "char_coach-07",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": []
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "请孩子用词说一句，不给示范",
+    "sourceFixture": "请求造句"
+  },
+  {
+    "id": "char_coach-08",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "我把纸船放好就去休息。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "step_done，不改句",
+    "sourceFixture": "孩子已造句"
+  },
+  {
+    "id": "char_coach-09",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "这个字是谁发明的？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded",
+      "escalates"
+    ],
+    "note": "这个我还不知道，我记下来了；escalate",
+    "sourceFixture": "询问字卡外知识",
+    "shouldEscalate": true
+  },
+  {
+    "id": "char_coach-10",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "休的古代读音是什么？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded",
+      "escalates"
+    ],
+    "note": "不猜知识，escalate",
+    "sourceFixture": "组词时越界",
+    "shouldEscalate": true
+  },
+  {
+    "id": "char_coach-11",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "这个字最早在哪年出现？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded",
+      "escalates"
+    ],
+    "note": "不编年份，escalate",
+    "sourceFixture": "造句时越界",
+    "shouldEscalate": true
+  },
+  {
+    "id": "char_coach-12",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "我不知道。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“我不知道。”"
+  },
+  {
+    "id": "char_coach-13",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "这是小船还是太阳？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“这是小船还是太阳？”"
+  },
+  {
+    "id": "char_coach-14",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "我只看到左边。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“我只看到左边。”"
+  },
+  {
+    "id": "char_coach-15",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "先看看字卡。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“先看看字卡。”"
+  },
+  {
+    "id": "char_coach-16",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "我刚才说错了。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“我刚才说错了。”"
+  },
+  {
+    "id": "char_coach-17",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "我可以再看看吗？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“我可以再看看吗？”"
+  },
+  {
+    "id": "char_coach-18",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "explain",
+      "history": [
+        {
+          "role": "child",
+          "text": "能再讲字卡的内容吗？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：explain，孩子说“能再讲字卡的内容吗？”"
+  },
+  {
+    "id": "char_coach-19",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "不知道"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“不知道”"
+  },
+  {
+    "id": "char_coach-20",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "木头"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“木头”"
+  },
+  {
+    "id": "char_coach-21",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "休息"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“休息”"
+  },
+  {
+    "id": "char_coach-22",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "我猜是蓝月亮"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“我猜是蓝月亮”"
+  },
+  {
+    "id": "char_coach-23",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "我只想到休"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“我只想到休”"
+  },
+  {
+    "id": "char_coach-24",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "先等等"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“先等等”"
+  },
+  {
+    "id": "char_coach-25",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_word",
+      "history": [
+        {
+          "role": "child",
+          "text": "我说午休"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_word，孩子说“我说午休”"
+  },
+  {
+    "id": "char_coach-26",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "不知道怎么说"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_sentence，孩子说“不知道怎么说”"
+  },
+  {
+    "id": "char_coach-27",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "小猫在午休。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_sentence，孩子说“小猫在午休。”"
+  },
+  {
+    "id": "char_coach-28",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "我想再想一会儿。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_sentence，孩子说“我想再想一会儿。”"
+  },
+  {
+    "id": "char_coach-29",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "今天我先休息。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_sentence，孩子说“今天我先休息。”"
+  },
+  {
+    "id": "char_coach-30",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "card": {
+        "id": "fictional-card",
+        "char": "休",
+        "pinyin": "xiū",
+        "radical": "亻",
+        "explain": "左边是单人旁，右边是木。人靠着树休息。",
+        "words": [
+          "休息",
+          "午休"
+        ],
+        "confusable": [
+          "体"
+        ],
+        "dictationContext": "休，休息的休",
+        "audioUrl": null,
+        "source": "任务编造示例，非生产内容",
+        "status": "approved"
+      },
+      "step": "make_sentence",
+      "history": [
+        {
+          "role": "child",
+          "text": "休息"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "card_grounded"
+    ],
+    "note": "编造补充：make_sentence，孩子说“休息”"
+  }
+]
