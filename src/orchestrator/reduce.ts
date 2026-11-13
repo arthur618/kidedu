@@ -34,7 +34,7 @@ function enter(state: SessionState, ctx: SessionContext, effects: Effect[] = [])
 function withResult(ctx: SessionContext, char: string, result: CharResult): SessionContext {
   return {
     ...ctx,
-    stageOf: { ...ctx.stageOf, [char]: nextStage(ctx.stageOf[char]!, ctx.kindOf[char]!, result) },
+    stageOf: { ...ctx.stageOf, [char]: nextStage(ctx.stageOf[char] ?? "recognize", ctx.kindOf[char] ?? "recognize_only", result) },
   };
 }
 
