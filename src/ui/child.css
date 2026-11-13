@@ -1,0 +1,61 @@
+.child-app { --ink:#243f3a; --green:#245c4b; --paper:#fffdf7; --line:#d6ded0; color:var(--ink); background:#f1f0e6; min-height:100dvh; font:20px/1.65 "PingFang SC","Microsoft YaHei",sans-serif; padding:20px 20px 12px; box-sizing:border-box; }
+.child-app *, .child-app *::before, .child-app *::after { box-sizing:border-box; }
+body:has(.child-app) { margin:0; }
+.child-app .topbar { display:flex; justify-content:space-between; align-items:center; gap:8px; max-width:720px; margin:0 auto 20px; }
+.child-app .brand { display:flex; gap:10px; align-items:center; font-size:20px; font-weight:650; line-height:1.35; }
+.child-app .brand svg { flex-shrink:0; }
+.child-app button { font:inherit; color:var(--ink); background:#fffdf7; border:2px solid #bdcfc4; border-radius:18px; min-height:56px; min-width:56px; padding:12px 20px; cursor:pointer; overflow-wrap:anywhere; }
+.child-app button:focus-visible, .child-app input:focus-visible, .child-app textarea:focus-visible { outline:4px solid #b47c15; outline-offset:4px; }
+.child-app button:disabled { opacity:.55; cursor:default; }
+.child-app button.primary { background:var(--green); border-color:var(--green); color:#fffdf7; font-weight:650; width:100%; box-shadow:0 4px 0 #173d32; }
+.child-app button[aria-pressed="true"] { background:#e6edc8; border:3px solid #47643f; font-weight:700; }
+.child-app button.exit { background:transparent; border-color:transparent; padding:10px 8px; flex-shrink:0; }
+.child-app .learning-card { max-width:720px; margin:0 auto; padding:32px 44px; background:var(--paper); border:1px solid var(--line); border-radius:28px; box-shadow:0 8px 0 #e5e6d9; }
+.child-app h1 { font-size:32px; line-height:1.4; margin:0 0 16px; letter-spacing:.02em; outline:none; overflow-wrap:anywhere; }
+.child-app p { margin:12px 0 20px; overflow-wrap:anywhere; }
+.child-app .eyebrow { color:#667755; font-size:20px; margin:0 0 8px; }
+.child-app .lead { font-size:24px; }
+.child-app .gentle { color:#576e5d; }
+.child-app .actions, .child-app form { display:grid; gap:16px; }
+.child-app input, .child-app textarea { width:100%; min-width:0; min-height:56px; font:inherit; border:2px solid #a8bcad; border-radius:12px; color:var(--ink); background:#fff; padding:12px; }
+.child-app textarea { min-height:110px; resize:vertical; }
+.child-app label { display:block; }
+.child-app .file-input, .child-app .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); border:0; }
+.child-app .capture-art { width:168px; height:158px; border:2px solid #c6d4be; border-radius:10px; background:#f8f6e9; margin:24px auto 32px; transform:rotate(-5deg); padding:16px 24px; position:relative; }
+.child-app .capture-art span { font-size:24px; letter-spacing:.25em; }
+.child-app .capture-art i { display:block; border-bottom:2px solid #c4d1bc; height:20px; }
+.child-app .capture-art b { color:#aa7516; font-size:52px; position:absolute; right:-22px; bottom:0; }
+.child-app .homework-list { display:grid; gap:16px; margin:24px 0; }
+.child-app .homework-row { display:grid; grid-template-columns:32px minmax(0,1fr) auto; gap:8px; align-items:center; }
+.child-app .homework-row button { padding:10px; }
+.child-app .item-number { color:#61765b; }
+.child-app .recognize-word { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:32px 0; font-family:"Kaiti SC",KaiTi,serif; font-size:96px; line-height:1.3; }
+.child-app mark { color:var(--green); background:#f5e5a9; border-radius:14px; padding:0 8px; }
+.child-app .choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.child-app .char-card { width:168px; margin:16px auto 24px; padding:0 12px 8px; text-align:center; background:linear-gradient(90deg,transparent 49.5%,#d8e3d5 50%,transparent 50.5%),linear-gradient(transparent 58%,#d8e3d5 58.5%,transparent 59%),#f5f6ed; border-radius:20px; border:1px solid #d8e3d5; }
+.child-app .pinyin { margin:4px 0 0; font-size:24px; }
+.child-app .big-char { font-size:112px; font-family:"Kaiti SC",KaiTi,serif; line-height:1.25; }
+.child-app .speech { background:#edf3e9; padding:16px 20px; border-radius:18px; margin:20px 0; }
+.child-app .speech p { margin:0 0 12px; }
+.child-app .speech p:last-child { margin-bottom:0; }
+.child-app .ask { font-weight:650; }
+.child-app .sound-art, .child-app .story-art { color:#5b7757; background:#edf1dc; width:140px; height:140px; margin:24px auto; border-radius:50%; text-align:center; font-size:84px; line-height:140px; }
+.child-app .story-art span { color:#b37d19; font-size:32px; }
+.child-app .step { color:#65765b; }
+.child-app .paper-art { display:flex; justify-content:center; gap:8px; color:#8da080; font-size:64px; margin:28px 0; }
+.child-app .comparison { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.child-app figure { margin:0; min-width:0; text-align:center; }
+.child-app figure img { width:100%; height:136px; object-fit:contain; background:white; border-radius:12px; margin-top:8px; border:1px solid #dedfd4; }
+.child-app figcaption { color:#586e59; }
+.child-app .standard-char { font-family:"Kaiti SC",KaiTi,serif; font-size:96px; line-height:136px; margin-top:8px; background:#f0f3e7; border-radius:12px; }
+.child-app .compare-card { padding:20px 0; border-bottom:1px dashed #c5d1be; margin-bottom:24px; }
+.child-app .notice { background:#f8edc8; border-radius:12px; padding:12px; }
+.child-app .summary { padding:16px 24px; background:#f1f4e8; border-radius:20px; }
+.child-app .summary-chars { font-size:32px; color:#315843; }
+.child-app .moods { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.child-app .moods button { display:grid; justify-items:center; padding:8px 4px; }
+.child-app .moods button span:first-child { font-size:40px; }
+.child-app footer { color:#64765d; max-width:720px; margin:28px auto 8px; text-align:center; }
+.child-app .status { border-radius:18px; background:#edf3e9; padding:20px; }
+@media(max-width:480px) { .child-app { padding:12px 12px; } .child-app .brand { gap:4px; } .child-app .brand svg { width:44px; height:56px; } .child-app .learning-card { padding:24px 20px; border-radius:22px; } .child-app h1 { font-size:28px; } .child-app .topbar { margin-bottom:12px; } .child-app button.exit { padding:8px 0; } .child-app .homework-row { grid-template-columns:minmax(0,1fr) auto; } .child-app .item-number { display:none; } .child-app .summary { padding:12px; } }
+@media(prefers-reduced-motion:no-preference) { .child-app button { transition:background .15s ease, transform .15s ease; } .child-app button:active { transform:translateY(2px); } }
