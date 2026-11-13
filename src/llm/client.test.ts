@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import runtimeConfigJson from "../../config/models.json";
-import type { LlmClientDeps } from "./client";
+import { createLlmClient, type LlmClientDeps } from "./client";
 import type { LlmRequest, ModelConfig } from "../contracts/llm";
 import type { AgentName } from "../contracts/schemas";
-import { createLlmClient, OUTPUT_ONLY_JSON_SUFFIX } from "./client";
+
+const OUTPUT_ONLY_JSON_SUFFIX = "只输出一个 JSON 对象，不要输出其他任何文字。";
 
 const schema = z.object({ answer: z.string() });
 
@@ -25,6 +26,24 @@ function responseWithUsage(content: string, usage: Record<string, unknown>): Res
       choices: [{ message: { content } }],
       usage,
     }),
+  } as unknown as Response;
+}
+
+function invalidJsonResponse(): Response {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => {
+      throw new SyntaxError("bad json");
+    },
+  } as unknown as Response;
+}
+
+function missingChoicesResponse(): Response {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => ({ usage: { prompt_tokens: 1, completion_tokens: 0 } }),
   } as unknown as Response;
 }
 
@@ -169,15 +188,6 @@ describe("请求构造", () => {
 
     await client.call(baseRequest());
     expect(calls[0]!.url).toBe("https://api.deepseek.com/chat/completions");
-  });
-});
-
-describe("请求构造（纯函数）", () => {
-  it("stripCodeFence 只去掉整段包裹", async () => {
-    const { stripCodeFence } = await import("./client");
-    expect(stripCodeFence('```json\n{"a":1}\n```')).toBe('{"a":1}');
-    expect(stripCodeFence('```\n{"a":1}\n```')).toBe('{"a":1}');
-    expect(stripCodeFence('  {"a":1}  ')).toBe('{"a":1}');
   });
 });
 
@@ -348,6 +358,65 @@ describe("超时与错误处理", () => {
   });
 });
 
+describe("上游响应本身无法解析", () => {
+  it("第一次响应 JSON 坏了：按服务端错误等 500ms 重试，成功且不追加 assistant 消息", async () => {
+    const sleep = vi.fn(async () => {});
+    const { fetchImpl, calls } = fakeFetch((index) =>
+      index === 0 ? invalidJsonResponse() : response('{"answer":"第二次成功"}'),
+    );
+    const client = makeClient(fetchImpl, { sleep });
+
+    const result = await client.call(baseRequest());
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("应当成功");
+    expect(result.data).toEqual({ answer: "第二次成功" });
+    expect(calls).toHaveLength(2);
+    expect(sleep).toHaveBeenCalledWith(500);
+
+    const firstMessages = requestBody(calls[0]!).messages as unknown[];
+    const secondMessages = requestBody(calls[1]!).messages as unknown[];
+    expect(secondMessages).toEqual(firstMessages);
+    expect(secondMessages.some((message) => (message as { role: string }).role === "assistant")).toBe(
+      false,
+    );
+  });
+
+  it("两次都缺少 choices：返回 provider_error，fetch 两次，且没有追加空 assistant 消息", async () => {
+    const sleep = vi.fn(async () => {});
+    const { fetchImpl, calls } = fakeFetch(() => missingChoicesResponse());
+    const client = makeClient(fetchImpl, { sleep });
+
+    const result = await client.call(baseRequest());
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error("应当失败");
+    expect(result.error).toBe("provider_error");
+    expect(calls).toHaveLength(2);
+    expect(sleep).toHaveBeenCalledTimes(1);
+
+    const firstMessages = requestBody(calls[0]!).messages as unknown[];
+    const secondMessages = requestBody(calls[1]!).messages as unknown[];
+    expect(secondMessages).toEqual(firstMessages);
+    expect(secondMessages.some((message) => (message as { role: string }).role === "assistant")).toBe(
+      false,
+    );
+  });
+
+  it("缺 choices 的响应仍会统计 returned usage", async () => {
+    const sleep = vi.fn(async () => {});
+    const onTurn = vi.fn();
+    const { fetchImpl } = fakeFetch(() => missingChoicesResponse());
+    const client = makeClient(fetchImpl, { sleep, onTurn });
+
+    await client.call(baseRequest());
+
+    expect(onTurn).toHaveBeenCalledWith(
+      expect.objectContaining({ inputTokens: 2, outputTokens: 0, ok: false, error: "provider_error" }),
+    );
+  });
+});
+
 describe("token 统计与 onTurn", () => {
   const usageCases: Array<[string, Record<string, unknown>, number]> = [
     [
@@ -441,6 +510,7 @@ describe("token 统计与 onTurn", () => {
         cachedInputTokens: 2,
         outputTokens: 4,
         ok: false,
+        error: "invalid_output",
       }),
     );
   });
@@ -516,5 +586,38 @@ describe("密钥不泄露", () => {
     expect(result.error).not.toContain(secret);
     expect(calls).toHaveLength(2);
     expect(JSON.stringify(onTurn.mock.calls[0]![0])).not.toContain(secret);
+  });
+});
+
+describe("createLlmClient 自己守住红线", () => {
+  it("直接把含 openai 的配置对象传给 createLlmClient 时创建失败", () => {
+    const config = fixtureConfig();
+    config.reader = { ...config.reader, provider: "openai" };
+    const fetchImpl = (async () => {
+      throw new Error("不应该发请求");
+    }) as unknown as typeof fetch;
+
+    expect(() =>
+      createLlmClient({
+        config,
+        fetch: fetchImpl,
+        getEnv: () => "test-key",
+        now: () => 0,
+      }),
+    ).toThrow(/reader/);
+  });
+
+  it("即使配置对象被 JSON 复制过也仍然检查结构与 provider", () => {
+    const config = JSON.parse(JSON.stringify(fixtureConfig())) as ModelConfig;
+    config.report = { ...config.report, provider: "openai" };
+
+    expect(() =>
+      createLlmClient({
+        config,
+        fetch: (async () => response('{"answer":"ok"}')) as unknown as typeof fetch,
+        getEnv: () => "test-key",
+        now: () => 0,
+      }),
+    ).toThrow(/report/);
   });
 });

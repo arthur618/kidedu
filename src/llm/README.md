@@ -11,6 +11,7 @@ import { createLlmClient } from "@/llm/client";
 
 // 启动时执行一次：配置结构不对，或任何一个运行时 Agent 不是 deepseek，这里会直接抛错。
 const config = loadRuntimeConfig(runtimeConfigJson);
+// createLlmClient 内部会再调用一次 loadRuntimeConfig，手写配置对象也不能绕过红线。
 
 const llm = createLlmClient({
   config,
@@ -132,7 +133,10 @@ const reviewLlm = createOfflineClient({
 - 每次请求用 `AbortController` 限时；超时返回 `timeout`，不重试。
 - 网络异常或 5xx：等 500ms 重试一次；仍失败返回 `provider_error`。
 - 4xx：不重试，返回 `provider_error`。
-- 输出不是合法 JSON 或不通过 schema：把模型输出和 zod 问题追加到消息里，重试一次；仍不通过返回 `invalid_output`。
+- 模型返回的文字不是合法 JSON 或不通过 schema：把模型输出和 zod 问题追加到消息里，重试一次；仍不通过返回 `invalid_output`。
+- 上游响应本身无法解析（HTTP 成功但响应体不是合法 JSON，或缺少 `choices[0].message.content`）：按可重试的服务端错误处理，等 500ms 再试一次，仍失败返回 `provider_error`，不会把空内容追加进对话。
 - 整个 `call` 的预算上限是 `timeoutMs` 的两倍；第二次请求会在剩余预算内缩短超时，预算不够时不再发请求。
 - token 从 `usage.prompt_tokens`、`usage.completion_tokens` 读取；缓存 token 优先 `prompt_cache_hit_tokens`，否则 `prompt_tokens_details.cached_tokens`，都没有就是 0。重试的两次会相加。
 - 密钥只通过 `getEnv` 读，只放进请求头 `Authorization`，不会进入请求体、返回值、`onTurn` 记录或错误信息。
+- `onTurn` 的记录类型是契约里的 `LlmTurnRecord`；失败时带 `error`，成功时不带。
+- `src/llm/internal.ts` 是运行时和离线共用的内部实现，只允许 `client.ts` 和 `offline.ts` 引用；其他路径不要 import。

@@ -13,8 +13,10 @@
 
 只给 `scripts/content/` 的离线流水线用，不接触孩子数据，因此允许使用 OpenAI。文件里有两项：
 
-- `draft`：起草，默认 provider 为 `openai`。
+- `draft`：起草，默认 provider 为 `openai`，`baseUrl` 是 `https://api.openai.com/v1`。
 - `review`：复核，默认 provider 为 `deepseek`。
+
+离线起草和审校的输出较长，两项的 `timeoutMs` 都放宽到 `60000`（60 秒）；运行时仍然保持 8 秒。
 
 两项的 `model` 都是占位值。负责人需要按自己账号实际可用的型号填写（例如把 `REPLACE_WITH_OPENAI_MODEL` 和 `REPLACE_WITH_DEEPSEEK_MODEL` 换成真实模型名）。如果不填，请求会被厂商拒绝，但不会影响运行时。
 

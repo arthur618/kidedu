@@ -46,6 +46,10 @@ describe("loadOfflineConfig", () => {
     const config = loadOfflineConfig(offlineConfigJson);
     expect(config.draft.provider).toBe("openai");
     expect(config.review.provider).toBe("deepseek");
+    expect(config.draft.baseUrl).toBe("https://api.openai.com/v1");
+    expect(config.draft.timeoutMs).toBe(60000);
+    expect(config.review.timeoutMs).toBe(60000);
+    expect(config.draft.baseUrl.endsWith("/v1")).toBe(true);
   });
 
   it("即使两条都是 openai 也能通过，因为离线层不受运行时红线约束", () => {
@@ -74,7 +78,8 @@ describe("createOfflineClient", () => {
 
     expect(result.ok).toBe(true);
     expect(calls).toHaveLength(1);
-    expect(calls[0]!.url).toBe("https://api.openai.com/chat/completions");
+    expect(calls[0]!.url).toBe("https://api.openai.com/v1/chat/completions");
+    expect(calls[0]!.url.endsWith("/v1/chat/completions")).toBe(true);
     expect(calls[0]!.body.model).toBe(offlineConfigJson.draft.model);
   });
 

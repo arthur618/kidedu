@@ -5,9 +5,9 @@
  */
 import { z } from "zod";
 import offlineConfigJson from "../../config/models.offline.json";
-import type { LlmClient, ModelRoute } from "../contracts/llm";
-import { createRouteClient, type LlmTurnRecord } from "./client";
+import type { LlmClient, LlmTurnRecord, ModelRoute } from "../contracts/llm";
 import { modelRouteSchema } from "./config";
+import { createRouteClient } from "./internal";
 
 export type OfflineRole = "draft" | "review";
 
