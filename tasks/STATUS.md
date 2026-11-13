@@ -46,5 +46,5 @@
 
 - C2：独立worktree yuwen-c2-ui，按/learn入口实现，避免与D1的根首页冲突；接口数据缺口在报告列明，由总设计师统一交C7接线。
 - C4：独立worktree yuwen-c4-content，离线流水线和示例使用假客户端，不调用真实模型。
-- C6：待C3合并后从统一main基准派发独立worktree；只读准备已完成。样例与private结果隔离规则见tasks/codex/C6-addendum.md。当前环境没有已配置的DEEPSEEK_API_KEY，不伪造真实评测证据。
+- C6：C3已合并，从统一main基准e888dc9派发独立worktree yuwen-c6-evals，现已开始实现。样例与private结果隔离规则见tasks/codex/C6-addendum.md。当前环境没有已配置的DEEPSEEK_API_KEY，不伪造真实评测证据。
 - 实现agent不改契约、验证脚本、reviews和看板，不合并、不推送。总设计师在独立克隆复验并写review，按负责人授权执行通过后的本地合并。
