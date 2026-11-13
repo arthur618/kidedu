@@ -85,7 +85,10 @@ export async function runEvaluation(options: RunOptions): Promise<{ report: Eval
   if (options.limit !== undefined && (!Number.isSafeInteger(options.limit) || options.limit < 1)) throw new Error("limit必须是正整数");
   const config = modelConfig(options.config ?? runtimeConfig, options.model);
   const getEnv = options.getEnv ?? (name => process.env[name]);
-  const secrets = [...new Set(RUNTIME_AGENTS.map(a => config[a].apiKeyEnv))].map(name => getEnv(name)).filter((s): s is string => Boolean(s));
+  // D2发送trim后的值；原值也可能被替身或上游输出，所有出口都须覆盖两者。
+  const secrets = [...new Set(RUNTIME_AGENTS.map(a => config[a].apiKeyEnv))]
+    .flatMap(name => { const value = getEnv(name); return value ? [value, value.trim()] : []; })
+    .filter(Boolean);
   const now = options.now ?? Date.now;
   const create = options.createClient ?? (onTurn => createLlmClient({ config, fetch: globalThis.fetch, getEnv, now, onTurn }));
   let entries = options.cases ?? await loadPublicCases(path.join(options.rootDir, "evals/cases"), options.agent);

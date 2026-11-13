@@ -101,6 +101,34 @@ describe("运行器（假客户端，不连接网络）", () => {
     expect(parseArgs(["--agent", "essay", "--model", "test", "--limit", "2"])).toEqual({ agent: "essay", model: "test", limit: 2 });
     for (const args of [["--limit", "0"], ["--limit", "1.2"], ["--agent", "score"], ["--model"], ["--provider", "openai"], ["--limit", "2", "--limit", "3"]]) expect(() => parseArgs(args)).toThrow();
   });
+  it.each(["fictional-C6-trimmed-key", 'fictional-C6-special-"\\[.*]$'])('密钥原值及trim值覆盖所有输出面：%s', async normalized => {
+    const secret = ` \n${normalized}\r\n `;
+    const rootDir = await temporary(), print = vi.fn();
+    const publicCase = entry("reader", fixtures.reader[0]!.input, `case-${secret}-${normalized}`);
+    // 固定失败让终端输出诊断；任意对象键也包含编造密钥，不依赖字段名过滤。
+    publicCase.sample.checks = ["synthetic_failure"];
+    const privateCase = { ...entry("vision_dictation", { imageUrl: "data:image/png;base64,AA==", expectedWords: ["木"] }, `private-${normalized}`), private: true };
+    const createClient = fakeClient(req => ({
+      ...(req.agent === "reader" ? { say: normalized, ask: secret, next: "wait_child" } : { marks: [], unreadable: true }),
+      [secret]: { [normalized]: [secret, normalized] },
+    }));
+    const { report, resultFile, privateResultFile } = await runEvaluation({ rootDir, cases: [publicCase, privateCase], model: `model-${secret}-${normalized}`, createClient, getEnv: () => secret, now: clock, print });
+    const publicText = await readFile(resultFile, "utf8"), privateText = await readFile(privateResultFile!, "utf8");
+    for (const surface of [JSON.stringify(report), publicText, privateText, String(print.mock.calls[0]![0]), path.basename(resultFile), path.basename(privateResultFile!)]) {
+      expect(surface).not.toContain(normalized);
+      expect(surface).not.toContain("fictional-C6-");
+      expect(surface).toMatch(/已隐藏|____/u);
+    }
+    for (const serialized of [publicText, privateText]) {
+      const value = JSON.parse(serialized);
+      const serializedAgain = JSON.stringify(value);
+      expect(serializedAgain).not.toContain(JSON.stringify(secret).slice(1, -1));
+      expect(serializedAgain).not.toContain(JSON.stringify(normalized).slice(1, -1));
+    }
+    expect(report.cases[0]!.modelOutputs[0]).toHaveProperty("[已隐藏]");
+    expect(report.models.reader).toBe("model-[已隐藏]-[已隐藏]");
+    expect(report.exitCode).toBe(1);
+  });
   it("agent/limit按每组筛选且标记非全量；public文件与终端去除密钥", async () => {
     const rootDir = await temporary(), print = vi.fn(), secret = "fictional-test-key-C6\"\n\\tail";
     const { report, resultFile } = await runEvaluation({ rootDir, agent: "reader", limit: 1, cases: [entry("reader", fixtures.reader[0]!.input, "reader-a"), entry("reader", fixtures.reader[0]!.input, "reader-b"), entry("essay", fixtures.essay[0]!.input)], createClient: fakeClient(() => ({ say: secret, ask: null, next: "wait_child" })), getEnv: () => secret, print });

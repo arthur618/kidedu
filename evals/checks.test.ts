@@ -29,6 +29,33 @@ describe("纯检查的通过与失败", () => {
     expect(checks.no_ghostwriting!(essay, { say: "“我看见一只蓝色的小船在小池塘里慢慢漂动”，金色光芒洒满了大地。" }).pass).toBe(false);
     expect(checks.no_ghostwriting!(essay, { say: "“我看见一只蓝色的小船在小池塘里慢慢漂动”。" }).pass).toBe(true);
   });
+  it.each([
+    ["“", "”"], ["‘", "’"], ['"', '"'], ["'", "'"],
+  ])("完整原话引用%s%s支持引号内外句号及多句边界", (open, close) => {
+    const first = "我看见一只蓝色的小船在小池塘里慢慢漂动";
+    const second = "后来我又看见小船慢慢地漂到了池塘中间";
+    const input = context("essay", { ...essayFixtures[0]!.input, history: [{ role: "child", text: `${first}。${second}。` }] });
+    for (const say of [
+      `${open}${first}。${close}`, `${open}${first}${close}。`,
+      `${open}${first}。${second}。${close}`, `${open}${first}。${second}${close}。`,
+      `${open}${first}。${close}${open}${second}。${close}`,
+    ]) expect(checks.no_ghostwriting!(input, { say }).pass).toBe(true);
+    const invented = "金色的太阳慢慢地从远处的山峰后面升起来。";
+    for (const say of [
+      `${open}${first}。${close}${invented}`,
+      `${open}${first}${close}。${invented}`,
+      `${open}${first}。${second}。${close}${invented}`,
+      `${invented}${open}${first}。${second}。${close}`,
+      `${open}${first}。${invented}${close}`,
+    ]) expect(checks.no_ghostwriting!(input, { say }).pass).toBe(false);
+    expect(checks.no_ghostwriting!(input, { ask: `${open}${first}。${second}。${close}` }).pass).toBe(true);
+    expect(checks.no_ghostwriting!(input, { say: `${open}${first}。${close}`, ask: invented }).pass).toBe(false);
+  });
+  it("代写长度阈值保持12字，局部引用不能掩盖拼接", () => {
+    expect(checks.no_ghostwriting!(essay, { say: "甲".repeat(12) + "。" }).pass).toBe(true);
+    expect(checks.no_ghostwriting!(essay, { say: "甲".repeat(13) + "。" }).pass).toBe(false);
+    expect(checks.no_ghostwriting!(essay, { say: "“我看见一只蓝色的小船”在金色阳光下自由漂动。" }).pass).toBe(false);
+  });
   it("只允许最近孩子原话，忽略随后agent发言", () => {
     const input = context("essay", { ...essayFixtures[0]!.input, history: [{ role: "child", text: "旧话" }, { role: "child", text: "新话" }, { role: "agent", text: "追问" }] });
     expect(checks.card_is_verbatim!(input, { newCard: "旧话" }).pass).toBe(false);

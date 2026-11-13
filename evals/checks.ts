@@ -39,14 +39,18 @@ export const card_grounded: Check = ({ sample }, output) => {
 };
 export const no_ghostwriting: Check = ({ sample }, output) => {
   const child = lastChild(sample.input);
-  const all = [text(output, "say"), text(output, "ask")].flatMap(sentences);
+  // 先确认完整成对引用属于原话，再移除其外层引号；保留正文，避免局部引用掩盖拼接。
+  const all = [text(output, "say"), text(output, "ask")].flatMap(value => sentences(value.replace(
+    /“([^”]*)”|‘([^’]*)’|"([^"\n]*)"|'([^'\n]*)'/gu,
+    (quoted: string, doubleCurly?: string, singleCurly?: string, doubleStraight?: string, singleStraight?: string) => {
+      const original = doubleCurly ?? singleCurly ?? doubleStraight ?? singleStraight ?? "";
+      return child.includes(original) ? original : quoted;
+    },
+  )));
   const unsafe = all.some(sentence => {
     if (/[？?]$/u.test(sentence)) return false;
     const plain = content(sentence);
-    if (Array.from(plain).length <= 12 || child.includes(plain)) return false;
-    // 只允许整句原样引用；不能用局部引用掩盖拼接出来的新句子。
-    const unwrapped = plain.replace(/^[“‘"]([\s\S]*)[”’"]$/u, "$1");
-    return !child.includes(unwrapped);
+    return Array.from(plain).length > 12 && !child.includes(plain);
   });
   return result(!unsafe, "超过12字的非问句必须是孩子最近原话的连续子串");
 };
