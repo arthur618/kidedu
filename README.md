@@ -4,7 +4,7 @@
 
 这个仓库用多个编码 Agent 协作开发：
 
-- **总设计师**（Claude）：写契约和任务文件，验收每个任务。
+- **总设计师**（Codex）：写契约和任务文件，验收每个任务。
 - **Codex**：做绝大部分任务包（`tasks/codex/`）。
 - **DeepSeek harness**：只做 D1 和 D2 两个任务包（`tasks/deepseek/`）。
 
@@ -38,3 +38,5 @@ bash scripts/verify.sh C1       # 加上任务 C1 的范围检查和报告检查
 ## 当前进度
 
 见 `tasks/STATUS.md`。
+
+换电脑继续项目：先读 [任务看板](tasks/STATUS.md) 和 [项目接续说明](tasks/RESUME.md)。原始交接背景见 [HANDOFF](docs/HANDOFF.md)。
