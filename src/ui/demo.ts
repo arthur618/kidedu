@@ -15,7 +15,7 @@ export function demoPacket(screen: SessionState, photo = demoPhoto): Packet {
     dictation_compare: { imageUrl: photo, chars: ["山"], marks: [{ word: "山", charIndex: 0, expected: "山", box: [0.1, 0.1, 0.8, 0.8], suspicious: true, confidence: 0.7 }] },
     wrap_up: { learned: ["山"], revisit: ["山"] },
   };
-  return { sessionId: "fixture-session", state: screen, effects: [{ type: "show", screen, data: data[screen] }] };
+  return { sessionId: "fixture-session", state: screen, effects: screen === "ended" ? [] : [{ type: "show", screen, data: data[screen] }] };
 }
 export function createDemoService(initial: SessionState = "homework_capture", record: (type: string) => void = () => {}): LearningService {
   let state = initial;

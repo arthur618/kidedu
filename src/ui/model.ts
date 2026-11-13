@@ -20,6 +20,7 @@ export type ScreenDecoder = (packet: Packet) => View;
 
 /** 本地适配约定，尚非服务端契约；只消费验证后的 show 数据。 */
 export const decodeScreen: ScreenDecoder = packet => {
+  if (packet.state === "ended") return { screen: "ended" };
   const show = [...packet.effects].reverse().find(effect => {
     const parsed = z.object({ type: z.literal("show"), screen: SessionStateSchema }).safeParse(effect);
     return parsed.success && parsed.data.screen === packet.state;

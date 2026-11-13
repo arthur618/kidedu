@@ -59,6 +59,26 @@ describe("C2 服务边界", () => {
     const event = vi.spyOn(service, "event"); const controller = new LearningController(service); const pending = controller.start();
     await controller.event({ type: "quit" }); ready(demoPacket("homework_capture")); await pending; expect(event).toHaveBeenCalledWith({ type: "quit" });
   });
+  it("终态不需要 show，完成和退出均可到达", async () => {
+    expect(decodeScreen({ state: "ended", effects: [] })).toEqual({ screen: "ended" });
+    const controller = new LearningController(createDemoService("wrap_up"));
+    await controller.start(); await controller.event({ type: "quit" });
+    expect(controller.snapshot().view?.screen).toBe("ended");
+  });
+  it("启动未建会话时退出不会覆盖启动重试，包括等待中退出", async () => {
+    for (const queued of [false, true]) {
+      let rejectStart!: (error: Error) => void;
+      const fetcher = vi.fn().mockImplementationOnce(() => new Promise((_, reject) => { rejectStart = reject; })).mockResolvedValueOnce(new Response(JSON.stringify(demoPacket("homework_capture"))));
+      const controller = new LearningController(createHttpService({ childId: "a", lessonId: "b", fetcher }));
+      const pending = controller.start();
+      if (queued) await controller.event({ type: "quit" });
+      rejectStart(new Error("offline")); await pending;
+      if (!queued) await controller.event({ type: "quit" });
+      expect(controller.snapshot().retry).toBe(true); expect(fetcher).toHaveBeenCalledTimes(1);
+      await controller.retry(); expect(fetcher).toHaveBeenCalledTimes(2);
+      expect(controller.snapshot().view?.screen).toBe("homework_capture");
+    }
+  });
   it("拒绝缺失未知数据，不猜测字卡或下一屏", () => {
     expect(() => decodeScreen({ state: "understand", effects: [{ type: "show", screen: "understand", data: { char: "山" } }] })).toThrow();
     expect(() => decodeScreen({ state: "recognize", effects: [] })).toThrow();

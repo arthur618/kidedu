@@ -109,3 +109,42 @@ test("图片长边压缩、裁切与空坐标整图回退", async ({ page }) => 
   });
   await page.goto("/learn"); await expect(page.getByText("在照片里找：")).toBeVisible(); expect(await page.locator(".comparison img").getAttribute("src")).toBe(demoPhoto);
 });
+
+test("照片不可用时不能判断，可重试恢复", async ({ page }) => {
+  let delivered = 0;
+  await page.route("**/api/session**", async route => {
+    const packet = demoPacket("dictation_compare");
+    const data = (packet.effects[0] as { data: { imageUrl: string; marks: { box: number[] | null }[] } }).data;
+    data.imageUrl = "data:image/png;base64,YmFk";
+    data.marks[0]!.box = null;
+    if (route.request().postDataJSON().type) delivered++;
+    await route.fulfill({ json: packet });
+  });
+  await page.goto("/learn");
+  await expect(page.getByText("这张照片还没看清，可以再试一次，或者今天先到这。")).toBeVisible();
+  await expect(page.getByRole("button", { name: "一样", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "我看好了" })).toBeDisabled();
+  await page.getByRole("button", { name: "再试一次" }).click();
+  await expect(page.getByText("这张照片还没看清，可以再试一次，或者今天先到这。")).toBeVisible();
+  await expect(page.getByRole("button", { name: "一样", exact: true })).toBeDisabled();
+  expect(delivered).toBe(0);
+});
+test("裁图失败后重试成功才能判断", async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    (window as unknown as { failCrop: boolean }).failCrop = true;
+    HTMLCanvasElement.prototype.getContext = function(this: HTMLCanvasElement, ...args: Parameters<typeof original>) {
+      if ((window as unknown as { failCrop: boolean }).failCrop) return null;
+      return original.apply(this, args);
+    } as typeof original;
+  });
+  await page.route("**/api/session", route => route.fulfill({ json: demoPacket("dictation_compare") }));
+  await page.goto("/learn");
+  await expect(page.getByRole("button", { name: "再试一次" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "一样", exact: true })).toBeDisabled();
+  await page.evaluate(() => { (window as unknown as { failCrop: boolean }).failCrop = false; });
+  await page.getByRole("button", { name: "再试一次" }).click();
+  await expect(page.getByRole("button", { name: "一样", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "一样", exact: true }).click();
+  await expect(page.getByRole("button", { name: "我看好了" })).toBeEnabled();
+});

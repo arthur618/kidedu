@@ -31,11 +31,11 @@ export async function compressPhoto(file: File): Promise<string> {
 export async function cropPhoto(src: string, box: [number, number, number, number]): Promise<string> {
   const image = await loadImage(src);
   const crop = cropBox(box, image.naturalWidth, image.naturalHeight);
-  if (crop.width <= 0 || crop.height <= 0) return src;
+  if (crop.width <= 0 || crop.height <= 0) throw new Error("invalid_crop");
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(crop.width)); canvas.height = Math.max(1, Math.round(crop.height));
   const context = canvas.getContext("2d");
-  if (!context) return src;
+  if (!context) throw new Error("canvas_unavailable");
   context.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL("image/jpeg", 0.85);
 }

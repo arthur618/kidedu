@@ -51,18 +51,28 @@ export function DictationPlay({ data, onDone }: { data: ScreenData["dictation_pl
 export function DictationCapture({ onPhoto }: { onPhoto: (photo: string) => void }) {
   return <><p>把刚才写的字拍下来，<br/>我们放在一起看看。</p><div className="paper-art" aria-hidden="true"><span>田</span><span>田</span><span>田</span></div><p className="gentle">把纸放平，让每个字都拍清楚。</p><PhotoPicker label="拍下我写的字" onPhoto={onPhoto}/></>;
 }
-function WrittenPhoto({ imageUrl, mark }: { imageUrl: string; mark: ScreenData["dictation_compare"]["marks"][number] }) {
-  const [src, setSrc] = useState(imageUrl);
+function WrittenPhoto({ imageUrl, mark, onReady }: { imageUrl: string; mark: ScreenData["dictation_compare"]["marks"][number]; onReady: (ready: boolean) => void }) {
+  const [src, setSrc] = useState<string>();
   const [retry, setRetry] = useState(false);
-  useEffect(() => { let active = true; setSrc(imageUrl); if (mark.box) void cropPhoto(imageUrl, mark.box).then(value => { if (active) setSrc(value); }).catch(() => { if (active) setRetry(true); }); return () => { active = false; }; }, [imageUrl, mark]);
-  return <figure><figcaption>我写的</figcaption><img src={src} alt={`纸上的${mark.word}`} onError={() => setRetry(true)}/>{!mark.box && <p>在照片里找：<mark>{mark.word}</mark></p>}{retry && <p role="status">这张照片还没看清，可以再拍一次。</p>}</figure>;
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    let active = true;
+    onReady(false); setSrc(undefined); setRetry(false);
+    const prepare = mark.box ? cropPhoto(imageUrl, mark.box) : Promise.resolve(imageUrl);
+    void prepare.then(value => { if (active) setSrc(value); }).catch(() => { if (active) setRetry(true); });
+    return () => { active = false; };
+  }, [imageUrl, mark, attempt, onReady]);
+  return <figure><figcaption>我写的</figcaption>{src && <img key={attempt} src={src} alt={`纸上的${mark.word}`} onLoad={() => onReady(true)} onError={() => { onReady(false); setRetry(true); }}/ >}{!mark.box && <p>在照片里找：<mark>{mark.word}</mark></p>}{retry && <div role="status"><p>这张照片还没看清，可以再试一次，或者今天先到这。</p><button onClick={() => setAttempt(value => value + 1)}>再试一次</button></div>}</figure>;
 }
 export function DictationCompare({ data, onDone }: { data: ScreenData["dictation_compare"]; onDone: (results: { char: string; result: "correct" | "wrong" }[]) => void }) {
   const [answers, setAnswers] = useState<Record<string, "correct" | "wrong">>({});
+  const [ready, setReady] = useState<Record<string, boolean>>({});
+  const callbacks = useRef<Record<string, (value: boolean) => void>>({});
   return <><p>一个字一个字看，你来做决定。</p>{data.chars.map(char => {
     const mark = data.marks.find(item => item.expected === char)!;
-    return <section className="compare-card" key={char} aria-label={`对照${char}`}><div className="comparison"><WrittenPhoto imageUrl={data.imageUrl} mark={mark}/><figure><figcaption>字卡上的</figcaption><div className="standard-char">{char}</div></figure></div>{mark.suspicious && <p className="notice">✦ 这里可能不一样，仔细看看。</p>}<div className="choices"><button aria-pressed={answers[char] === "correct"} onClick={() => setAnswers({ ...answers, [char]: "correct" })}>一样</button><button aria-pressed={answers[char] === "wrong"} onClick={() => setAnswers({ ...answers, [char]: "wrong" })}>不一样</button></div>{answers[char] === "wrong" && <p className="gentle">这个字我们再看看。</p>}</section>;
-  })}<button className="primary" disabled={data.chars.some(char => !answers[char])} onClick={() => onDone(data.chars.map(char => ({ char, result: answers[char]! })))}>我看好了</button></>;
+    callbacks.current[char] ??= value => { setReady(previous => ({ ...previous, [char]: value })); if (!value) setAnswers(previous => { const next = { ...previous }; delete next[char]; return next; }); };
+    return <section className="compare-card" key={char} aria-label={`对照${char}`}><div className="comparison"><WrittenPhoto imageUrl={data.imageUrl} mark={mark} onReady={callbacks.current[char]}/><figure><figcaption>字卡上的</figcaption><div className="standard-char">{char}</div></figure></div>{mark.suspicious && <p className="notice">✦ 这里可能不一样，仔细看看。</p>}<div className="choices"><button disabled={!ready[char]} aria-pressed={answers[char] === "correct"} onClick={() => setAnswers({ ...answers, [char]: "correct" })}>一样</button><button disabled={!ready[char]} aria-pressed={answers[char] === "wrong"} onClick={() => setAnswers({ ...answers, [char]: "wrong" })}>不一样</button></div>{answers[char] === "wrong" && <p className="gentle">这个字我们再看看。</p>}</section>;
+  })}<button className="primary" disabled={data.chars.some(char => !ready[char] || !answers[char])} onClick={() => onDone(data.chars.map(char => ({ char, result: answers[char]! })))}>我看好了</button></>;
 }
 export function ReadingOffer({ onChoice }: { onChoice: (accept: boolean) => void }) {
   return <><div className="story-art" aria-hidden="true">☾<span>✦</span></div><p className="lead">今天有个小故事，要读吗？</p><div className="actions"><button className="primary" onClick={() => onChoice(true)}>想读一读</button><button onClick={() => onChoice(false)}>下次再读</button></div></>;
