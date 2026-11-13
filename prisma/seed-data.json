@@ -1,0 +1,100 @@
+{
+  "child": {
+    "id": "child-demo-1",
+    "nickname": "小禾",
+    "grade": 3,
+    "interests": ["恐龙", "折纸"],
+    "dailyLimitMinutes": 30
+  },
+  "lesson": {
+    "id": "lesson-demo-g3-1",
+    "grade": 3,
+    "term": "upper",
+    "lessonNo": 1,
+    "title": "第一课 山山水水",
+    "recognizeChars": ["山", "水", "火"],
+    "writeChars": ["日", "月", "田"],
+    "words": ["山水", "火山", "日月", "水田"],
+    "status": "approved"
+  },
+  "charCards": [
+    {
+      "id": "card-demo-shan",
+      "char": "山",
+      "pinyin": "shān",
+      "radical": "山",
+      "explain": "“山”像三座连在一起的山峰，中间高，两边低。看到“山”字，就想到高高的山头。",
+      "words": ["高山", "山水"],
+      "confusable": ["出"],
+      "dictationContext": "山，高山的山",
+      "audioUrl": null,
+      "source": "自编内容，人工校订",
+      "status": "approved"
+    },
+    {
+      "id": "card-demo-shui",
+      "char": "水",
+      "pinyin": "shuǐ",
+      "radical": "水",
+      "explain": "“水”中间像一条小河，两边像溅起来的水花。小河流动的样子，就是“水”字。",
+      "words": ["河水", "水田"],
+      "confusable": ["永"],
+      "dictationContext": "水，河水的水",
+      "audioUrl": null,
+      "source": "自编内容，人工校订",
+      "status": "approved"
+    },
+    {
+      "id": "card-demo-huo",
+      "char": "火",
+      "pinyin": "huǒ",
+      "radical": "火",
+      "explain": "“火”像一堆烧起来的火苗，中间高，两边低。火苗往上窜，就是“火”字的样子。",
+      "words": ["火山", "火光"],
+      "confusable": ["灭"],
+      "dictationContext": "火，火山的火",
+      "audioUrl": null,
+      "source": "自编内容，人工校订",
+      "status": "approved"
+    },
+    {
+      "id": "card-demo-ri",
+      "char": "日",
+      "pinyin": "rì",
+      "radical": "日",
+      "explain": "“日”像太阳，外面一圈是太阳的边，中间一横是太阳里的光。古时候的人就这样画太阳。",
+      "words": ["日子", "日月"],
+      "confusable": ["目"],
+      "dictationContext": "日，日子的日",
+      "audioUrl": null,
+      "source": "自编内容，人工校订",
+      "status": "approved"
+    },
+    {
+      "id": "card-demo-yue",
+      "char": "月",
+      "pinyin": "yuè",
+      "radical": "月",
+      "explain": "“月”像一弯月亮，里面的两横像月光。弯弯的月亮挂在天上，就是“月”字。",
+      "words": ["月亮", "日月"],
+      "confusable": ["肉"],
+      "dictationContext": "月，月亮的月",
+      "audioUrl": null,
+      "source": "自编内容，人工校订",
+      "status": "approved"
+    },
+    {
+      "id": "card-demo-tian",
+      "char": "田",
+      "pinyin": "tián",
+      "radical": "田",
+      "explain": "“田”像一块被小路分成几格的地。农民在田里种庄稼，格子就是一块块田地。",
+      "words": ["田地", "水田"],
+      "confusable": ["由"],
+      "dictationContext": "田，田地的田",
+      "audioUrl": null,
+      "source": "自编内容，人工校订",
+      "status": "approved"
+    }
+  ]
+}
