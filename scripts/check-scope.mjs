@@ -1,6 +1,6 @@
 // 用法：node scripts/check-scope.mjs <任务号> [基准分支，默认 main]
 // 检查当前分支相对基准分支的改动是否都在该任务允许的路径内，且没有改契约。
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const [task, base = "main"] = process.argv.slice(2);
@@ -15,8 +15,8 @@ if (!allowed) {
   process.exit(2);
 }
 const always = ["package.json", "package-lock.json", `reports/${task}.md`];
-const changed = execSync(`git diff --name-only ${base}...HEAD`, { encoding: "utf8" })
-  .split("\n")
+const changed = execFileSync("git", ["diff", "--name-only", "-z", `${base}...HEAD`], { encoding: "utf8" })
+  .split("\0")
   .filter(Boolean);
 
 const bad = changed.filter((f) => !always.includes(f) && !allowed.some((p) => f === p || f.startsWith(p)));

@@ -89,3 +89,8 @@ content/
 - 不做入库。D1 提供导入已批准内容的脚本；本任务只产出文件。
 - 不做网页版的审核界面，`content:sheet` 生成的清单文件就是审核界面。
 - 示例内容不要抄课本原文。课文原文有版权，仓库里不放。
+
+
+## 总设计师补充：人工课程输入的审核闭环（2026-11-13）
+
+Lesson虽然是人工录入的draft，也必须能够走完check → review → approve，才能被D1按approved导入。content:review不能直接跳过所有Lesson。对人工Lesson只审阅可验证的录入一致性，不补课程知识，不凭模型判断教材真实性；最终批准仍由人决定。可以用_review元数据标识manual_lesson来源，不修改契约。生成的CharCard/Passage仍需记录起草厂商，审校厂商必须不同。README与测试应覆盖人工Lesson从draft到approved的完整闭环，并保留所有approved文件原字节。
