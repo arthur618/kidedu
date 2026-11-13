@@ -11,7 +11,13 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:import": "tsx prisma/import.ts"
+    "db:import": "tsx prisma/import.ts",
+    "content:cards": "tsx scripts/content/cli.ts cards",
+    "content:passage": "tsx scripts/content/cli.ts passage",
+    "content:check": "tsx scripts/content/cli.ts check",
+    "content:review": "tsx scripts/content/cli.ts review",
+    "content:sheet": "tsx scripts/content/cli.ts sheet",
+    "content:approve": "tsx scripts/content/cli.ts approve"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

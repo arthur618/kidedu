@@ -1,0 +1,33 @@
+{
+  "id": "demo",
+  "grade": 3,
+  "term": "upper",
+  "lessonNo": 1,
+  "title": "树下的小游戏（完全编造示例）",
+  "recognizeChars": [
+    "休",
+    "林",
+    "森",
+    "采",
+    "明",
+    "早"
+  ],
+  "writeChars": [
+    "休",
+    "明"
+  ],
+  "words": [
+    "休息",
+    "树林",
+    "森林",
+    "采花",
+    "明亮",
+    "早上"
+  ],
+  "status": "draft",
+  "_check": {
+    "hash": "75ac912e98ab0fd795eab0e50f1c19de8f52d0c71fab9b2858ef360d4e6ee5bb",
+    "passed": true,
+    "issues": []
+  }
+}

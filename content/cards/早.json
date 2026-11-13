@@ -1,0 +1,27 @@
+{
+  "id": "card-早",
+  "char": "早",
+  "pinyin": "zǎo",
+  "radical": "日",
+  "explain": "早的上面是日，下面是十。早可以表示时间靠前，草比早多了草字头。",
+  "words": [
+    "早上",
+    "早晨",
+    "早饭"
+  ],
+  "confusable": [
+    "草"
+  ],
+  "dictationContext": "早，早上的早",
+  "audioUrl": null,
+  "source": "",
+  "status": "draft",
+  "_draft": {
+    "provider": "openai"
+  },
+  "_check": {
+    "hash": "72521974afb7eec698c2dd2ad3d62d92ca5f348901de38552f4d3e28c9365f5c",
+    "passed": true,
+    "issues": []
+  }
+}

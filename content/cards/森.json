@@ -1,0 +1,27 @@
+{
+  "id": "card-森",
+  "char": "森",
+  "pinyin": "sēn",
+  "radical": "木",
+  "explain": "森里有三个木。它可以表示树很多，林只有两个木。",
+  "words": [
+    "森林",
+    "森严",
+    "阴森"
+  ],
+  "confusable": [
+    "林"
+  ],
+  "dictationContext": "森，森林的森",
+  "audioUrl": null,
+  "source": "",
+  "status": "draft",
+  "_draft": {
+    "provider": "openai"
+  },
+  "_check": {
+    "hash": "392b8319052505281a6e7287c731bdec940313c44230b4be1892a35f2e8256c4",
+    "passed": true,
+    "issues": []
+  }
+}

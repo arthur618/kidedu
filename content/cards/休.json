@@ -1,0 +1,27 @@
+{
+  "id": "card-休",
+  "char": "休",
+  "pinyin": "xiū",
+  "radical": "亻",
+  "explain": "左边是单人旁，右边是木。休有歇一歇的意思，和体相比，右边的木下没有一横。",
+  "words": [
+    "休息",
+    "休假",
+    "午休"
+  ],
+  "confusable": [
+    "体"
+  ],
+  "dictationContext": "休，休息的休",
+  "audioUrl": null,
+  "source": "",
+  "status": "draft",
+  "_draft": {
+    "provider": "openai"
+  },
+  "_check": {
+    "hash": "7c3fa43220eb761cde09d885172e24baeb2d26b2e1ed120e20ad7901425776a3",
+    "passed": true,
+    "issues": []
+  }
+}

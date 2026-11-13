@@ -1,0 +1,27 @@
+{
+  "id": "card-林",
+  "char": "林",
+  "pinyin": "lín",
+  "radical": "木",
+  "explain": "林由两个木组成。它可以表示成片的树，森比林多一个木。",
+  "words": [
+    "树林",
+    "林地",
+    "山林"
+  ],
+  "confusable": [
+    "森"
+  ],
+  "dictationContext": "林，树林的林",
+  "audioUrl": null,
+  "source": "",
+  "status": "draft",
+  "_draft": {
+    "provider": "openai"
+  },
+  "_check": {
+    "hash": "d9145fdbc8e414d68111478b3e531d71b2313a9ca1558ccd6364a3de2aa74690",
+    "passed": true,
+    "issues": []
+  }
+}
