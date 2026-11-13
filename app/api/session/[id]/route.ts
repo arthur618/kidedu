@@ -22,7 +22,7 @@ export async function GET(
       sessionId: session.id,
       state: runtime.state,
       context: runtime.context,
-      homework: session.homework,
+      homework: runtime.context.homework,
     });
   } catch (error) {
     console.error("读取会话失败：", error);

@@ -7,7 +7,7 @@
 ```bash
 npm install
 cp .env.example .env          # 里面已有 DATABASE_URL=file:./dev.db
-npm run db:migrate            # 建表（第一次会生成 prisma/migrations）
+npm run db:migrate            # 应用 prisma/migrations 里的建表脚本
 npm run db:seed               # 写入编造的演示数据
 npm run dev                   # 打开 http://localhost:3000
 ```
@@ -16,7 +16,8 @@ npm run dev                   # 打开 http://localhost:3000
 
 ## POST /api/session
 
-开始一次学习。服务端调用 `planDay` 得到当天计划，新建会话，再发送 `start` 事件。
+开始一次学习。服务端读出孩子的全部字和这一课的字，调用 `planDay` 得到当天计划，准备计划里每个字的
+`stageOf` / `kindOf`，调用 `initContext` 得到初始上下文，新建会话，再发送 `start` 事件。
 
 请求：
 
@@ -42,9 +43,10 @@ npm run dev                   # 打开 http://localhost:3000
 
 ## POST /api/session/[id]/event
 
-发送一个 `SessionEvent`。服务端读出状态和上下文，调 `reduce`，执行持久化效果，再把不处理的效果原样返回。
+发送一个 `SessionEvent`。接口直接用契约里的 `SessionEventSchema` 校验（`src/contracts/orchestrator.ts`），
+然后读出状态和上下文，调 `reduce`，在同一个数据库事务里执行持久化效果，再把不处理的效果原样返回。
 
-请求（事件结构见 `src/contracts/orchestrator.ts`）：
+请求：
 
 ```json
 { "type": "recognize_result", "char": "山", "result": "correct", "mode": "self_report" }
@@ -59,11 +61,12 @@ npm run dev                   # 打开 http://localhost:3000
 }
 ```
 
-会话不存在返回 404；事件结构不符合 `SessionEvent` 返回 400，而且不会调用 `reduce`。
+会话不存在返回 404；事件结构不符合 `SessionEventSchema` 返回 400，而且不会调用 `reduce`。
 
 ## GET /api/session/[id]
 
-返回当前状态、上下文和作业清单。
+返回当前状态、上下文和作业清单。顶层 `homework` 取自当前运行时上下文，和 `context.homework` 一致；
+孩子中途刷新页面也能看到刚确认的清单。
 
 ```json
 {
@@ -73,8 +76,12 @@ npm run dev                   # 打开 http://localhost:3000
     "sessionId": "session_0f1c2d3e-....",
     "childId": "child-demo-1",
     "today": "2026-11-13",
-    "plan": { "newChars": ["山", "水"], "reviewChars": [] },
+    "plan": { "newChars": ["山", "水"], "reviewChars": [], "carryOverChars": [] },
+    "hasEssayToday": false,
     "queue": ["山", "水"],
+    "understandQueue": [],
+    "writeQueue": [],
+    "understandAttempts": {},
     "stageOf": { "山": "recognize" },
     "kindOf": { "山": "write" },
     "homework": [],
@@ -90,13 +97,17 @@ npm run dev                   # 打开 http://localhost:3000
 ## 会话状态存在哪
 
 - `Session` 表只存契约里的字段：`id`、`childId`、`startedAt`、`endedAt`、`homework`。
-- 状态机的 `SessionState` 和 `SessionContext` 存在单独的 `SessionRuntime` 表里，一个会话一行：`sessionId`、`state`、`context`（JSON 字符串）。
-- `handleEvent` 处理完效果后，把新的 `state` 和 `context` 写回 `SessionRuntime`。
+- 状态机的 `SessionState` 和整个 `SessionContext` 存在单独的 `SessionRuntime` 表里，一个会话一行：
+  `sessionId`、`state`、`context`（JSON 字符串）。
+- `handleEvent` 把 `reduce` 返回的 `ctx` 整个存成 JSON，下次整个读出来传回 `reduce`，不裁剪、不补字段，
+  也不在两次事件之间更新 `stageOf`。
+- 一次事件的 ChildChar、Session 和 SessionRuntime 写入在同一个数据库事务里：全部成功才提交，
+  中途失败全部回滚。`getPrisma()` 在事务里自动返回同一个事务客户端（AsyncLocalStorage）。
 
-## 编排器还没合并时
+## 编排器还没正式接线时
 
-`src/server/deps.ts` 现在导出会抛“C1 尚未合并”的 `reduce`、`advanceChar`、`planDay` 占位函数。
-任务 C1 合并后，把该文件顶部三个常量改成从 `src/orchestrator/`（或 `@/orchestrator`）导入即可，接口层不用改。
+`src/server/deps.ts` 现在导出会抛“C1 尚未合并”的 `reduce`、`advanceChar`、`planDay`、`initContext` 占位函数。
+实际接线由任务 C7 完成：把该文件顶部四个常量改成从 `src/orchestrator/`（或 `@/orchestrator`）导入即可，接口层不用改。
 
 ## 数据访问层
 

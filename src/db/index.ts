@@ -9,4 +9,4 @@ export type { SessionRuntime } from "./sessionRuntime";
 export { insertTurn, getTurn } from "./turn";
 export { insertIncident, getIncident } from "./incident";
 export { ContractDataError } from "./errors";
-export { getPrisma, getDatabaseUrl, setDatabaseUrlForTests, disconnectPrisma } from "./client";
+export { getPrisma, getDatabaseUrl, setDatabaseUrlForTests, disconnectPrisma, withTransaction } from "./client";

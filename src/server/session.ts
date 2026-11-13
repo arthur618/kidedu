@@ -1,6 +1,8 @@
 import type {
   AdvanceChar,
+  DailyPlan,
   Effect,
+  InitContext,
   PlanDay,
   Reduce,
   SessionContext,
@@ -8,6 +10,7 @@ import type {
   SessionState,
 } from "../contracts/orchestrator";
 import type { CharKind, CharStage, ChildChar, Session } from "../contracts/schemas";
+import { withTransaction } from "../db/client";
 import type * as childDb from "../db/child";
 import type * as childCharDb from "../db/childChar";
 import type * as lessonDb from "../db/lesson";
@@ -33,6 +36,7 @@ export interface SessionDeps {
 
 export interface ServerDeps extends SessionDeps {
   planDay: PlanDay;
+  initContext: InitContext;
 }
 
 export class SessionNotFoundError extends Error {
@@ -53,13 +57,6 @@ export class LessonNotFoundError extends Error {
   constructor(lessonId: string) {
     super(`没有找到这一课（${lessonId}）。`);
     this.name = "LessonNotFoundError";
-  }
-}
-
-export class ChildCharNotFoundError extends Error {
-  constructor(childId: string, char: string) {
-    super(`没有找到孩子 ${childId} 的字 ${char} 的学习记录。`);
-    this.name = "ChildCharNotFoundError";
   }
 }
 
@@ -91,15 +88,24 @@ function initialChildChar(childId: string, char: string, kind: CharKind): ChildC
   };
 }
 
-function contextMaps(all: ChildChar[]): {
-  stageOf: Record<string, CharStage>;
-  kindOf: Record<string, CharKind>;
-} {
+/**
+ * 为计划里的每个字准备 stageOf / kindOf。
+ * 数据库里已有的字用库里的阶段和类别；没有的新字阶段是 recognize，
+ * 类别按这一课的 recognizeChars / writeChars。
+ */
+function planContextMaps(
+  plan: DailyPlan,
+  existing: ChildChar[],
+  lessonKinds: Map<string, CharKind>,
+): { stageOf: Record<string, CharStage>; kindOf: Record<string, CharKind> } {
+  const byChar = new Map(existing.map((cc) => [cc.char, cc]));
   const stageOf: Record<string, CharStage> = {};
   const kindOf: Record<string, CharKind> = {};
-  for (const cc of all) {
-    stageOf[cc.char] = cc.stage;
-    kindOf[cc.char] = cc.kind;
+  const planned = [...plan.newChars, ...plan.reviewChars, ...plan.carryOverChars];
+  for (const char of new Set(planned)) {
+    const current = byChar.get(char);
+    stageOf[char] = current?.stage ?? "recognize";
+    kindOf[char] = current?.kind ?? lessonKinds.get(char) ?? "recognize_only";
   }
   return { stageOf, kindOf };
 }
@@ -108,64 +114,74 @@ function contextMaps(all: ChildChar[]): {
  * 处理一个会话事件：
  * 1. 读会话和运行时上下文；2. 调 reduce；3. 执行持久化效果；
  * 4. 原样返回 call_agent / play_audio / show；5. 保存新的状态和上下文。
+ *
+ * 同一事件的所有持久化效果和 SessionRuntime 在同一个数据库事务里提交或回滚。
  */
 export async function handleEvent(
   deps: SessionDeps,
   sessionId: string,
   event: SessionEvent,
 ): Promise<{ state: SessionState; effects: Effect[] }> {
-  const session = await deps.getSession(sessionId);
-  if (!session) throw new SessionNotFoundError(sessionId);
+  return withTransaction(async () => {
+    const session = await deps.getSession(sessionId);
+    if (!session) throw new SessionNotFoundError(sessionId);
 
-  const runtime = await deps.getSessionRuntime(sessionId);
-  if (!runtime) throw new SessionNotFoundError(sessionId);
+    const runtime = await deps.getSessionRuntime(sessionId);
+    if (!runtime) throw new SessionNotFoundError(sessionId);
 
-  const transition = deps.reduce(runtime.state, runtime.context, event);
-  const nowIso = deps.now().toISOString();
-  const passthrough: Effect[] = [];
-  let saveSession = false;
-  let endSession = false;
+    const transition = deps.reduce(runtime.state, runtime.context, event);
+    const nowIso = deps.now().toISOString();
+    const passthrough: Effect[] = [];
+    let saveSession = false;
+    let endSession = false;
 
-  for (const effect of transition.effects) {
-    switch (effect.type) {
-      case "persist_char": {
-        const current = await deps.getChildChar(session.childId, effect.char);
-        if (!current) throw new ChildCharNotFoundError(session.childId, effect.char);
-        const advanced = deps.advanceChar(current, effect.result, transition.ctx.today);
-        await deps.upsertChildChar(advanced);
-        break;
+    for (const effect of transition.effects) {
+      switch (effect.type) {
+        case "persist_char": {
+          // 新字第一次出现时 ChildChar 还不存在：按上下文里的类别造一条初始记录。
+          const current =
+            (await deps.getChildChar(session.childId, effect.char)) ??
+            initialChildChar(
+              session.childId,
+              effect.char,
+              transition.ctx.kindOf[effect.char] ?? "recognize_only",
+            );
+          const advanced = deps.advanceChar(current, effect.result, transition.ctx.today);
+          await deps.upsertChildChar(advanced);
+          break;
+        }
+        case "persist_session":
+          saveSession = true;
+          break;
+        case "end_session":
+          saveSession = true;
+          endSession = true;
+          break;
+        case "call_agent":
+        case "play_audio":
+        case "show":
+          passthrough.push(effect);
+          break;
       }
-      case "persist_session":
-        saveSession = true;
-        break;
-      case "end_session":
-        saveSession = true;
-        endSession = true;
-        break;
-      case "call_agent":
-      case "play_audio":
-      case "show":
-        passthrough.push(effect);
-        break;
     }
-  }
 
-  if (saveSession) {
-    const updated: Session = {
-      ...session,
-      homework: transition.ctx.homework,
-      endedAt: endSession ? (session.endedAt ?? nowIso) : session.endedAt,
-    };
-    await deps.updateSession(updated);
-  }
+    if (saveSession) {
+      const updated: Session = {
+        ...session,
+        homework: transition.ctx.homework,
+        endedAt: endSession ? (session.endedAt ?? nowIso) : session.endedAt,
+      };
+      await deps.updateSession(updated);
+    }
 
-  await deps.saveSessionRuntime({
-    sessionId: transition.ctx.sessionId || sessionId,
-    state: transition.state,
-    context: transition.ctx,
+    await deps.saveSessionRuntime({
+      sessionId: transition.ctx.sessionId || sessionId,
+      state: transition.state,
+      context: transition.ctx,
+    });
+
+    return { state: transition.state, effects: passthrough };
   });
-
-  return { state: transition.state, effects: passthrough };
 }
 
 export interface StartSessionInput {
@@ -175,8 +191,9 @@ export interface StartSessionInput {
 }
 
 /**
- * 新建会话：按当天计划建 ChildChar，保存初始上下文，然后发送 start 事件。
- * planDay 由外部传入（任务 C1 的实现）。
+ * 新建会话：读孩子和课，调 planDay 得到计划，准备计划字的 stageOf / kindOf，
+ * 调 initContext 得到初始上下文并存起来，然后发送 start 事件。
+ * planDay / initContext 由外部传入（任务 C1 的实现）。
  */
 export async function startSession(
   deps: ServerDeps,
@@ -195,29 +212,16 @@ export async function startSession(
   const plan = deps.planDay(existing, chars, today);
   const session = await deps.createSession(child.id, now.toISOString());
 
-  const known = new Set(existing.map((cc) => cc.char));
-  const kindFor = new Map(chars.map((item) => [item.char, item.kind]));
-  for (const char of plan.newChars) {
-    if (!known.has(char)) {
-      await deps.upsertChildChar(initialChildChar(child.id, char, kindFor.get(char) ?? "recognize_only"));
-      known.add(char);
-    }
-  }
-
-  const all = await deps.listChildChars(child.id);
-  const { stageOf, kindOf } = contextMaps(all);
-  const context: SessionContext = {
+  const { stageOf, kindOf } = planContextMaps(plan, existing, new Map(chars.map((item) => [item.char, item.kind])));
+  const context = deps.initContext({
     sessionId: session.id,
     childId: child.id,
     today,
     plan,
-    queue: [],
     stageOf,
     kindOf,
-    homework: [],
-    elapsedMinutes: 0,
     limitMinutes: child.dailyLimitMinutes,
-  };
+  });
   await deps.saveSessionRuntime({ sessionId: session.id, state: "idle", context });
 
   const result = await handleEvent(deps, session.id, {

@@ -1,6 +1,6 @@
+import { SessionEventSchema } from "../../../../../src/contracts/orchestrator";
 import { handleEvent, SessionNotFoundError } from "../../../../../src/server/session";
 import { serverDeps } from "../../../../../src/server/deps";
-import { SessionEventSchema } from "../../../../../src/server/sessionSchemas";
 
 function json(body: unknown, status = 200): Response {
   return Response.json(body, { status, headers: { "cache-control": "no-store" } });
