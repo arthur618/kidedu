@@ -7,7 +7,7 @@
 | T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.1 |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
-| D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 需修改 | `reviews/D1.md`：7991c04 不通过；按 `tasks/deepseek/D1-rework.md` 返工 |
+| D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 待合并 | `reviews/D1.md`：226341a 第二次验收通过；当前main组合439个测试通过 |
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 待合并 | `reviews/C3.md`：37f04cf 通过，由负责人合并 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
 | C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 未开始 | |
@@ -38,4 +38,5 @@
 - 单字符schema的UTF-16限制暂缓，补充平面汉字需要整体定义长度与索引后再支持。
 - 运行时内容只允许status=approved；由D1查询和C7组装输入守住。C6使用合成图片替换C3视觉fixture占位URL。
 - C5：b9052c6已删除递归自查测试，第二次验收通过；负责人授权Codex执行合并（d83a064），main自查405个测试通过。
-- D1：原分支26测通过，试合并当前main后类型检查/构建失败；需跟进契约、补新字、原子持久化、修正GET当前清单并升级新增的不安全Next版本。
+- D1：226341a第二次验收通过；原分支404个测试、当前main组合439个测试通过，事务回滚独立探针通过。C7需把模型及护栏外部调用放在数据库事务提交之后。
+- 依赖审计仍有11项（含运行时Zod、旧测试工具链及新增Prisma CLI配置链）；Next告警已消除，后续另行安排依赖专项。
