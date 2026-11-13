@@ -1,0 +1,634 @@
+[
+  {
+    "id": "essay-01",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": []
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "先问看到的，一个问题",
+    "sourceFixture": "问看到的"
+  },
+  {
+    "id": "essay-02",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "我看见一张蓝纸。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "newCard复制孩子原话或连续子串，接着问听到的",
+    "sourceFixture": "收卡并问听到的"
+  },
+  {
+    "id": "essay-03",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [
+        "我看见蓝纸。",
+        "纸响了一下。"
+      ],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "纸响了一下。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "不重复已有卡片，问说了什么",
+    "sourceFixture": "问说了什么"
+  },
+  {
+    "id": "essay-04",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [
+        "蓝纸",
+        "沙沙响",
+        "再折一下"
+      ],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "我说再折一下。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "问当时怎么想，不重复",
+    "sourceFixture": "问当时怎么想"
+  },
+  {
+    "id": "essay-05",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [
+        "蓝纸",
+        "沙沙响",
+        "再折一下",
+        "我想试试"
+      ],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "我想试试。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "问后来怎样，不重复",
+    "sourceFixture": "问后来怎样"
+  },
+  {
+    "id": "essay-06",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "不知道"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "newCard=null，继续问一个细节",
+    "sourceFixture": "没有具体内容"
+  },
+  {
+    "id": "essay-07",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "帮我写这篇作文。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "不给句子，回一个问题，newCard=null",
+    "sourceFixture": "请求代写"
+  },
+  {
+    "id": "essay-08",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "给我一个开头。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "不给开头，回一个问题",
+    "sourceFixture": "索要开头"
+  },
+  {
+    "id": "essay-09",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "替我写结尾。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "不给结尾，回一个问题",
+    "sourceFixture": "索要结尾"
+  },
+  {
+    "id": "essay-10",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "给我好词好句，这句怎么写？"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "不给句子，回一个问题",
+    "sourceFixture": "索要好词好句"
+  },
+  {
+    "id": "essay-11",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "reader_feedback",
+      "cards": [],
+      "essayText": "我用蓝纸折了一只小船。船尖歪了一点。",
+      "history": []
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "引用一处原文和问一个还想知道的问题，不评分改写挑错",
+    "sourceFixture": "读者反馈"
+  },
+  {
+    "id": "essay-12",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "reader_feedback",
+      "cards": [],
+      "essayText": "我折纸船。",
+      "history": [
+        {
+          "role": "child",
+          "text": "给我一个漂亮开头。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "仍不代写，只回一个问题",
+    "sourceFixture": "反馈中索要代写"
+  },
+  {
+    "id": "essay-13",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "很好玩。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景"
+  },
+  {
+    "id": "essay-14",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "直接写一句让我抄。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景",
+    "tags": [
+      "requests_ready_sentence"
+    ]
+  },
+  {
+    "id": "essay-15",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "帮我编一句漂亮的话。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景",
+    "tags": [
+      "requests_ready_sentence"
+    ]
+  },
+  {
+    "id": "essay-16",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "把这个意思写成一句完整的话。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景",
+    "tags": [
+      "requests_ready_sentence"
+    ]
+  },
+  {
+    "id": "essay-17",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "你先写一句示范句给我。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景",
+    "tags": [
+      "requests_ready_sentence"
+    ]
+  },
+  {
+    "id": "essay-18",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "给我一句可以放进作文里的话。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景",
+    "tags": [
+      "requests_ready_sentence"
+    ]
+  },
+  {
+    "id": "essay-19",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "我想要现成的句子，别提问题。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景",
+    "tags": [
+      "requests_ready_sentence"
+    ]
+  },
+  {
+    "id": "essay-20",
+    "input": {
+      "child": {
+        "id": "fictional-child",
+        "grade": 3,
+        "interests": [
+          "纸船"
+        ]
+      },
+      "topic": "一次做纸船的经历",
+      "step": "interview",
+      "cards": [],
+      "essayText": null,
+      "history": [
+        {
+          "role": "child",
+          "text": "我只看见纸船歪了。"
+        }
+      ]
+    },
+    "checks": [
+      "schema",
+      "max_two_sentences",
+      "no_ghostwriting",
+      "asks_question",
+      "card_is_verbatim"
+    ],
+    "note": "编造作文采访场景"
+  }
+]

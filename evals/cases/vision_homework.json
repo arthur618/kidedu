@@ -1,0 +1,110 @@
+[
+  {
+    "id": "vision_homework-01",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "语文认读本课生字。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "recognize,true",
+    "sourceFixture": "认读"
+  },
+  {
+    "id": "vision_homework-02",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "语文生字抄两遍。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "copy,true，保留次数",
+    "sourceFixture": "抄写"
+  },
+  {
+    "id": "vision_homework-03",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "语文听写三个词。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "dictation,true",
+    "sourceFixture": "听写"
+  },
+  {
+    "id": "vision_homework-04",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "语文课文朗读一次。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "read_aloud,false",
+    "sourceFixture": "朗读"
+  },
+  {
+    "id": "vision_homework-05",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "语文写一次折纸的经历。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "essay,true，不代写",
+    "sourceFixture": "作文"
+  },
+  {
+    "id": "vision_homework-06",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "语文带一本课外书。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "other,false",
+    "sourceFixture": "其他语文任务"
+  },
+  {
+    "id": "vision_homework-07",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "数学口算十题，语文认读生字。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "仅保留语文",
+    "sourceFixture": "混合科目"
+  },
+  {
+    "id": "vision_homework-08",
+    "input": {
+      "imageUrl": null,
+      "spokenText": "作业纸上有些字我说不清楚，好像是语文的，但次数看不清。"
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "由C3模糊照片改编为口述不清：评测仅spokenText，不请求占位图片；应标unsure",
+    "sourceFixture": "模糊照片"
+  },
+  {
+    "id": "vision_homework-09",
+    "input": {
+      "imageUrl": null,
+      "spokenText": null
+    },
+    "checks": [
+      "schema"
+    ],
+    "note": "items=[],unsure=true",
+    "sourceFixture": "无资料"
+  }
+]

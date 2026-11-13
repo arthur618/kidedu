@@ -11,7 +11,9 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:import": "tsx prisma/import.ts"
+    "db:import": "tsx prisma/import.ts",
+    "eval": "tsx evals/run.ts",
+    "eval:diff": "tsx evals/diff.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
