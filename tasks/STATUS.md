@@ -4,7 +4,7 @@
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
-| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.1 |
+| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.2（新增HTTP响应契约） |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
@@ -13,7 +13,7 @@
 | C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 已合并 | f92b99d / main 9a30e66; 635 tests + 9 browser tests; reviews/C2.md |
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
-| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | C7-preflight.md |
+| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 进行中 | Sol high独立实现；契约2.2与C7-addendum已冻结；不调真实模型 |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
 
@@ -72,3 +72,7 @@ C2、C4、C6均已独立克隆复验并试合并main@fe7aea0，串行四项检�
 C4@1b3a60e、C6@04baa5d、C2@f92b99d均完成第二次独立验收并按负责人授权合入main，合并提交分别为9a749c3、58d136b、9a30e66。在真实main重新npm ci并执行verify.sh，31个测试文件、635个测试及实际Next生产构建全部通过；无任务号时范围和报告检查按脚本设计跳过，各分支在独立验收中已分别通过。C2另有9项独立浏览器测试通过。契约未修改，没有代写任务实现。
 
 GitHub远端：git@github.com:arthur618/kidedu.git。负责人已授权同步主线和任务分支。当前接续步骤见tasks/RESUME.md；C7未派发，先完成tasks/codex/C7-preflight.md设计清单。真实DeepSeek评测按负责人决定延后。前面的首次不通过、额度中断和恢复记录均是历史。
+
+## C7正式派发与契约2.2（2026-11-13）
+
+只新增src/contracts/session.ts，原三个契约不变：共享屏幕数据、Packet、正常unavailable/notice、稳定操作ID规则和100秒服务端/120秒客户端预算。C7获精确UI适配路径及两个内部运行时表/迁移的范围，明确幂等检查点、事务外模型、照片不落盘与重启恢复，新增验收18–24。实现使用Sol high、单agent，其他非必要工作不并行。总设计师仅改契约/任务/验收，不代写集成实现。真实模型评测仍延后。

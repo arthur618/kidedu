@@ -11,7 +11,7 @@
 
 ## 要读的
 
-- `src/contracts/` 全部三个文件。
+- `src/contracts/` 全部文件（现含session.ts），以及C7-addendum.md。
 - `src/server/README.md`（D1）、`src/llm/README.md`（D2）、`src/agents/README.md`（C3）、`src/guard/README.md`（C5）。
 - `reviews/C1.md` 第二次验收里“可以之后再改”的第一条。
 
@@ -119,12 +119,16 @@ D1的handleEvent已把学习记录、Session和SessionRuntime的保存放在一�
 
 ## 不在范围内
 
-- 不改界面（C2）。界面和这里的接口对不上时，写进报告。
+- 只允许C7-addendum列明的界面适配，不重画UI。
 - 不实现阅读和作文的 Agent 调用，只返回占位。
 - 不做语音。
-- 不改 `src/agents/`、`src/guard/`、`src/llm/`、`src/db/`，也不改契约。它们有问题就写进报告。
+- 不改src/agents、src/guard、src/llm及契约；DB仅可新增C7-addendum列明的内部运行时表及访问模块。
 - 不调真实模型。
 
 ## 派发前补充（C2/C4/C6验收后）
 
 先读C7-preflight.md。当前尚未派发C7：总设计师需先落实show.data共享结构、缺内容兜底形状、请求总预算、重试幂等和照片不落盘的兼容设计，再按需要调整精确scope。实现者不得自行修改契约或越界接线。
+
+## 正式派发裁决
+
+preflight各项已由总设计师在契约2.2和C7-addendum.md中明确，先完整读补充。补充明确取代旧文中的冲突项，扩展写路径和18–24条验收；其他原要求不变。允许路径以tasks/scopes.json为机器检查准绳。

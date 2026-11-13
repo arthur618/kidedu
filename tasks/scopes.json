@@ -39,6 +39,20 @@
     "app/api/",
     "src/orchestrator/reduce.ts",
     "src/orchestrator/reduce.test.ts",
-    "tests/integration/"
+    "tests/integration/",
+    "prisma/schema.prisma",
+    "prisma/migrations/20261114_c7_runtime/",
+    "src/db/sessionCommand.ts",
+    "src/db/sessionCommand.test.ts",
+    "src/db/coachRuntime.ts",
+    "src/db/coachRuntime.test.ts",
+    "src/ui/model.ts",
+    "src/ui/service.ts",
+    "src/ui/controller.ts",
+    "src/ui/LearningApp.tsx",
+    "src/ui/screens.tsx",
+    "src/ui/ui.test.ts",
+    "src/ui/integration.browser.ts",
+    "src/ui/playwright.config.ts"
   ]
 }
