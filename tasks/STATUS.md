@@ -1,6 +1,6 @@
 # 任务看板
 
-由总设计师维护。状态：未开始 / 进行中 / 待验收 / 需修改 / 待合并 / 已合并。
+由总设计师维护。状态：未开始 / 进行中 / 待验收 / 需修改 / 待合并 / 已合并 / 阻塞。
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -10,9 +10,9 @@
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 已合并 | `reviews/C3.md`：37f04cf 通过；合并fe42e9f，main 519个测试与构建通过 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
-| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 进行中 | 独立agent implement_c2；task/C2 |
-| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 进行中 | 独立agent implement_c6；另见C6-addendum，真实模型运行待本机配置 |
-| C4 | 内容生产流水线 | Codex | 3 | D2 | 进行中 | 独立agent implement_c4；task/C4 |
+| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 阻塞 | 工作区额度耗尽；草稿未提交、未验收，恢复见 `tasks/RESUME.md` |
+| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 阻塞 | 工作区额度耗尽；草稿未提交、未验收，恢复见 `tasks/RESUME.md` |
+| C4 | 内容生产流水线 | Codex | 3 | D2 | 阻塞 | 工作区额度耗尽；草稿未提交、未验收，恢复见 `tasks/RESUME.md` |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
@@ -48,3 +48,10 @@
 - C4：独立worktree yuwen-c4-content，离线流水线和示例使用假客户端，不调用真实模型。
 - C6：C3已合并，从统一main基准e888dc9派发独立worktree yuwen-c6-evals，现已开始实现。样例与private结果隔离规则见tasks/codex/C6-addendum.md。当前环境没有已配置的DEEPSEEK_API_KEY，不伪造真实评测证据。
 - 实现agent不改契约、验证脚本、reviews和看板，不合并、不推送。总设计师在独立克隆复验并写review，按负责人授权执行通过后的本地合并。
+
+
+## 执行阻塞记录（2026-11-13）
+
+三个实现agent均返回“Your workspace is out of credits”，并停止执行。C2/C4/C6的独立worktree和未提交草稿均已保留，另存tracked patch及untracked文件恢复包；没有代实现者提交或合并这些草稿。主仓代码仍为C3合并后的519测试通过基线。
+
+负责人已选择本轮先完成C6脚本验收，真实模型评测稍后再做；缺凭据不应阻止额度恢复后的脚本开发。恢复步骤、agent标识和草稿状态见tasks/RESUME.md。额度需工作区所有者恢复，恢复前不重复启动agent或把草稿标成交付。
