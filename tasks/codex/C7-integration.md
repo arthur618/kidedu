@@ -124,3 +124,7 @@ D1的handleEvent已把学习记录、Session和SessionRuntime的保存放在一�
 - 不做语音。
 - 不改 `src/agents/`、`src/guard/`、`src/llm/`、`src/db/`，也不改契约。它们有问题就写进报告。
 - 不调真实模型。
+
+## 派发前补充（C2/C4/C6验收后）
+
+先读C7-preflight.md。当前尚未派发C7：总设计师需先落实show.data共享结构、缺内容兜底形状、请求总预算、重试幂等和照片不落盘的兼容设计，再按需要调整精确scope。实现者不得自行修改契约或越界接线。

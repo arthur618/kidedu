@@ -10,10 +10,10 @@
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 已合并 | `reviews/C3.md`：37f04cf 通过；合并fe42e9f，main 519个测试与构建通过 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
-| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 需修改 | reviews/C2.md：9ec4086独立复验544测试及浏览器7项通过；终态、启动失败退出、坏照片判断三项返工 |
-| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 待合并 | reviews/C6.md：04baa5d第二次脚本验收通过，组合608测试含构建；真实评测延后 |
-| C4 | 内容生产流水线 | Codex | 3 | D2 | 待合并 | reviews/C4.md：1b3a60e第二次独立验收通过，566测试含构建；F1关闭 |
-| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | |
+| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 已合并 | f92b99d / main 9a30e66; 635 tests + 9 browser tests; reviews/C2.md |
+| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
+| C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
+| C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | C7-preflight.md |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
 
@@ -66,3 +66,9 @@
 ## 本轮独立验收与返工（2026-11-13）
 
 C2、C4、C6均已独立克隆复验并试合并main@fe7aea0，串行四项检查通过，但生产边界探针发现上述问题，结论均为需修改。正式意见在reviews对应任务文件，原实现者返工，不由验收对话代改。并行构建资源竞争导致的初次超时已用串行复跑排除；后续全套构建统一排队。中文文件名范围检查已修复（fe7aea0），未放宽路径。
+
+## 本轮最终合并及同步（2026-11-13）
+
+C4@1b3a60e、C6@04baa5d、C2@f92b99d均完成第二次独立验收并按负责人授权合入main，合并提交分别为9a749c3、58d136b、9a30e66。在真实main重新npm ci并执行verify.sh，31个测试文件、635个测试及实际Next生产构建全部通过；无任务号时范围和报告检查按脚本设计跳过，各分支在独立验收中已分别通过。C2另有9项独立浏览器测试通过。契约未修改，没有代写任务实现。
+
+GitHub远端：git@github.com:arthur618/kidedu.git。负责人已授权同步主线和任务分支。当前接续步骤见tasks/RESUME.md；C7未派发，先完成tasks/codex/C7-preflight.md设计清单。真实DeepSeek评测按负责人决定延后。前面的首次不通过、额度中断和恢复记录均是历史。
