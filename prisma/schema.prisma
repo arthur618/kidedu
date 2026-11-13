@@ -114,3 +114,25 @@ model SessionRuntime {
   state     String
   context   String
 }
+
+// C7 内部命令日志；pending/response 只能放去图数据。
+model SessionCommand {
+  scope       String
+  key         String
+  fingerprint String
+  kind        String
+  sessionId   String?
+  phase       String
+  pending     String
+  response    String?
+  sequence    Int @id @default(autoincrement())
+
+  @@unique([scope, key])
+  @@index([sessionId, sequence])
+}
+
+// 教练活动与 SessionContext 分离；同字第二次活动由 activity 区分。
+model CoachRuntime {
+  sessionId String @id
+  data      String
+}

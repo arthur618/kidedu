@@ -1,0 +1,25 @@
+import { beforeAll, beforeEach, afterAll, expect, it } from "vitest";
+import type { LlmRequest } from "../../src/contracts/llm";
+import { getPrisma } from "../../src/db/client";
+import { getCoachRuntime } from "../../src/db/coachRuntime";
+import { database, seed, harness, successOutput } from "./helpers";
+let db: Awaited<ReturnType<typeof database>>;
+beforeAll(async () => { db = await database(); }, 60000); beforeEach(seed); afterAll(async () => { await db.cleanup(); });
+it("[22] 总预算耗尽取消等待并正常兜底，迟到模型结果不能推进步骤/覆盖退出", async () => {
+  const h = harness(); const id = await h.enterUnderstand();
+  let timer: (() => void) | undefined; let release: ((data: unknown) => void) | undefined; let delayed: LlmRequest<unknown> | undefined;
+  let clock = 0;
+  h.deps.modelOptions.nowMs = () => clock;
+  h.deps.modelOptions.setTimer = ((callback: () => void, ms: number) => { expect(ms).toBe(100000); timer = callback; return 1 as unknown as ReturnType<typeof setTimeout>; });
+  h.deps.modelOptions.clearTimer = () => {};
+  h.fake.setHandler(req => new Promise(resolve => { delayed = req; release = resolve; }));
+  const operation = h.post("coach", { char: "山", text: "" }, id);
+  while (!release) await new Promise(resolve => setTimeout(resolve, 1));
+  clock = 100001; timer!();
+  const packet = await operation; expect(packet.state).toBe("understand"); const before = await getCoachRuntime(id);
+  expect(before?.step).toBe("make_word"); expect(before?.output.next).toBe("wait_child");
+  expect((await h.event(id, { type: "quit" })).state).toBe("wrap_up");
+  const count = await getPrisma().turn.count(); release!(successOutput(delayed!)); await new Promise(resolve => setTimeout(resolve, 10));
+  expect(await getCoachRuntime(id)).toEqual(before); expect(await getPrisma().turn.count()).toBe(count);
+  expect((await h.handlers().get(id)).status).toBe(200); expect(h.fake.calls.filter(req => req === delayed)).toHaveLength(1);
+});

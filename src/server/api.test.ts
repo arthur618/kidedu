@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST as createSessionRoute } from "../../app/api/session/route";
 import { GET as getSessionRoute } from "../../app/api/session/[id]/route";
 import { POST as postEventRoute } from "../../app/api/session/[id]/event/route";
@@ -25,6 +25,8 @@ afterAll(async () => {
   await db?.cleanup();
 });
 
+beforeEach(() => { vi.spyOn(serverDeps, "now").mockReturnValue(new Date("2026-11-13T02:03:04.000Z")); });
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -32,7 +34,7 @@ afterEach(() => {
 function postJson(url: string, body: unknown): Request {
   return new Request(url, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", "Idempotency-Key": `test_${crypto.randomUUID()}` },
     body: JSON.stringify(body),
   });
 }
@@ -166,7 +168,7 @@ describe("POST /api/session/[id]/event", () => {
     const reduceSpy = vi.spyOn(serverDeps, "reduce");
     const request = new Request(`${base}/session-1/event`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", "Idempotency-Key": `test_${crypto.randomUUID()}` },
       body: "{",
     });
 

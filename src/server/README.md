@@ -1,116 +1,33 @@
-# 后端接口说明（任务 D1）
+# C7 运行时接口
 
-三个接口都在 `app/api/session/` 下。孩子编号从请求里传，没有登录和权限。
+服务启动时 `createServerDeps()` 校验 DeepSeek 路由并创建一次真实 LlmClient，连接真实编排器、数据层、Agent 与护栏。阅读/作文仍是“即将开放”。没有生产假模型开关。
 
-## 本地启动
+全部 POST 要求 `Idempotency-Key`（16–128 位字母、数字、下划线或连字符），controller 一次操作的重试保留同一标识，下一操作换标识。响应复用 `src/contracts/session.ts` 的 `SessionPacketSchema`，只向界面发执行完成的 `show`；缺内容或重启缺原图用 `unavailable` 和正常退出入口。
 
-```bash
-npm install
-cp .env.example .env          # 里面已有 DATABASE_URL=file:./dev.db
-npm run db:migrate            # 应用 prisma/migrations 里的建表脚本
-npm run db:seed               # 写入编造的演示数据
-npm run dev                   # 打开 http://localhost:3000
-```
+| 方法/地址 | 正文 | 返回 |
+| --- | --- | --- |
+| POST `/api/session` | `{childId,lessonId,hasEssayToday}` | `{sessionId,state:"homework_capture",effects:[{type:"show",screen:"homework_capture"}]}` |
+| POST `/api/session/[id]/homework` | `{imageDataUrl?,spokenText?}`，至少一个 | 看清后 `homework_confirm` + `{items}`；不确定仍 `homework_capture` + `notice` |
+| POST `/api/session/[id]/event` | 契约 SessionEvent | 完整 Packet；非法状态事件仍显示当前快照 |
+| POST `/api/session/[id]/coach` | `{char,text}` | 当前字的讲解/下一步实际提示，或下一学习状态 |
+| GET `/api/session/[id]` | 无 | 当前 Packet，兼容保留 `context`、`homework`；不跑模型、不推进步骤 |
 
-`npm run build` 会做生产构建。数据库地址只从环境变量 `DATABASE_URL` 读，密钥也只从环境变量读。
+400 表示格式/图片/操作标识不合要求；404 表示孩子、课或会话不存在；409 表示标识复用但正文不同，或当前不接受该教练活动。业务拒绝有持久终态，不阻塞退出。
 
-## POST /api/session
+## 事务和恢复
 
-开始一次学习。服务端读出孩子的全部字和这一课的字，调用 `planDay` 得到当天计划，准备计划里每个字的
-`stageOf` / `kindOf`，调用 `initContext` 得到初始上下文，新建会话，再发送 `start` 事件。
+同一 Node 进程按 childId（start）或 sessionId（其他命令）排队。`SessionCommand` 持久保存 SHA-256 指纹、去图待处理效果、检查点及响应；`CoachRuntime` 和 SessionContext 分离。新会话创建/start/命令检查点同一短事务。学习事件的 ChildChar、Session、SessionRuntime 和命令 transitioned 检查点同一短事务。事务提交后才运行 Agent/护栏。
 
-请求：
+教练步骤/历史与命令 complete 同一事务；活动完成时学习转换和命令 transitioned 同一事务。响应丢失或进程重启重放不会重复 reduce、累计学习结果或数孩子发言。外部模型在进程崩溃后可能再调用一次；这不是模型侧恰好一次承诺。本轮未实现多实例分布式锁。
 
-```json
-{
-  "childId": "child-demo-1",
-  "lessonId": "lesson-demo-g3-1",
-  "hasEssayToday": false
-}
-```
+理解按 explain→make_word→make_sentence。仅首次空白表示“我听完了”，不算六句；后续空白不跳步。六句仍未完成记一次 wrong，新一轮活动重置。缺 approved 卡不调用教练、不造卡、不记孩子错。
 
-返回 200：
+## 图片与预算
 
-```json
-{
-  "sessionId": "session_0f1c2d3e-....",
-  "state": "homework_capture",
-  "effects": [{ "type": "show", "screen": "homework_capture" }]
-}
-```
+只接收 JPEG/PNG data URL，解码最多2MB；不落盘。原图仅在当前进程内的当前对照显示持有，离开对照即释放。所有持久记录和响应缓存去图，指纹只存哈希。重启 GET 用 photo_not_available；原照片命令同正文重放重新提供图片并可恢复外部效果。新 ID 的非法重拍不能替换旧图或冒充旧命令。当前图按原命令scope/key绑定，GET读取该命令的可用快照；较新无图命令的历史结果不能遮蔽它。旧命令重放返回其当时的合法结果，与GET的当前快照分开；当前已退出对照时不再执行旧视觉效果。
 
-孩子或课不存在返回 404；请求结构不对返回 400。
+服务端外部效果总预算100秒，浏览器120秒；可注入时钟和定时器。真实 fetch 合并操作取消信号；只有纯模型结果参与竞速，迟到结果没有数据库写入或状态推进权限。按调用上下文匹配 D2 onTurn 及输入输出；Turn 写入在 Agent 返回后明确 await，失败会使接口报错并保留可恢复检查点，不能被模型客户端吞掉。整体取消时按可注入时钟记录本次call开始至取消的已知耗时，未知token仍可为0；不等待迟到计量，也不补写迟到Turn。视觉调用 verdict=skipped，护栏候选分别记 blocked/pass。
 
-## POST /api/session/[id]/event
+## 验证
 
-发送一个 `SessionEvent`。接口直接用契约里的 `SessionEventSchema` 校验（`src/contracts/orchestrator.ts`），
-然后读出状态和上下文，调 `reduce`，在同一个数据库事务里执行持久化效果，再把不处理的效果原样返回。
-
-请求：
-
-```json
-{ "type": "recognize_result", "char": "山", "result": "correct", "mode": "self_report" }
-```
-
-返回 200：
-
-```json
-{
-  "state": "understand",
-  "effects": [{ "type": "show", "screen": "understand", "data": { "char": "山" } }]
-}
-```
-
-会话不存在返回 404；事件结构不符合 `SessionEventSchema` 返回 400，而且不会调用 `reduce`。
-
-## GET /api/session/[id]
-
-返回当前状态、上下文和作业清单。顶层 `homework` 取自当前运行时上下文，和 `context.homework` 一致；
-孩子中途刷新页面也能看到刚确认的清单。
-
-```json
-{
-  "sessionId": "session_0f1c2d3e-....",
-  "state": "recognize",
-  "context": {
-    "sessionId": "session_0f1c2d3e-....",
-    "childId": "child-demo-1",
-    "today": "2026-11-13",
-    "plan": { "newChars": ["山", "水"], "reviewChars": [], "carryOverChars": [] },
-    "hasEssayToday": false,
-    "queue": ["山", "水"],
-    "understandQueue": [],
-    "writeQueue": [],
-    "understandAttempts": {},
-    "stageOf": { "山": "recognize" },
-    "kindOf": { "山": "write" },
-    "homework": [],
-    "elapsedMinutes": 0,
-    "limitMinutes": 30
-  },
-  "homework": []
-}
-```
-
-会话不存在返回 404。
-
-## 会话状态存在哪
-
-- `Session` 表只存契约里的字段：`id`、`childId`、`startedAt`、`endedAt`、`homework`。
-- 状态机的 `SessionState` 和整个 `SessionContext` 存在单独的 `SessionRuntime` 表里，一个会话一行：
-  `sessionId`、`state`、`context`（JSON 字符串）。
-- `handleEvent` 把 `reduce` 返回的 `ctx` 整个存成 JSON，下次整个读出来传回 `reduce`，不裁剪、不补字段，
-  也不在两次事件之间更新 `stageOf`。
-- 一次事件的 ChildChar、Session 和 SessionRuntime 写入在同一个数据库事务里：全部成功才提交，
-  中途失败全部回滚。`getPrisma()` 在事务里自动返回同一个事务客户端（AsyncLocalStorage）。
-
-## 编排器还没正式接线时
-
-`src/server/deps.ts` 现在导出会抛“C1 尚未合并”的 `reduce`、`advanceChar`、`planDay`、`initContext` 占位函数。
-实际接线由任务 C7 完成：把该文件顶部四个常量改成从 `src/orchestrator/`（或 `@/orchestrator`）导入即可，接口层不用改。
-
-## 数据访问层
-
-`src/db/` 里每张表一个文件。函数入参和返回值都是 `src/contracts/schemas.ts` 里的类型，不暴露 Prisma 类型；
-每行读出后都用对应的 zod schema `parse`，坏数据会抛 `ContractDataError`（带表名和主键）。
-`Lesson`、`CharCard`、`Passage` 的读取函数默认只返回 `status === "approved"` 的行。
+`tests/integration/` 用 Prisma migrate deploy 创建临时 SQLite，连接真实 handler、编排器、数据访问、Agent 和护栏，只有 LlmClient 假。`src/ui/integration.browser.ts` 通过独立回环 HTTP server 执行生产 handler；浏览器只重定向地址，不编响应。用 `C7_BROWSER_PORT` 指定空闲端口，缓存继承 XDG_CACHE_HOME 或使用系统临时目录。

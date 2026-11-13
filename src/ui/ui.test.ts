@@ -52,12 +52,12 @@ describe("C2 服务边界", () => {
   it("6 任何屏幕出口均交给服务；忙时退出排队", async () => {
     for (const screen of SessionStateSchema.options) {
       const service = createDemoService(screen); const event = vi.spyOn(service, "event"); const controller = new LearningController(service);
-      await controller.start(); await controller.event({ type: "quit" }); expect(event).toHaveBeenCalledWith({ type: "quit" });
+      await controller.start(); await controller.event({ type: "quit" }); expect(event).toHaveBeenCalledWith({ type: "quit" }, expect.any(String));
     }
     let ready!: (packet: ReturnType<typeof demoPacket>) => void;
     const service = createDemoService(); service.start = () => new Promise(resolve => { ready = resolve; });
     const event = vi.spyOn(service, "event"); const controller = new LearningController(service); const pending = controller.start();
-    await controller.event({ type: "quit" }); ready(demoPacket("homework_capture")); await pending; expect(event).toHaveBeenCalledWith({ type: "quit" });
+    await controller.event({ type: "quit" }); ready(demoPacket("homework_capture")); await pending; expect(event).toHaveBeenCalledWith({ type: "quit" }, expect.any(String));
   });
   it("终态不需要 show，完成和退出均可到达", async () => {
     expect(decodeScreen({ state: "ended", effects: [] })).toEqual({ screen: "ended" });
@@ -102,5 +102,34 @@ describe("C2 服务边界", () => {
   it("照片缩放不放大，裁图坐标限定在照片内", () => {
     expect(fitImage(3200, 2400)).toEqual({ width: 1600, height: 1200 }); expect(fitImage(600, 2000)).toEqual({ width: 480, height: 1600 }); expect(fitImage(300, 400)).toEqual({ width: 300, height: 400 });
     expect(cropBox([0.8, 0.8, 0.4, 0.4], 1000, 500)).toEqual({ x: 800, y: 400, width: 199.99999999999994, height: 99.99999999999997 });
+  });
+});
+
+describe("C7 HTTP重试与预算", () => {
+  it("[19] controller一次操作重试稳定ID，下一操作与排队quit用新ID", async () => {
+    let index = 0; const ids: string[] = [];
+    const start = vi.fn().mockRejectedValueOnce(new Error("response_lost")).mockImplementation(async (id: string) => { ids.push(id); return demoPacket("homework_capture"); });
+    const coach = vi.fn().mockRejectedValueOnce(new Error("response_lost")).mockResolvedValue(demoPacket("understand"));
+    const service = { ...createDemoService(), start, coach };
+    const event = vi.spyOn(service, "event");
+    const controller = new LearningController(service, decodeScreen, () => `operation-${String(++index).padStart(8, "0")}`);
+    await controller.start(); await controller.retry(); expect(start.mock.calls[0]?.[0]).toBe(start.mock.calls[1]?.[0]);
+    await controller.coach({ char: "山", text: "高山" }); await controller.retry();
+    expect(coach.mock.calls[0]?.[1]).toBe(coach.mock.calls[1]?.[1]); expect(coach.mock.calls[0]?.[1]).not.toBe(start.mock.calls[0]?.[0]);
+    await controller.event({ type: "quit" }); expect(event.mock.calls[0]?.[1]).not.toBe(coach.mock.calls[0]?.[1]);
+  });
+  it("[22] 超过8秒且预算内的真实HTTP适配器能够完成，总等待120秒", async () => {
+    vi.useFakeTimers();
+    try {
+      let signal: AbortSignal | undefined; let delay: number | undefined;
+      const service = createHttpService({ childId: "fictional", lessonId: "lesson", setTimer: ((callback: () => void, ms: number) => { delay = ms; return setTimeout(callback, ms); }) as typeof setTimeout,
+        fetcher: (async (_url, init) => { signal = init?.signal ?? undefined; await new Promise(resolve => setTimeout(resolve, 9000)); return new Response(JSON.stringify(demoPacket("homework_capture"))); }) as typeof fetch });
+      const pending = service.start("operation-00000001"); await vi.advanceTimersByTimeAsync(9001); expect((await pending).state).toBe("homework_capture"); expect(delay).toBe(120000); expect(signal?.aborted).toBe(false);
+    } finally { vi.useRealTimers(); }
+  });
+  it("[18] unavailable正常渲染及notice显示，不需要造字卡", () => {
+    const view = decodeScreen({ sessionId: "fictional", state: "understand", effects: [], unavailable: { reason: "missing_content", say: "字卡还没准备好。" } });
+    const html = renderToStaticMarkup(React.createElement(LearningScreen, { view, actions, notice: "今天先歇一歇。" }));
+    expect(html).toContain("字卡还没准备好。"); expect(html).toContain("今天先到这"); expect(html).toContain("今天先歇一歇。");
   });
 });

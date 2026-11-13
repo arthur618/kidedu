@@ -477,3 +477,10 @@ it.each([false, true])("[7][8] hasEssayToday=%s的全部call_agent效果精确�
     ] : [{ type: "call_agent", agent: "reader", payload: { step: "ask" } }]),
   ]);
 });
+
+it("C7 [15] withResult 缺失stageOf/kindOf按recognize/recognize_only处理且不产生undefined", () => {
+  const ctx = context({ queue: ["休"], stageOf: {}, kindOf: {} });
+  const transition = reduce("recognize", ctx, { type: "recognize_result", char: "休", result: "correct", mode: "self_report" });
+  expect(transition.ctx.stageOf["休"]).toBe("understand");
+  expect(JSON.stringify(transition)).not.toContain("undefined");
+});
