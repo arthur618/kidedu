@@ -2,19 +2,19 @@
 
 更新时间：2026-11-13。总设计师：本独立验收对话；实现与验收继续分开。
 
-## 当前阻塞
+## 此前阻塞与当前恢复
 
 C2、C4、C6三个agent均因工作区额度耗尽而终止，系统原文：`Your workspace is out of credits. Ask your workspace owner to refill in order to continue.`
 
-所有实现草稿已保留在原worktree，没有提交、没有验收、没有合并。不要把报告草稿或先前的试跑当作最终交付证据。工作区额度恢复后，由总设计师用collaboration.followup_task恢复原agent，无需负责人执行终端命令。
+所有实现草稿已保留在原worktree，没有提交、没有验收、没有合并。不要把报告草稿或先前的试跑当作最终交付证据。当前已按负责人要求以明确指定的模型创建新的恢复agent，继续原worktree，旧errored agent不再启动。分配见tasks/MODEL-ROUTING.md，无需负责人执行终端命令。
 
 ## 实现agent与工作目录
 
 | 任务 | Agent | Worktree | 分支基线 |
 | --- | --- | --- | --- |
-| C2 | /root/implement_c2 | /Users/lihao/.codex/worktrees/yuwen-c2-ui/yuwen-banxue | task/C2，3b96d06 |
-| C4 | /root/implement_c4 | /Users/lihao/.codex/worktrees/yuwen-c4-content/yuwen-banxue | task/C4，3b96d06 |
-| C6 | /root/implement_c6 | /Users/lihao/.codex/worktrees/yuwen-c6-evals/yuwen-banxue | task/C6，e888dc9 |
+| C2 | /root/resume_c2_terra | /Users/lihao/.codex/worktrees/yuwen-c2-ui/yuwen-banxue | task/C2，3b96d06 |
+| C4 | /root/resume_c4_sol | /Users/lihao/.codex/worktrees/yuwen-c4-content/yuwen-banxue | task/C4，3b96d06 |
+| C6 | /root/resume_c6_sol | /Users/lihao/.codex/worktrees/yuwen-c6-evals/yuwen-banxue | task/C6，e888dc9 |
 
 ## 已落盘与待做
 
@@ -35,3 +35,5 @@ C2、C4、C6三个agent均因工作区额度耗尽而终止，系统原文：`Yo
 项目对话输出目录：/Users/lihao/Documents/Codex/2026-11-13/claude-1-docs-handoff-md-2/outputs/recovery/
 
 每个C2/C4/C6-wip.tar.gz都包含MANIFEST.json、tracked.patch及untracked/文件，已核对归档条目数。未收集node_modules、构建缓存、环境变量或任何真实孩子数据。原worktree保持原样，没有归档删除。
+
+当前模型：C2=gpt-6.1-terra/high，C4=gpt-6.1-sol/medium，C6=gpt-6.1-sol/high。新agent已恢复执行，草稿和后备归档均继续保留。

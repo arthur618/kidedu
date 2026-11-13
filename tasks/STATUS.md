@@ -10,9 +10,9 @@
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 已合并 | `reviews/C3.md`：37f04cf 通过；合并fe42e9f，main 519个测试与构建通过 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
-| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 阻塞 | 工作区额度耗尽；草稿未提交、未验收，恢复见 `tasks/RESUME.md` |
-| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 阻塞 | 工作区额度耗尽；草稿未提交、未验收，恢复见 `tasks/RESUME.md` |
-| C4 | 内容生产流水线 | Codex | 3 | D2 | 阻塞 | 工作区额度耗尽；草稿未提交、未验收，恢复见 `tasks/RESUME.md` |
+| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 进行中 | Terra high恢复，agent resume_c2_terra；草稿继续，未交付 |
+| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 进行中 | Sol high恢复，agent resume_c6_sol；本轮仅脚本验收，真实评测稍后 |
+| C4 | 内容生产流水线 | Codex | 3 | D2 | 进行中 | Sol medium恢复，agent resume_c4_sol；草稿继续，未交付 |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
@@ -55,3 +55,8 @@
 三个实现agent均返回“Your workspace is out of credits”，并停止执行。C2/C4/C6的独立worktree和未提交草稿均已保留，另存tracked patch及untracked文件恢复包；没有代实现者提交或合并这些草稿。主仓代码仍为C3合并后的519测试通过基线。
 
 负责人已选择本轮先完成C6脚本验收，真实模型评测稍后再做；缺凭据不应阻止额度恢复后的脚本开发。恢复步骤、agent标识和草稿状态见tasks/RESUME.md。额度需工作区所有者恢复，恢复前不重复启动agent或把草稿标成交付。
+
+
+## 模型分配调整与恢复（2026-11-13）
+
+负责人要求按复杂度选择性价比模型。重新查询显示普通用量允许执行，使用显式指定的新agent恢复原worktree：C2=Terra high、C4=Sol medium、C6=Sol high，当前均继续草稿。此前“额度阻塞”记录保留为历史，不代表当前仍停止。分配依据、成本口径与升档纪律见tasks/MODEL-ROUTING.md；当前agent标识与恢复说明已同步。
