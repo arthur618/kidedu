@@ -1,15 +1,15 @@
 # 任务看板
 
-由总设计师维护。状态：未开始 / 进行中 / 待验收 / 需修改 / 已合并。
+由总设计师维护。状态：未开始 / 进行中 / 待验收 / 需修改 / 待合并 / 已合并。
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
 | T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.1 |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
-| D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 进行中 | 另见 `tasks/deepseek/D1-addendum.md` |
-| C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 未开始 | |
-| C5 | 护栏（原 D3） | Codex | 2 | D2 | 未开始 | |
+| D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 需修改 | `reviews/D1.md`：7991c04 不通过；按 `tasks/deepseek/D1-rework.md` 返工 |
+| C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 待合并 | `reviews/C3.md`：37f04cf 通过，由负责人合并 |
+| C5 | 护栏（原 D3） | Codex | 2 | D2 | 待合并 | `reviews/C5.md`：b9052c6 第二次验收通过，由负责人合并 |
 | C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 未开始 | |
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 未开始 | |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 未开始 | |
@@ -31,3 +31,11 @@
 | 2026-11-13 | 初版 | 全部 |
 | 2026-11-13 | 版本 2，只动 `orchestrator.ts`：`SessionContext` 增加 `hasEssayToday`、`understandQueue`、`writeQueue`、`understandAttempts`；`DailyPlan` 增加 `carryOverChars`；增加 `wrap_up_done` 事件、`SessionEventSchema`、`NextStage`、`InitContext`；`Effect` 的 payload 改为精确类型；认读答错改为进入 understand；理解答错最多两次；`stageOf` 由 reduce 维护 | C1（返工）、D1（补充说明）。D2 不受影响 |
 | 2026-11-13 | 版本 2.1，只动 `llm.ts`：增加 `LlmTurnRecord` 类型（只加不改） | D2（返工时改为从契约导入） |
+
+## 2026-11-13 验收裁决与已知欠账
+
+- C3：维持契约2.1，不增加形近字区别字段。区别只能来自已审核的explain，没有说明时只提醒对照字形。
+- 单字符schema的UTF-16限制暂缓，补充平面汉字需要整体定义长度与索引后再支持。
+- 运行时内容只允许status=approved；由D1查询和C7组装输入守住。C6使用合成图片替换C3视觉fixture占位URL。
+- C5：b9052c6已删除递归自查测试，第二次验收通过；第12条由直接自查与独立复跑证明，待负责人合并。
+- D1：原分支26测通过，试合并当前main后类型检查/构建失败；需跟进契约、补新字、原子持久化、修正GET当前清单并升级新增的不安全Next版本。
