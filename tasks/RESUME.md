@@ -1,48 +1,31 @@
-# 并行任务恢复说明
+# 项目接续说明
 
-更新时间：2026-11-13。总设计师：本独立验收对话；实现与验收继续分开。
+更新时间：2026-11-13。远端：https://github.com/arthur618/kidedu 。本文件与 tasks/STATUS.md 是当前状态；docs/HANDOFF.md 保留原始交接背景，其中旧进度不再代表现状。
 
-## 此前阻塞与当前恢复
+## 当前状态
 
-C2、C4、C6三个agent均因工作区额度耗尽而终止，系统原文：`Your workspace is out of credits. Ask your workspace owner to refill in order to continue.`
+- main 已合入 C1、D2、C3、C5、D1；契约 2.1。最近已验收主线基线 519 测试通过。
+- C2 @ 9ec4086：独立组合复验 544 测试和浏览器 7 项通过，但 reviews/C2.md 的 F1–F3 需返工，尚未合入 main。
+- C4 @ 725b22c：独立组合复验 564 测试通过，reviews/C4.md 的 sheet 输出链接保护需返工，尚未合入 main。
+- C6 @ b09ec2a：独立组合复验 554 测试通过，reviews/C6.md 的规范化密钥脱敏和引用误判需返工，尚未合入 main。
+- C7 未开始，必须先明确 C2 的响应结构、终态、请求超时和重试幂等边界；任务见 tasks/codex/C7-integration.md。
+- C8–C11 任务文件按约定等 C7 验收后再写。真实 DeepSeek 评测由负责人明确延后；不得伪造结果。
 
-所有实现草稿已保留在原worktree，没有提交、没有验收、没有合并。不要把报告草稿或先前的试跑当作最终交付证据。当前已按负责人要求以明确指定的模型创建新的恢复agent，继续原worktree，旧errored agent不再启动。分配见tasks/MODEL-ROUTING.md，无需负责人执行终端命令。
+## 换电脑后的 agent 开工顺序
 
-## 实现agent与工作目录
+1. 读取 AGENTS.md、docs/HANDOFF.md、docs/ARCHITECTURE.md、docs/WORKFLOW.md、src/contracts/ 三个文件、tasks/STATUS.md、本文件及对应 review。
+2. 克隆本仓库后先检查远端 main 和 task/C2、task/C4、task/C6 的最新提交，不把上面首次交付提交当作永远最新。返工提交以各分支报告和独立 review 为准。
+3. 实现与验收分开：实现者只在对应任务分支和 scope 内修改，不能改契约、reviews、主验证脚本和看板。总设计师维护这些文件，在独立克隆重新安装、复跑、读代码及试合 main 后下结论。
+4. 负责人已授权总设计师直接执行通过验收后的合并与本仓库同步，无需让负责人运行终端命令。不要合入尚未通过的任务代码，不强制推送，不覆盖另一台电脑新增的提交。
+5. npm ci 按锁文件安装。Prisma 建临时库前清除继承的 RUST_LOG；Next 构建、全套 verify、浏览器测试串行排队，避免多个分支同时构建造成环境超时。原机器的缓存绝对路径不具可移植性，在新机使用自己的缓存。
+6. 只用编造测试数据。真实照片/标注只在本机 data/private，已排除版本控制；环境变量、SSH 私钥、依赖目录及缓存不会随 Git 迁移，需要本机单独配置，不在对话贴密钥。
 
-| 任务 | Agent | Worktree | 分支基线 |
-| --- | --- | --- | --- |
-| C2 | /root/resume_c2_terra | /Users/lihao/.codex/worktrees/yuwen-c2-ui/yuwen-banxue | task/C2，3b96d06 |
-| C4 | /root/resume_c4_sol | /Users/lihao/.codex/worktrees/yuwen-c4-content/yuwen-banxue | task/C4，3b96d06 |
-| C6 | /root/resume_c6_sol | /Users/lihao/.codex/worktrees/yuwen-c6-evals/yuwen-banxue | task/C6，e888dc9 |
+## 当前实现分工
 
-## 已落盘与待做
+| 任务 | 当前返工 agent（仅原对话有效） | 模型 |
+| --- | --- | --- |
+| C2 | /root/rework_c2_terra | gpt-6.1-terra high |
+| C4 | /root/rework_c4_sol | gpt-6.1-sol medium |
+| C6 | /root/rework_c6_sol | gpt-6.1-sol high |
 
-- C2：15个未跟踪的界面、控制器、适配器、图片工具和测试文件，及package修改。没有最终报告或任务提交。发现`.gitignore`也被修改，它不在C2范围，恢复时实现者需自行核对并撤销这项越界改动（不要丢失界面草稿）。继续补齐截图、全部测试、报告与交付。入口/learn，不能与D1的根首页冲突；show.data及homework/coach接口缺口须在报告列明，交C7接线。
-- C4：18个未跟踪的流水线、CLI、检查函数、测试、示例、README和报告草稿，及package修改。继续完成“人工Lesson也能check→review→approve”的闭环测试，核对所有approved保持原字节，完整自查后提交；不能只相信现有报告草稿。
-- C6：8个未跟踪的检查函数、类型、阈值和case文件；尚缺运行器、CLI、diff、测试、README和报告等交付。先重读tasks/codex/C6-addendum.md，守住模型失败不能借兜底算通过、private结果隔离和样例迁移裁决。
-
-## 恢复规则
-
-1. 先检查各worktree现状，保留草稿；恢复包仅作后备，不要覆盖后来新增的工作。
-2. 本轮由负责人选择“先完成脚本验收，真实评测稍后”。实现者不搜寻其他位置的密钥、不发真实模型请求；C6第7条如实记录待运行。
-3. 每个agent仅在自己的task分支完成允许范围的实现、meaningful测试及reports/<任务>.md，不改契约、reviews、验证脚本、看板，不合并或推送。
-4. 真正交付后，主验收对话在独立克隆重新安装、重跑verify、读生产代码与全部标准、试合最新main并写review。通过后按负责人授权执行本地合并，合并后重跑检查。
-5. C7等这批报告明确接口和数据需求后，再由新的实现agent接线。总设计师不代写任务实现。
-
-## 恢复快照
-
-项目对话输出目录：/Users/lihao/Documents/Codex/2026-11-13/claude-1-docs-handoff-md-2/outputs/recovery/
-
-每个C2/C4/C6-wip.tar.gz都包含MANIFEST.json、tracked.patch及untracked/文件，已核对归档条目数。未收集node_modules、构建缓存、环境变量或任何真实孩子数据。原worktree保持原样，没有归档删除。
-
-当前模型：C2=gpt-6.1-terra/high，C4=gpt-6.1-sol/medium，C6=gpt-6.1-sol/high。新agent已恢复执行，草稿和后备归档均继续保留。
-
-
-## 最新交付状态
-
-- C2：Terra high已提交9ec4086，worktree干净；报告和32张截图待总设计师独立验收。前文15文件的草稿清单及恢复包仅是历史快照，不要覆盖已提交成果。
-- C4：Sol medium已提交725b22c，worktree干净；报告与45个本任务测试待独立验收。中文路径范围检查问题由总设计师复核，不让实现者改验证脚本。
-- C6：Sol high继续开发，尚未交付。
-
-C2/C4尚未合并。当前总设计师仍不写任务实现；以后继续时先处理这两个独立验收，再协调C6/C7。
+新电脑不要依赖这些 agent 标识或旧 worktree 路径；按远端分支和 review 创建新的独立实现任务。费用分配原则见 tasks/MODEL-ROUTING.md。此前额度中断已恢复，恢复包只是历史备份，不要拿它覆盖后续已提交内容。
