@@ -170,6 +170,23 @@ describe("离线内容工作流", () => {
     await expect(pipeline.approve([where, bad])).rejects.toThrow();
     expect((await read(where)).status).toBe("reviewed");
   });
+  it.each(["leaf", "directory"] as const)("sheet拒绝%s符号链接，保留目标approved字卡原字节", async linkKind => {
+    const date = "2026-11-13";
+    const approved = path.join(root, "cards", linkKind === "leaf" ? "休.json" : `${date}.md`);
+    await write(approved, { ...demoCards[0]!, status: "approved" });
+    await fs.writeFile(approved, JSON.stringify(await read(approved), null, 4) + "\n\n");
+    const bytes = await fs.readFile(approved);
+    const directory = path.join(root, "review");
+    if (linkKind === "leaf") {
+      await fs.mkdir(directory);
+      await fs.symlink(approved, path.join(directory, `${date}.md`));
+    } else {
+      await fs.symlink(path.dirname(approved), directory, "dir");
+    }
+    await expect(pipeline.sheet(date)).rejects.toThrow("符号链接");
+    expect(await fs.readFile(approved)).toEqual(bytes);
+    expect((await fs.lstat(linkKind === "leaf" ? path.join(directory, `${date}.md`) : directory)).isSymbolicLink()).toBe(true);
+  });
   it("拒绝目录外路径和符号链接，锁防止并发命令，异常后释放锁", async () => {
     const where = await draft();
     await fs.symlink(where, file("cards", "链接"));

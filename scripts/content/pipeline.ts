@@ -146,7 +146,14 @@ export class Pipeline {
       lines.push(`## ${path.relative(this.root, file)}`, "", `- [ ] 人工核对；代码检查${current ? "有效" : "失效，需重跑"}`, "", "```json", JSON.stringify(doc, null, 2), "```", "");
     }
     const file = path.join(this.root, "review", `${date}.md`);
-    await fs.mkdir(path.dirname(file), { recursive: true });
+    const directory = path.dirname(file);
+    await fs.mkdir(directory, { recursive: true });
+    if (await fs.realpath(directory) !== directory) throw new ContentError("不接受符号链接。");
+    try {
+      if ((await fs.lstat(file)).isSymbolicLink()) throw new ContentError("不接受符号链接。");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
     await fs.writeFile(file, lines.join("\n"));
     return file;
   }
