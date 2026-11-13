@@ -57,8 +57,9 @@ Agent (src/agents)  ──▶ LlmClient (src/llm) ──▶ DeepSeek
 | `scripts/content/`、`content/` | 内容生产流水线 | C4 |
 | `prisma/`、`src/db/`、`src/server/`、`app/api/` | 数据库、后端骨架、接口 | D1 |
 | `src/llm/`、`config/` | 模型调用层 | D2 |
-| `src/guard/` | 护栏 | D3 |
-| `evals/` | 评测脚本和样本 | D4 |
+| `src/guard/` | 护栏 | C5 |
+| `evals/` | 评测脚本和样本 | C6 |
+| `tests/integration/`，以及 `src/server/`、`app/api/` 的接线部分 | 集成 | C7 |
 
 ## 技术栈
 

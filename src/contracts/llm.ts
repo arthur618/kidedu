@@ -1,5 +1,6 @@
 /**
  * 契约文件：模型调用层的接口。实现见任务 D2。
+ * 版本 2.1（2026-11-13）：增加 LlmTurnRecord。
  * 所有 Agent 只通过 LlmClient 调模型，不直接引用任何厂商 SDK。
  */
 import type { z } from "zod";
@@ -43,6 +44,19 @@ export type LlmResult<TOut> =
 
 export interface LlmClient {
   call<TOut>(req: LlmRequest<TOut>): Promise<LlmResult<TOut>>;
+}
+
+/** 每次 call 结束时交给调用方的记录（成功或失败都有）。调用方用它写 Turn 表。不含密钥和请求内容。 */
+export interface LlmTurnRecord {
+  agent: AgentName;
+  model: string;
+  inputTokens: number;
+  cachedInputTokens: number;
+  outputTokens: number;
+  latencyMs: number;
+  ok: boolean;
+  /** 失败时的原因，成功时不带。 */
+  error?: "timeout" | "invalid_output" | "provider_error";
 }
 
 /** config/models.json 的结构：每个 Agent 用哪个模型。换模型只改这个文件。 */

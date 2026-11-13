@@ -1,0 +1,16 @@
+{
+  "draft": {
+    "provider": "openai",
+    "model": "REPLACE_WITH_OPENAI_MODEL",
+    "baseUrl": "https://api.openai.com/v1",
+    "apiKeyEnv": "OPENAI_API_KEY",
+    "timeoutMs": 60000
+  },
+  "review": {
+    "provider": "deepseek",
+    "model": "REPLACE_WITH_DEEPSEEK_MODEL",
+    "baseUrl": "https://api.deepseek.com",
+    "apiKeyEnv": "DEEPSEEK_API_KEY",
+    "timeoutMs": 60000
+  }
+}
