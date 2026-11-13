@@ -38,3 +38,8 @@ C7尚未派发。Luna不会独立承担审批完整性、隐私隔离或状态�
 | C6 | /root/resume_c6_sol | /Users/lihao/.codex/worktrees/yuwen-c6-evals/yuwen-banxue |
 
 本轮仍只完成C6脚本验收，真实模型评测稍后；项目运行时DeepSeek路由红线不受开发agent模型分配影响。
+
+
+## 初步执行结果
+
+C2由Terra high交付9ec4086，C4由Sol medium交付725b22c；均已提交、工作区干净，等待独立验收。C6仍由Sol high执行。这表明所选模型已能恢复实际工作，不代表已测得完整任务费用或质量优于其他模型，最终以独立验收和返工结果评估。

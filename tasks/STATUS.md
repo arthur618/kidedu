@@ -10,9 +10,9 @@
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 已合并 | `reviews/C3.md`：37f04cf 通过；合并fe42e9f，main 519个测试与构建通过 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
-| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 进行中 | Terra high恢复，agent resume_c2_terra；草稿继续，未交付 |
+| C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 待验收 | Terra high交付9ec4086；报告与32张截图待独立复验 |
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 进行中 | Sol high恢复，agent resume_c6_sol；本轮仅脚本验收，真实评测稍后 |
-| C4 | 内容生产流水线 | Codex | 3 | D2 | 进行中 | Sol medium恢复，agent resume_c4_sol；草稿继续，未交付 |
+| C4 | 内容生产流水线 | Codex | 3 | D2 | 待验收 | Sol medium交付725b22c；中文路径范围检查兼容问题待总设计师复核 |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 未开始 | |
 
 ## 之后的任务（全部交给 Codex；任务文件在 C7 验收后根据集成的实际情况再写）
@@ -60,3 +60,5 @@
 ## 模型分配调整与恢复（2026-11-13）
 
 负责人要求按复杂度选择性价比模型。重新查询显示普通用量允许执行，使用显式指定的新agent恢复原worktree：C2=Terra high、C4=Sol medium、C6=Sol high，当前均继续草稿。此前“额度阻塞”记录保留为历史，不代表当前仍停止。分配依据、成本口径与升档纪律见tasks/MODEL-ROUTING.md；当前agent标识与恢复说明已同步。
+
+模型调整后的首批交付：C2 @ 9ec4086、C4 @ 725b22c均已提交且实现worktree干净，仍未独立验收或合并；C6继续执行。实现者报告的自查输出不是总验收结论。C4标准范围检查存在中文路径转义误报，临时core.quotePath=false的自查命令已在报告披露，由总设计师核对验证工具。

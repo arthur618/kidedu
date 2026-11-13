@@ -37,3 +37,12 @@ C2、C4、C6三个agent均因工作区额度耗尽而终止，系统原文：`Yo
 每个C2/C4/C6-wip.tar.gz都包含MANIFEST.json、tracked.patch及untracked/文件，已核对归档条目数。未收集node_modules、构建缓存、环境变量或任何真实孩子数据。原worktree保持原样，没有归档删除。
 
 当前模型：C2=gpt-6.1-terra/high，C4=gpt-6.1-sol/medium，C6=gpt-6.1-sol/high。新agent已恢复执行，草稿和后备归档均继续保留。
+
+
+## 最新交付状态
+
+- C2：Terra high已提交9ec4086，worktree干净；报告和32张截图待总设计师独立验收。前文15文件的草稿清单及恢复包仅是历史快照，不要覆盖已提交成果。
+- C4：Sol medium已提交725b22c，worktree干净；报告与45个本任务测试待独立验收。中文路径范围检查问题由总设计师复核，不让实现者改验证脚本。
+- C6：Sol high继续开发，尚未交付。
+
+C2/C4尚未合并。当前总设计师仍不写任务实现；以后继续时先处理这两个独立验收，再协调C6/C7。
