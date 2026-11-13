@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ChildChar, type CharStage } from "../contracts/schemas";
-import { advanceChar, planDay } from "./schedule";
+import { CharKind, CharStage, ChildChar } from "../contracts/schemas";
+import { advanceChar, nextStage, planDay } from "./schedule";
 
 const today = "2026-11-29";
 function record(overrides: Partial<ChildChar> = {}): ChildChar {
@@ -25,7 +25,7 @@ describe("间隔复习", () => {
   });
 
   it.each([
-    ["recognize", "recognize", 3], ["understand", "understand", 3],
+    ["recognize", "understand", 3], ["understand", "understand", 3],
     ["write", "understand", 3], ["review_2d", "understand", 0], ["review_7d", "understand", 0],
   ] as const)("[1] 规则1–5 %s答错 → %s；规则7更新日期而不增加连续数", (stage, expectedStage, streak) => {
     const input = record({ stage, nextReviewOn: stage.startsWith("review") ? today : null });
@@ -98,5 +98,50 @@ describe("间隔复习", () => {
     expect(planDay(all, lesson, today).newChars).toEqual([lesson[0]!.char, ...lesson.slice(6).map(({ char }) => char)]);
     expect(planDay(all, [...lesson, lesson[0]!], today).newChars).toHaveLength(25);
     expect(lesson).toEqual(snapshot);
+  });
+
+  for (const stage of CharStage.options) {
+    for (const kind of CharKind.options) {
+      for (const result of ["correct", "wrong"] as const) {
+        it(`[17] nextStage与advanceChar一致：${stage} × ${kind} × ${result}`, () => {
+          const input = Object.freeze(record({ stage, kind, nextReviewOn: stage.startsWith("review") ? today : null }));
+          const output = advanceChar(input, result, today);
+          expect(output.stage).toBe(nextStage(stage, kind, result));
+          expect(ChildChar.safeParse(output).success).toBe(true);
+        });
+      }
+    }
+  }
+
+  it.each([
+    ["review_2d", "wrong"], ["review_7d", "correct"], ["review_7d", "wrong"],
+  ] as const)("[1] 规则8 离开%s且不进入复习阶段时清空排期：%s", (stage, result) => {
+    expect(advanceChar(record({ stage, nextReviewOn: today }), result, today).nextReviewOn).toBeNull();
+  });
+
+  it("[24] understand和write都是遗留字；课内已有遗留字不再作为新字或复习字", () => {
+    const all = [record({ char: "休", stage: "understand" }), record({ char: "林", stage: "write" }),
+      record({ char: "木", stage: "recognize" }), record({ char: "明", stage: "mastered" })];
+    const plan = planDay(all, [
+      { char: "休", kind: "write" }, { char: "林", kind: "write" }, { char: "木", kind: "recognize_only" },
+      { char: "禾", kind: "recognize_only" }, { char: "禾", kind: "recognize_only" },
+    ], today);
+    expect(plan).toEqual({ newChars: ["木", "禾"], reviewChars: [], carryOverChars: ["休", "林"] });
+    expect(new Set([...plan.newChars, ...plan.reviewChars, ...plan.carryOverChars]).size).toBe(4);
+  });
+
+  it("[24] 遗留字超过8个时按错误数降序、码点升序取前8，冻结输入和改变输入顺序都不影响结果", () => {
+    const all = Array.from({ length: 12 }, (_, index) => record({
+      char: String.fromCodePoint(0x4e00 + index), stage: index % 2 === 0 ? "understand" : "write",
+      wrongCount: index < 3 ? 8 : 2,
+    }));
+    const snapshot = structuredClone(all);
+    all.forEach(Object.freeze);
+    Object.freeze(all);
+    const expected = Array.from({ length: 8 }, (_, index) => String.fromCodePoint(0x4e00 + index));
+    expect(planDay(all, [], today).carryOverChars).toEqual(expected);
+    expect(planDay([...all].reverse(), [], today).carryOverChars).toEqual(expected);
+    expect(planDay([...all.slice(5), ...all.slice(0, 5)], [], today).carryOverChars).toEqual(expected);
+    expect(all).toEqual(snapshot);
   });
 });

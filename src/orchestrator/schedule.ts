@@ -1,63 +1,52 @@
-import type { AdvanceChar, PlanDay } from "../contracts/orchestrator";
+import type { AdvanceChar, NextStage, PlanDay } from "../contracts/orchestrator";
+import type { ChildChar } from "../contracts/schemas";
 import { addDays } from "./dates";
 
-export const advanceChar: AdvanceChar = (cc, result, today) => {
-  const next = { ...cc, lastSeenOn: today };
-  // 已掌握的学习进度冻结，但每次重逢仍记录日期。
-  if (cc.stage === "mastered") return next;
-
-  if (result === "wrong") {
-    next.wrongCount += 1;
-    if (cc.stage === "write" || cc.stage === "review_2d" || cc.stage === "review_7d") {
-      next.stage = "understand";
-      next.nextReviewOn = null;
-    }
-    if (cc.stage === "review_2d" || cc.stage === "review_7d") next.correctStreak = 0;
-    return next;
+export const nextStage: NextStage = (stage, kind, result) => {
+  if (stage === "mastered") return "mastered";
+  if (result === "wrong") return "understand";
+  switch (stage) {
+    case "recognize": return "understand";
+    case "understand": return kind === "write" ? "write" : "review_2d";
+    case "write": return "review_2d";
+    case "review_2d": return "review_7d";
+    case "review_7d": return "mastered";
   }
-
-  next.correctStreak += 1;
-  switch (cc.stage) {
-    case "recognize":
-      next.stage = "understand";
-      next.nextReviewOn = null;
-      break;
-    case "understand":
-      next.stage = cc.kind === "write" ? "write" : "review_2d";
-      next.nextReviewOn = cc.kind === "write" ? null : addDays(today, 2);
-      break;
-    case "write":
-      next.stage = "review_2d";
-      next.nextReviewOn = addDays(today, 2);
-      break;
-    case "review_2d":
-      next.stage = "review_7d";
-      next.nextReviewOn = addDays(today, 7);
-      break;
-    case "review_7d":
-      next.stage = "mastered";
-      next.nextReviewOn = null;
-      break;
-  }
-  return next;
 };
 
-function compareCodePoints(left: string, right: string): number {
-  return (left.codePointAt(0) ?? 0) - (right.codePointAt(0) ?? 0);
+export const advanceChar: AdvanceChar = (cc, result, today) => {
+  // 已掌握的学习进度冻结，但每次重逢仍记录日期。
+  if (cc.stage === "mastered") return { ...cc, lastSeenOn: today };
+  const stage = nextStage(cc.stage, cc.kind, result);
+  const reviewWrong = result === "wrong" && (cc.stage === "review_2d" || cc.stage === "review_7d");
+  return {
+    ...cc,
+    stage,
+    correctStreak: result === "correct" ? cc.correctStreak + 1 : reviewWrong ? 0 : cc.correctStreak,
+    wrongCount: cc.wrongCount + (result === "wrong" ? 1 : 0),
+    nextReviewOn: stage === "review_2d" ? addDays(today, 2) : stage === "review_7d" ? addDays(today, 7) : null,
+    lastSeenOn: today,
+  };
+};
+
+function rankedChars(records: ChildChar[], limit: number): string[] {
+  return [...records]
+    .sort((a, b) => b.wrongCount - a.wrongCount || (a.char.codePointAt(0) ?? 0) - (b.char.codePointAt(0) ?? 0))
+    .slice(0, limit)
+    .map(({ char }) => char);
 }
 
 export const planDay: PlanDay = (all, lessonChars, today) => {
   const known = new Map(all.map((cc) => [cc.char, cc]));
+  const newChars = [...new Set(lessonChars
+    .filter(({ char }) => !known.has(char) || known.get(char)?.stage === "recognize")
+    .map(({ char }) => char))];
+  const newSet = new Set(newChars);
   return {
-    newChars: [...new Set(lessonChars
-      .filter(({ char }) => !known.has(char) || known.get(char)?.stage === "recognize")
-      .map(({ char }) => char))],
-    reviewChars: all
-      .filter((cc) => (cc.stage === "review_2d" || cc.stage === "review_7d")
-        && cc.nextReviewOn !== null && cc.nextReviewOn <= today)
-      .slice()
-      .sort((a, b) => b.wrongCount - a.wrongCount || compareCodePoints(a.char, b.char))
-      .slice(0, 12)
-      .map((cc) => cc.char),
+    newChars,
+    reviewChars: rankedChars(all.filter((cc) => (cc.stage === "review_2d" || cc.stage === "review_7d")
+      && cc.nextReviewOn !== null && cc.nextReviewOn <= today), 12),
+    carryOverChars: rankedChars(all.filter((cc) => (cc.stage === "understand" || cc.stage === "write")
+      && !newSet.has(cc.char)), 8),
   };
 };
