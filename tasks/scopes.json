@@ -54,5 +54,16 @@
     "src/ui/ui.test.ts",
     "src/ui/integration.browser.ts",
     "src/ui/playwright.config.ts"
+  ],
+  "C8A": [
+    "src/speech/",
+    "app/api/speech/",
+    "src/server/speech.ts",
+    "src/ui/speech/",
+    "src/ui/HttpLearningApp.tsx",
+    "src/ui/screens.tsx",
+    "src/ui/ui.test.ts",
+    "src/ui/speech.browser.ts",
+    "tests/integration/speech/"
   ]
 }

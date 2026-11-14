@@ -4,7 +4,7 @@
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
-| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.2（新增HTTP响应契约） |
+| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.3（新增语音契约） |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
@@ -14,6 +14,7 @@
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 已合并 | reviews/C7.md：1baf3be通过，合并d149377；main666测试/构建、独立浏览器10项 |
+| C8A | 语音接口、内存录音及文字退路 | Codex / Sol medium | 5 | C7、契约2.3 | 进行中 | task/C8A，真实供应商仍关闭 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -82,3 +83,7 @@ GitHub远端：git@github.com:arthur618/kidedu.git。负责人已授权同步主
 C7@1baf3be第二次独立验收通过，F1/F2关闭，已合并d149377。独立克隆四项自查：35文件666测试、实际构建、33文件范围、报告均通过；浏览器10项及六组自编探针通过。真实main重新npm ci与verify后666测试/构建通过。无任务号时范围/报告按设计跳过，各分支已独立检查。真实模型评测仍延后。
 
 C8–C11任务书已按集成情况建立，尚未派发；各任务开工前由总设计师补齐契约与精确scope。语音供应商尚未明确，先规划C8A接口/测试，不发真实音频。当前接续状态以tasks/RESUME.md为准；此前进行中/需修改段落均为历史。
+
+## C8A正式派发与契约2.3（2026-11-14）
+
+新增src/contracts/speech.ts，统一音频MIME/2MB/30秒录音、8秒服务与12秒HTTP预算、ASR/TTS结构；SpeechToText只增加可选第三参数mimeType/signal，旧调用不变。真实供应商未确定，C8A默认关闭且不搜索密钥，不使用浏览器云语音，转录只填编辑框不判正误不自动提交。Sol medium单agent实施，精确scope已冻结；root维护契约与独立验收。

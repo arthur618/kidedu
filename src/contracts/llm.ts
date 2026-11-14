@@ -5,6 +5,7 @@
  */
 import type { z } from "zod";
 import type { AgentName } from "./schemas";
+import type { SpeechMime } from "./speech";
 
 export interface LlmImage {
   url: string;
@@ -86,5 +87,5 @@ export const RUNTIME_AGENTS: AgentName[] = [
 
 /** 语音转文字。M1 可以不接，认读走 self_report 模式。 */
 export interface SpeechToText {
-  transcribe(audio: Uint8Array, hint?: { expectedText?: string }): Promise<{ text: string; pinyin: string[] } | null>;
+  transcribe(audio: Uint8Array, hint?: { expectedText?: string }, options?: { mimeType?: SpeechMime; signal?: AbortSignal }): Promise<{ text: string; pinyin: string[] } | null>;
 }
