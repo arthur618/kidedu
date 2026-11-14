@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useSpeechInput } from "../speech/input";
 import type { CharCard } from "../../contracts/schemas";
 import type { ScreenData } from "../model";
 export function Reading({ data, onDone, lookup }: { data: ScreenData["reading"]; onDone: () => void; lookup?: (char: string) => Promise<CharCard | null> }) {
@@ -23,6 +24,7 @@ export function Reading({ data, onDone, lookup }: { data: ScreenData["reading"];
 }
 export function Retell({ data, onText }: { data: ScreenData["retell"]; onText: (text: string) => void }) {
   const [text, setText] = useState("");
+  const speech = useSpeechInput(setText);
   if (data.mode !== "ready") return <p>小问号还在准备新故事。</p>;
-  return <><p>{data.say}</p>{data.ask && <p className="ask">{data.ask}</p>}<form onSubmit={event => { event.preventDefault(); if (text.trim()) onText(text.trim()); }}><label htmlFor="reading-answer">我想说</label><textarea id="reading-answer" maxLength={2000} value={text} onChange={event => setText(event.target.value)}/><button className="primary" disabled={!text.trim()}>好了，听听我的</button></form></>;
+  return <><p>{data.say}</p>{data.ask && <p className="ask">{data.ask}</p>}<form onSubmit={event => { event.preventDefault(); if (text.trim()) { speech.cancel(); onText(text.trim()); } }}><label htmlFor="reading-answer">我想说</label><textarea id="reading-answer" maxLength={2000} value={text} onChange={event => { speech.cancel(); setText(event.target.value); }}/>{speech.control}<button className="primary" disabled={!text.trim()}>好了，听听我的</button></form></>;
 }
