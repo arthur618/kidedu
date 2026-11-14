@@ -33,3 +33,7 @@ src/nightly/、app/(parent)/、src/ui/parent/、app/api/parent/、必要server�
 6. 所有媒体及密钥隔离测试只用合成数据；日志无媒体/凭据。
 7. 家长两尺寸、键盘及基本语义浏览器测试通过；真实批处理CLI烟测、独立verify/build通过。
 8. 报告区分本地试点能力与多实例/部署调度/真实模型评测，不声明已公开上线。
+
+## 待冻结实施方案（2026-11-14）
+
+具体来源、持久恢复和访问控制草案已保存到[C11A-preflight.md](C11A-preflight.md)与[C11B-preflight.md](C11B-preflight.md)，尚未派发，不能据草案写实现。C10通过后总设计师冻结共享契约/精确scope，顺序实施A再B，外部配置和真实接口联调继续延后。
