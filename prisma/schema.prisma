@@ -149,3 +149,56 @@ model EssayRuntime {
   data String?
   commands String @default("{}")
 }
+
+// C11A：真实学习事件追加流水；不依赖当前进度反推历史。
+model LearningOutcome {
+  id String @id
+  sessionId String
+  childId String
+  commandScope String
+  commandKey String
+  effectIndex Int
+  char String
+  kind String
+  stageBefore String
+  stageAfter String
+  result String
+  occurredAt String
+  @@unique([commandScope, commandKey, effectIndex])
+  @@index([childId, occurredAt])
+}
+model SessionLearningCoverage {
+  sessionId String @id
+  startedAt String
+}
+// snapshot/step.result为私有来源与评分；公共日报另行严格投影。
+model NightlyJob {
+  id Int @id @default(autoincrement())
+  childId String
+  date String
+  timezone String
+  sourceVersion String
+  snapshot String
+  leaseToken String?
+  leaseUntil String?
+  final String?
+  @@unique([childId, date, timezone, sourceVersion])
+}
+model NightlyStep {
+  jobId Int
+  key String
+  inputFingerprint String
+  reusedFromJobId Int?
+  status String
+  result String?
+  error String?
+  @@id([jobId, key, inputFingerprint])
+}
+model NightlyPublication {
+  childId String
+  date String
+  timezone String
+  jobId Int
+  data String
+  @@id([childId, date, timezone])
+}
