@@ -1,4 +1,5 @@
 import { getCharCard } from '../db/charCard';
+import { createDeepSeekSpeech } from '../speech/deepseek';
 import { SPEECH_MAX_AUDIO_BYTES, SpeechTranscribeBodySchema, SpeechSynthesizeBodySchema, type SpeechServiceDeps } from '../contracts/speech';
 import { createSpeechService, type SpeechTimers } from '../speech/service';
 const unavailable = (status = 200) => Response.json({ status: 'unavailable' }, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -26,5 +27,5 @@ export function createSpeechHandlers(deps: SpeechServiceDeps, timers?: SpeechTim
     },
   };
 }
-// 真实供应商由C8B接入；没有请求参数、环境变量或生产假服务入口。
-export const productionSpeechHandlers = createSpeechHandlers({ asr: null, tts: null, getCharCard });
+// 开关和密钥仅读服务端环境；无任意供应商地址或生产fake入口。
+export const productionSpeechHandlers = createSpeechHandlers({ ...createDeepSeekSpeech(), getCharCard });
