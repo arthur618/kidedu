@@ -2,7 +2,20 @@
 
 - 实现者：Codex，Sol medium（单实现，无子agent）
 - 分支：task/D2B
-- 自查结果：focused通过；最终`bash scripts/verify.sh D2B`等待root释放独占构建窗口后执行，结果随后补记。
+- 自查结果：focused 101/101通过；root释放独占窗口后执行一次`bash scripts/verify.sh D2B`，退出码0。完整输出留于执行机`/private/tmp/d2b-final-verify.log`。
+
+```text
+Test Files  44 passed (44)
+     Tests  831 passed (831)
+src/server/build.test.ts: npm run build / Next.js 生产构建成功
+== 3/4 范围检查 ==
+范围检查通过：10 个文件都在 D2B 的范围内。
+== 4/4 报告文件 ==
+reports/D2B.md 存在
+全部通过。
+```
+
+类型检查及`git diff --check`亦通过。真实生产构建由verify内build.test.ts执行（18.8秒），没有另跑重复build；整套耗时31.7秒。
 
 ## 做了什么
 
@@ -21,8 +34,8 @@
 | 1. 默认/显式预算、真实发送的首次/纠正请求一致；DeepSeek开启审核但无tools，OpenAI离线路由不带专有字段，非法选项拒绝。 | src/llm/deepseek.test.ts：“缺省和显式选项…首次/纠正请求共用预算与审核”（含1/8192边界）、“八个Agent明确非思考和有限预算”、“非法DeepSeek选项…启动拒绝”、“OpenAI配置拒绝DeepSeek选项，实际离线请求无专有字段”；client.test.ts缓存/图片顺序既有测试。 | focused通过 |
 | 2. 完整stop有效/空白/截断但合法JSON、拒答但合法JSON、tool_calls、资源中断、未知/缺原因各有正反例；迟到和失败不误当模型成功，收费重试有界。 | deepseek.test.ts“完成原因与拒答”覆盖stop、length、content_filter、tool_calls、insufficient_system_resource、aborted、未知/null/缺字段、refusal缺失/null/空白/非空/异常类型；“stop带…仍拒绝且不执行工具”、“超时后迟到的合法stop不成功、不补记onTurn”、“HTTP…保留usage，重试次数有界”；client.test.ts网络/5xx/总预算测试。 | focused通过 |
 | 3. 官方两种缓存计量、失败和多次尝试合计、同client并发/取消保持；无key零网络，密钥仅假值且不回显。 | client.test.ts两种缓存别名/优先级、成功/失败onTurn与密钥不泄露；deepseek.test.ts“先schema错误后拒答仍累计两次官方缓存计量”、HTTP400/401/403/429/500计量、缺usage/AbortError/无密钥；tests/integration/deepseek/concurrency.test.ts反序完成拒答与成功归属、单操作取消隔离；tests/integration/model.test.ts真实D2写Turn及整体预算取消。 | focused通过 |
-| 4. 原Agent/护栏/内容/eval/运行时全部回归，不能放宽schema或删难例；旧fake HTTP缺finish_reason须修成真实协议fixture，不靠decoder默许缺字段。 | 仅为client.test.ts、offline.test.ts及tests/integration/model.test.ts正常fixture补finish_reason stop，取消fixture使用原生AbortError；无删测试/改契约。全套verify待独占窗口。 | 待最终verify |
-| 5. 集中focused后最终verify D2B（包含真实build），与C11A协调全套构建独占；报告逐条及尚待真实key联调。必要实际浏览器回归由root统一串行，无新UI不另造截图。 | focused与集中自审已完成，发现响应体读取AbortError被JSON解析catch误归重试后已修正并补测试。未启动重复build/浏览器；最终verify按root窗口执行。 | 待最终verify |
+| 4. 原Agent/护栏/内容/eval/运行时全部回归，不能放宽schema或删难例；旧fake HTTP缺finish_reason须修成真实协议fixture，不靠decoder默许缺字段。 | 仅为client.test.ts、offline.test.ts及tests/integration/model.test.ts正常fixture补finish_reason stop，取消fixture使用原生AbortError；无删测试/改契约。最终verify含原Agent/护栏/内容/eval/运行时共831测试及真实生产构建通过。 | 通过 |
+| 5. 集中focused后最终verify D2B（包含真实build），与C11A协调全套构建独占；报告逐条及尚待真实key联调。必要实际浏览器回归由root统一串行，无新UI不另造截图。 | focused与集中自审已完成，发现响应体读取AbortError被JSON解析catch误归重试后已修正并补测试。未启动重复build/浏览器；最终verify在root授权独占窗口执行，831测试/真实build/scope/报告四项通过，结束后立即通知root释放窗口。 | 通过 |
 
 ## 改动的文件
 
