@@ -23,7 +23,7 @@ function responseWithUsage(content: string, usage: Record<string, unknown>): Res
     ok: true,
     status: 200,
     json: async () => ({
-      choices: [{ message: { content } }],
+      choices: [{ finish_reason: "stop", message: { content } }],
       usage,
     }),
   } as unknown as Response;

@@ -3,7 +3,7 @@
  * 这里有一条产品红线：运行时 Agent 的 provider 只能是 deepseek，没有跳过开关。
  */
 import { z } from "zod";
-import { RUNTIME_AGENTS, type ModelConfig } from "../contracts/llm";
+import { DeepSeekOptionsSchema, RUNTIME_AGENTS, type ModelConfig } from "../contracts/llm";
 
 export const modelRouteSchema = z.object({
   provider: z.enum(["deepseek", "openai"]),
@@ -11,6 +11,11 @@ export const modelRouteSchema = z.object({
   baseUrl: z.string().url(),
   apiKeyEnv: z.string().min(1),
   timeoutMs: z.number().int().positive(),
+  deepseek: DeepSeekOptionsSchema.optional(),
+}).strict().superRefine((route, ctx) => {
+  if (route.provider !== "deepseek" && route.deepseek !== undefined) {
+    ctx.addIssue({ code: "custom", path: ["deepseek"], message: "DeepSeek选项只能用于DeepSeek路由。" });
+  }
 });
 
 /** 八个运行时 Agent 都必须显式配置，多出来的键会被拒绝。 */
