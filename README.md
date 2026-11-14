@@ -12,7 +12,7 @@
 
 | 你是 | 先读 |
 | --- | --- |
-| 负责人 | `docs/WORKFLOW.md`，然后看 `tasks/STATUS.md` 派发第一批任务 |
+| 负责人 | `tasks/RESUME.md` 和 `tasks/STATUS.md`，再读 `docs/WORKFLOW.md` |
 | 编码 Agent | `AGENTS.md`，然后是你的任务文件 |
 
 ## 目录
@@ -30,7 +30,7 @@ scripts/verify.sh    提交前自查，验收时也跑它
 ## 本地运行
 
 ```
-npm install
+npm ci
 bash scripts/verify.sh          # 类型检查和测试
 bash scripts/verify.sh C1       # 加上任务 C1 的范围检查和报告检查
 ```
@@ -40,4 +40,4 @@ bash scripts/verify.sh C1       # 加上任务 C1 的范围检查和报告检查
 见 `tasks/STATUS.md`。
 
 换电脑继续项目：先读 [任务看板](tasks/STATUS.md) 和 [项目接续说明](tasks/RESUME.md)。原始交接背景见 [HANDOFF](docs/HANDOFF.md)。
-\n认字回路与C8A语音接口已集成，main自查679测试及生产构建通过；本地孩子端入口为`/learn`。生产语音仍关闭，真实模型评测尚未运行；C8B供应商接入和后续阅读/作文/日报见任务看板。\n
+认字回路、C8A语音接口、C9阅读与文字复述已集成，C9合并后main的697个测试和实际生产构建通过；孩子端入口为`/learn`。C10作文正在实施，后续为日报与家长端。生产语音仍关闭，真实模型质量和外部接口联调按负责人安排延后，凭据保持未配置。

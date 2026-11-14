@@ -1,6 +1,6 @@
 # C7 运行时接口
 
-服务启动时 `createServerDeps()` 校验 DeepSeek 路由并创建一次真实 LlmClient，连接真实编排器、数据层、Agent 与护栏。阅读/作文仍是“即将开放”。没有生产假模型开关。
+服务启动时 `createServerDeps()` 校验 DeepSeek 路由并创建一次真实 LlmClient，连接真实编排器、数据层、Agent 与护栏。C9已接通阅读/文字复述；作文由C10继续接入。没有生产假模型开关。
 
 全部 POST 要求 `Idempotency-Key`（16–128 位字母、数字、下划线或连字符），controller 一次操作的重试保留同一标识，下一操作换标识。响应复用 `src/contracts/session.ts` 的 `SessionPacketSchema`，只向界面发执行完成的 `show`；缺内容或重启缺原图用 `unavailable` 和正常退出入口。
 
@@ -10,6 +10,8 @@
 | POST `/api/session/[id]/homework` | `{imageDataUrl?,spokenText?}`，至少一个 | 看清后 `homework_confirm` + `{items}`；不确定仍 `homework_capture` + `notice` |
 | POST `/api/session/[id]/event` | 契约 SessionEvent | 完整 Packet；非法状态事件仍显示当前快照 |
 | POST `/api/session/[id]/coach` | `{char,text}` | 当前字的讲解/下一步实际提示，或下一学习状态 |
+| POST `/api/session/[id]/reading` | `{text}` | 复述后最多一次追问，再收尾；同样要求稳定操作ID |
+| GET `/api/session/[id]/reading/card?char=字` | 无 | 仅当前选文内的approved只读字卡；不推进学习 |
 | GET `/api/session/[id]` | 无 | 当前 Packet，兼容保留 `context`、`homework`；不跑模型、不推进步骤 |
 
 400 表示格式/图片/操作标识不合要求；404 表示孩子、课或会话不存在；409 表示标识复用但正文不同，或当前不接受该教练活动。业务拒绝有持久终态，不阻塞退出。
@@ -31,3 +33,7 @@
 ## 验证
 
 `tests/integration/` 用 Prisma migrate deploy 创建临时 SQLite，连接真实 handler、编排器、数据访问、Agent 和护栏，只有 LlmClient 假。`src/ui/integration.browser.ts` 通过独立回环 HTTP server 执行生产 handler；浏览器只重定向地址，不编响应。用 `C7_BROWSER_PORT` 指定空闲端口，缓存继承 XDG_CACHE_HOME 或使用系统临时目录。
+
+## C9阅读边界
+
+approved内容稳定选文，公共正文只投影id/title/body/targetChars，keyPoints仅在私有ReadingRuntime快照。首问取审核question并规则审查；两条孩子原话/一次follow_up/收尾用真实Reader和护栏，模型事务外，活动/转换/命令原子。阅读Turn只存白名单计量元数据。GET重查approved且只读当前活动，撤审后正常unavailable。整页重载接续原会话的客户端能力尚未实现，此处恢复指GET快照与稳定ID重放。真实外部配置/联调仍延后。
