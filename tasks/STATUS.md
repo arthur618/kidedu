@@ -20,7 +20,7 @@
 
 | C10 | 作文采访、孩子原话卡和读后反馈 | Codex / Sol high | 7 | C9、契约2.5 | 已合并 | reviews/C10.md：9747a8d通过，合并98450a1；独立/main781测试/构建，独立27浏览器，F1关闭 |
 
-| C11A | 夜间事实汇总、复述评分与日报 | Codex / Sol high | 8 | C10、契约2.6 | 进行中 | tasks/codex/C11A-addendum.md；真实接口配置/联调延后 |
+| C11A | 夜间事实汇总、复述评分与日报 | Codex / Sol high | 8 | C10、契约2.6 | 待合并 | reviews/C11A.md：0477bbb通过，独立817测试/构建、22范围、27浏览器、两组对账 |
 
 | D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 进行中 | tasks/codex/D2B-deepseek.md；不配置key/不真实联调 |
 
