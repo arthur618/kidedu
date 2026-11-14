@@ -1,4 +1,5 @@
 "use client";
+import { Reading, Retell } from "./reading/screens";
 import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HomeworkItem } from "../contracts/schemas";
 import type { SessionEvent } from "../contracts/orchestrator";
@@ -86,7 +87,7 @@ export function Ended() { return <><div className="sound-art" aria-hidden="true"
 const titles: Record<View["screen"], [string, string]> = {
   unavailable: ["今天先歇一歇", "慢慢来"], idle: ["你好，我是小问号", "一起学语文"], homework_capture: ["今天，我们做什么？", "从这里开始"], homework_confirm: ["这是今天的作业吗？", "看看小清单"], recognize: ["和这个字打个招呼", "认一认"], understand: ["一起认识它", "想一想"], dictation_play: ["把听到的写下来", "听一听 · 写一写"], dictation_capture: ["让我看看你的字", "拍下小作品"], dictation_compare: ["放在一起，仔细看看", "比一比"], reading_offer: ["再遇见一个小故事", "读一点点"], reading: ["故事小天地", "读一读"], retell: ["说给小问号听", "聊一聊"], essay_interview: ["收集你的好想法", "想一想"], essay_cards: ["你的想法小卡片", "看一看"], essay_feedback: ["一起看看你的文章", "聊一聊"], wrap_up: ["今天的小收获", "给自己一个微笑"], ended: ["我们下次见", "好好休息"],
 };
-export interface ScreenActions { event: (event: SessionEvent) => void; homework: (input: { imageDataUrl?: string; spokenText?: string }) => void; coach: (input: { char: string; text: string }) => void }
+export interface ScreenActions { reading?: (input: { text: string }) => void; readingCard?: (char: string) => Promise<import("../contracts/schemas").CharCard | null>; event: (event: SessionEvent) => void; homework: (input: { imageDataUrl?: string; spokenText?: string }) => void; coach: (input: { char: string; text: string }) => void }
 export function LearningScreen({ view, actions, notice }: { view: View; actions: ScreenActions; notice?: string }) {
   let content: ReactNode;
   switch (view.screen) {
@@ -99,6 +100,8 @@ export function LearningScreen({ view, actions, notice }: { view: View; actions:
     case "dictation_capture": content = <DictationCapture onPhoto={imageUrl => actions.event({ type: "dictation_photo", imageUrl })}/>; break;
     case "dictation_compare": content = <DictationCompare data={view.data} onDone={results => actions.event({ type: "dictation_confirmed", results })}/ >; break;
     case "reading_offer": content = <ReadingOffer onChoice={accept => actions.event({ type: "reading_choice", accept })}/>; break;
+    case "reading": content = <Reading data={view.data} onDone={() => actions.event({ type: "reading_done" })} lookup={actions.readingCard}/>; break;
+    case "retell": content = <Retell data={view.data} onText={text => actions.reading?.({ text })}/>; break;
     case "wrap_up": content = <WrapUp data={view.data} onMood={() => actions.event({ type: "wrap_up_done" })}/>; break;
     case "ended": content = <Ended/>; break;
     default: content = <ComingSoon/>;

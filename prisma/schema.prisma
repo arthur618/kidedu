@@ -136,3 +136,9 @@ model CoachRuntime {
   sessionId String @id
   data      String
 }
+
+// C9 私有快照与孩子原话，禁止整体投影到HTTP或Turn。
+model ReadingRuntime {
+  sessionId String @id
+  data String
+}

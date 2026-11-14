@@ -1,3 +1,6 @@
+import { ReadingActionSchema } from "../contracts/reading";
+import { getReadingRuntime } from "../db/readingRuntime";
+import { getPassage } from "../db/passage";
 import { z } from "zod";
 import { SessionEventSchema } from "../contracts/orchestrator";
 import { SESSION_REQUEST_ID_HEADER, SessionRequestIdSchema, SessionPacketSchema } from "../contracts/session";
@@ -7,7 +10,7 @@ import { createSessionService, CoachConflict, RequestConflict, type CommandKind 
 const startSchema = z.object({ childId: z.string().min(1), lessonId: z.string().min(1), hasEssayToday: z.boolean() }).strict();
 const homeworkSchema = z.object({ imageDataUrl: z.string().optional(), spokenText: z.string().trim().min(1).max(10000).optional() }).strict().refine(body => body.imageDataUrl || body.spokenText);
 const coachSchema = z.object({ char: z.string().length(1), text: z.string().max(10000) }).strict();
-const schemas = { start: startSchema, event: SessionEventSchema, homework: homeworkSchema, coach: coachSchema };
+const schemas = { start: startSchema, event: SessionEventSchema, homework: homeworkSchema, coach: coachSchema, reading: ReadingActionSchema };
 export function validPhoto(value: string): boolean {
   const match = /^data:image\/(jpeg|png);base64,([A-Za-z0-9+/]+={0,2})$/.exec(value);
   if (!match || !match[2] || match[2].length % 4 !== 0) return false;
@@ -35,6 +38,20 @@ export function createHttpHandlers(deps: RuntimeDeps) {
       if (typeof photo === "string" && !validPhoto(photo)) return json({ error: "请选一张不超过2MB的 JPG 或 PNG 图片。" }, 400);
       try { return json(SessionPacketSchema.parse(await service.post(kind, kind === "start" ? (body as z.infer<typeof startSchema>).childId : sessionId!, key.data, body))); }
       catch (error) { return errorResponse(error); }
+    },
+    async card(sessionId: string, request: Request): Promise<Response> {
+      const char = new URL(request.url).searchParams.get("char");
+      if (!char || Array.from(char).length !== 1) return json({ error: "请选一个字。" }, 400);
+      try {
+        const runtime = await deps.getSessionRuntime(sessionId);
+        if (!runtime) throw new SessionNotFoundError(sessionId);
+        const activity = await getReadingRuntime(sessionId);
+        if (!["reading", "retell"].includes(runtime.state) || !activity) return json({ error: "现在先完成眼前这一步吧。" }, 409);
+        if (!activity.passage.body.includes(char)) return json({ error: "请选短文里的一个字。" }, 400);
+        if (!await getPassage(activity.passage.id)) return json({ status: "unavailable" });
+        const card = await deps.getCharCard(char);
+        return json(card ? { status: "ok", card } : { status: "unavailable" });
+      } catch (error) { return errorResponse(error); }
     },
     async get(sessionId: string): Promise<Response> {
       try { const result = await service.get(sessionId); SessionPacketSchema.parse(result); return json(result); } catch (error) { return errorResponse(error); }

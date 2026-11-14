@@ -61,3 +61,7 @@ export async function upsertPassage(data: Passage): Promise<Passage> {
   });
   return fromRow(row);
 }
+
+export async function listApprovedPassages(): Promise<Passage[]> {
+  return (await getPrisma().passage.findMany({ where: { status: "approved" } })).map(fromRow);
+}

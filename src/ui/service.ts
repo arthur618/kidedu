@@ -1,7 +1,13 @@
+import { ApprovedCharCard } from "../contracts/session";
+import { z } from "zod";
+import { ReadingActionSchema } from "../contracts/reading";
+import type { CharCard } from "../contracts/schemas";
 import { SessionPacketSchema as PacketSchema, SESSION_CLIENT_TIMEOUT_MS, SESSION_REQUEST_ID_HEADER, type SessionPacket as Packet } from "../contracts/session";
 import { SessionEventSchema, type SessionEvent } from "../contracts/orchestrator";
 
 export interface LearningService {
+  reading?(input: { text: string }, operationId?: string): Promise<Packet>;
+  readingCard?(char: string): Promise<CharCard | null>;
   start(operationId?: string): Promise<Packet>;
   event(event: SessionEvent, operationId?: string): Promise<Packet>;
   homework(input: { imageDataUrl?: string; spokenText?: string }, operationId?: string): Promise<Packet>;
@@ -26,6 +32,13 @@ export function createHttpService(options: { childId: string; lessonId: string; 
     return `/api/session/${encodeURIComponent(sessionId)}/${suffix}`;
   }
   return {
+    reading: (input, id) => request(path("reading"), ReadingActionSchema.parse(input), id),
+    readingCard: async char => {
+      const response = await fetcher(path("reading/card") + "?char=" + encodeURIComponent(char), { cache: "no-store" });
+      if (!response.ok) throw new Error("card_unavailable");
+      const result = z.discriminatedUnion("status", [z.object({ status: z.literal("ok"), card: ApprovedCharCard }), z.object({ status: z.literal("unavailable") })]).parse(await response.json());
+      return result.status === "ok" ? result.card : null;
+    },
     start: id => request("/api/session", { childId: options.childId, lessonId: options.lessonId, hasEssayToday: options.hasEssayToday ?? false }, id),
     event: (event, id) => request(path("event"), SessionEventSchema.parse(event), id),
     homework: (input, id) => request(path("homework"), input, id),

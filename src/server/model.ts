@@ -70,10 +70,10 @@ export function measuredClient(base: LlmClient, options: ModelOptions, turns: Pe
   } };
 }
 /** 明确 await 存库，避免 D2/Agent 吞掉 onTurn 抛错。 */
-export async function persistTurns(sessionId: string, turns: PendingTurn[], verdict: Turn["guardVerdict"], now: () => Date): Promise<void> {
+export async function persistTurns(sessionId: string, turns: PendingTurn[], verdict: Turn["guardVerdict"], now: () => Date, metadata?: { activity: string; passageId: string; step: string }): Promise<void> {
   for (const { request, result, record } of turns.splice(0)) {
     await insertTurn({ id: `turn_${randomUUID()}`, sessionId, agent: request.agent,
-      model: record?.model ?? result.model, input: redact(request), output: redact(result),
+      model: record?.model ?? result.model, input: metadata ? { ...metadata, agent: request.agent } : redact(request), output: metadata ? { ok: result.ok, model: result.model, omitted: true, ...(result.ok ? {} : { error: result.error }) } : redact(result),
       inputTokens: record?.inputTokens ?? (result.ok ? result.inputTokens : 0),
       cachedInputTokens: record?.cachedInputTokens ?? (result.ok ? result.cachedInputTokens : 0),
       outputTokens: record?.outputTokens ?? (result.ok ? result.outputTokens : 0),

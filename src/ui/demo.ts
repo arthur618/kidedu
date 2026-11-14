@@ -13,6 +13,8 @@ export function demoPacket(screen: SessionState, photo = demoPhoto): Packet {
     understand: { card: demoCard, say: demoCard.explain, ask: "你想到了哪个词？" },
     dictation_play: { cards: [demoCard] },
     dictation_compare: { imageUrl: photo, chars: ["山"], marks: [{ word: "山", charIndex: 0, expected: "山", box: [0.1, 0.1, 0.8, 0.8], suspicious: true, confidence: 0.7 }] },
+    reading: { mode: "ready", passage: { id: "fictional-story", title: "山边", body: "山边有水。小鸟飞过山坡。", targetChars: ["山", "水"] } },
+    retell: { mode: "ready", passageId: "fictional-story", phase: "answer", say: "读完想一想。", ask: "你想说什么？" },
     wrap_up: { learned: ["山"], revisit: ["山"] },
   };
   return { sessionId: "fixture-session", state: screen, effects: screen === "ended" ? [] : [{ type: "show", screen, data: data[screen] }] };
@@ -22,6 +24,8 @@ export function createDemoService(initial: SessionState = "homework_capture", re
   let photo = demoPhoto;
   function next(screen: SessionState) { state = screen; return Promise.resolve(demoPacket(state, photo)); }
   return {
+    reading: () => next(state === "retell" ? "wrap_up" : state),
+    readingCard: async char => char === "山" ? demoCard : null,
     start: () => { record("start"); return next(state); },
     homework: input => { record("homework"); if (state !== "homework_capture" || (!input.spokenText && !input.imageDataUrl)) return Promise.reject(); return next("homework_confirm"); },
     coach: input => { record("coach"); if (state !== "understand" || input.char !== "山") return Promise.reject(); return next("dictation_play"); },
@@ -34,6 +38,7 @@ export function createDemoService(initial: SessionState = "homework_capture", re
       if (state === "dictation_capture" && event.type === "dictation_photo") { photo = event.imageUrl; return next("dictation_compare"); }
       if (state === "dictation_compare" && event.type === "dictation_confirmed") return next("reading_offer");
       if (state === "reading_offer" && event.type === "reading_choice") return next(event.accept ? "reading" : "wrap_up");
+      if (state === "reading" && event.type === "reading_done") return next("retell");
       if (state === "wrap_up" && event.type === "wrap_up_done") return next("ended");
       return Promise.reject(new Error("unexpected_demo_event"));
     },
