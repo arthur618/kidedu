@@ -53,7 +53,7 @@ export async function checkpointEssay(deps: RuntimeDeps, id: string, before: Ses
   if (state === "essay_interview" && before !== state) {
     const item = ctx.homework.find(item => item.kind === "essay" && item.supported && !!item.text.trim());
     if (item) await saveEssayRuntime(id, { topic: item.text.trim(), homeworkItemId: item.id, phase: "interview", utterances: [], cards: [], history: [], essayText: null, output: null, feedbackQuote: null, startedAt: deps.now().toISOString(), completedAt: null });
-    else await incident(deps, "bad_question", "作文主题尚未准备好。");
+    else await incident(deps, "bad_question", "作文主题尚未准备好。", id);
   }
   const activity = await getEssayRuntime(id);
   if (!activity) return;
@@ -122,7 +122,7 @@ export async function essayOutput(deps: RuntimeDeps, id: string, activity: Essay
     return candidate;
   }, () => fallback ?? blocked, { llm, agent: "essay", context: "essay", extra: { childLastUtterance: feedback ? activity.essayText ?? "" : activity.utterances.at(-1) ?? "" } });
   await flush(result.guard.verdict);
-  if (failed || invalid || result.guard.verdict === "blocked") await incident(deps, "ghostwriting", failed ? "作文服务暂不可用，已使用安全退路。" : "作文候选已拦下，已核对原话来源。");
+  if (failed || invalid || result.guard.verdict === "blocked") await incident(deps, "ghostwriting", failed ? "作文服务暂不可用，已使用安全退路。" : "作文候选已拦下，已核对原话来源。", id);
   if (!outputValid(result.output, activity, feedback)) return fallback;
   return { ...result.output, newCard: feedback ? null : validCard(result.output.newCard, activity.utterances.at(-1) ?? "") ? result.output.newCard : null };
 }

@@ -39,7 +39,7 @@ export async function checkpointReading(deps: RuntimeDeps, id: string, before: S
   if (state === "reading" && before !== "reading") {
     const passage = selectPassage(await listApprovedPassages(), ctx, await deps.listChildChars(ctx.childId));
     if (passage) await saveReadingRuntime(id, { passage: { ...passage, status: "approved" }, phase: "reading", question: null, history: [], transcript: [], output: null, startedAt: deps.now().toISOString(), completedAt: null });
-    else await incident(deps, "knowledge", "没有合适的已审核短文。");
+    else await incident(deps, "knowledge", "没有合适的已审核短文。", id);
   }
   const activity = await getReadingRuntime(id);
   if (!activity) return;
@@ -48,7 +48,7 @@ export async function checkpointReading(deps: RuntimeDeps, id: string, before: S
     const question = activity.passage.question;
     let output: ReaderOutput = { say: "读完想一想。", ask: question, next: "wait_child" };
     if (!question.trim() || question.length > 60 || (question.match(/[^。！？!?]+[。！？!?]*/gu) ?? []).length !== 1 || !rulesPass(output, activity.passage)) {
-      await incident(deps, "bad_question", "短文首问已由安全提问替换。");
+      await incident(deps, "bad_question", "短文首问已由安全提问替换。", id);
       output = safeOutput(activity.passage);
     }
     await saveReadingRuntime(id, { ...activity, phase: "answer", question: output.ask, output, history: [{ role: "agent", text: [output.say, output.ask].filter(Boolean).join("\n") }] });
@@ -81,10 +81,10 @@ export async function readerOutput(deps: RuntimeDeps, id: string, activity: Read
     return runReader(input, { llm });
   }, () => safeOutput(activity.passage, step === "wrap_up"), { llm, agent: "reader", context: "reading", extra: { keyPoints: activity.passage.keyPoints } });
   await flush(result.guard.verdict);
-  if (failedModel) await incident(deps, "bad_question", "阅读服务暂不可用，已使用安全话术。");
-  if (result.guard.verdict === "blocked") await incident(deps, "bad_question", "阅读输出已拦下。");
+  if (failedModel) await incident(deps, "bad_question", "阅读服务暂不可用，已使用安全话术。", id);
+  if (result.guard.verdict === "blocked") await incident(deps, "bad_question", "阅读输出已拦下。", id);
   const output = step === "wrap_up" ? { ...result.output, ask: null } : result.output;
   if (rulesPass(output, activity.passage)) return output;
-  await incident(deps, "bad_question", "阅读话术已由安全短句替换。");
+  await incident(deps, "bad_question", "阅读话术已由安全短句替换。", id);
   return safeOutput(activity.passage, step === "wrap_up");
 }

@@ -188,7 +188,7 @@ export function createSessionService(deps: RuntimeDeps) {
       const card = await deps.getCharCard(input.char);
       const child = await deps.getChild(runtime.context.childId);
       if (!card || !child) {
-        await incident(deps, "knowledge", "当前字卡尚未准备好。");
+        await incident(deps, "knowledge", "当前字卡尚未准备好。", id);
         return complete(command, unavailable(id, runtime.state));
       }
       const saved = await getCoachRuntime(id);

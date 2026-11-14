@@ -1,0 +1,11 @@
+ALTER TABLE "Incident" ADD COLUMN "revision" INTEGER NOT NULL DEFAULT 0;
+CREATE TABLE "ParentAccessSession" ("tokenHash" TEXT NOT NULL PRIMARY KEY, "configFingerprint" TEXT NOT NULL, "expiresAt" TEXT NOT NULL, "revoked" BOOLEAN NOT NULL DEFAULT false);
+CREATE TABLE "ParentLoginLimit" ("bucket" TEXT NOT NULL PRIMARY KEY, "windowStart" TEXT NOT NULL, "attempts" INTEGER NOT NULL);
+CREATE TABLE "IncidentContext" ("incidentId" TEXT NOT NULL PRIMARY KEY, "childId" TEXT NOT NULL, "sessionId" TEXT NOT NULL);
+CREATE INDEX "IncidentContext_childId_incidentId_idx" ON "IncidentContext"("childId", "incidentId");
+CREATE INDEX "IncidentContext_sessionId_idx" ON "IncidentContext"("sessionId");
+CREATE TABLE "ParentReviewAudit" ("id" TEXT NOT NULL PRIMARY KEY, "incidentId" TEXT NOT NULL, "childId" TEXT NOT NULL, "actor" TEXT NOT NULL, "requestId" TEXT NOT NULL, "revisionBefore" INTEGER NOT NULL, "revisionAfter" INTEGER NOT NULL, "resolvedBefore" BOOLEAN NOT NULL, "resolvedAfter" BOOLEAN NOT NULL, "createdAt" TEXT NOT NULL);
+CREATE UNIQUE INDEX "ParentReviewAudit_requestId_key" ON "ParentReviewAudit"("requestId");
+CREATE INDEX "ParentReviewAudit_childId_incidentId_idx" ON "ParentReviewAudit"("childId", "incidentId");
+CREATE TABLE "ParentReviewRequest" ("requestId" TEXT NOT NULL PRIMARY KEY, "childId" TEXT NOT NULL, "incidentId" TEXT NOT NULL, "fingerprint" TEXT NOT NULL, "response" TEXT NOT NULL);
+CREATE INDEX "ParentReviewRequest_childId_idx" ON "ParentReviewRequest"("childId");
