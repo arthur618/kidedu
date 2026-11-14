@@ -40,4 +40,4 @@ bash scripts/verify.sh C1       # 加上任务 C1 的范围检查和报告检查
 见 `tasks/STATUS.md`。
 
 换电脑继续项目：先读 [任务看板](tasks/STATUS.md) 和 [项目接续说明](tasks/RESUME.md)。原始交接背景见 [HANDOFF](docs/HANDOFF.md)。
-\nC7认字回路已集成，main自查666测试及生产构建通过；本地孩子端入口为`/learn`。真实模型评测尚未运行，后续语音/阅读/作文/日报见任务看板。\n
+\n认字回路与C8A语音接口已集成，main自查679测试及生产构建通过；本地孩子端入口为`/learn`。生产语音仍关闭，真实模型评测尚未运行；C8B供应商接入和后续阅读/作文/日报见任务看板。\n

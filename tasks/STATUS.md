@@ -14,13 +14,13 @@
 | C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 已合并 | reviews/C7.md：1baf3be通过，合并d149377；main666测试/构建、独立浏览器10项 |
-| C8A | 语音接口、内存录音及文字退路 | Codex / Sol medium | 5 | C7、契约2.3 | 需修改 | reviews/C8A.md: 0fe085e; 679 tests / 18 browser passed; F1 native media error fallback |
+| C8A | 语音接口、内存录音及文字退路 | Codex / Sol medium | 5 | C7、契约2.3 | 已合并 | reviews/C8A.md：c15bda6通过，合并6452b91；main679测试/构建，独立浏览器21项 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
 | 任务 | 内容 | 里程碑 |
 | --- | --- | --- |
-| C8 | 语音：报词音频合成；语音转文字接入（供应商待定） | M1–M2 |
+| C8 | C8A已合并；C8B真实语音供应商及验证待定 | M1–M2 |
 | C9 | 课外阅读：短文选择、阅读界面、点字查卡、讲给小问号听 | M2 |
 | C10 | 作文启发：采访界面、素材卡、读后反馈 | M3 |
 | C11 | 夜间批处理：评分、日报；家长端；复核后台 | M4 |
@@ -87,3 +87,7 @@ C8–C11任务书已按集成情况建立，尚未派发；各任务开工前由
 ## C8A正式派发与契约2.3（2026-11-14）
 
 新增src/contracts/speech.ts，统一音频MIME/2MB/30秒录音、8秒服务与12秒HTTP预算、ASR/TTS结构；SpeechToText只增加可选第三参数mimeType/signal，旧调用不变。真实供应商未确定，C8A默认关闭且不搜索密钥，不使用浏览器云语音，转录只填编辑框不判正误不自动提交。Sol medium单agent实施，精确scope已冻结；root维护契约与独立验收。
+
+## C8A最终验收合并（2026-11-14）
+
+C8A@c15bda6第二次独立验收通过，原生media error退路F1关闭，合并6452b91。独立679测试/实际构建、17文件范围/报告、21项浏览器、自编服务/录音/原生error探针通过；真实main重装后679测试和构建通过。生产语音仍关闭，C8B待国内供应商与实际媒体验证。C9可先文字路径，不受C8B阻塞。历史的C8A进行中/需修改段落不代表当前状态，最新以RESUME为准。
