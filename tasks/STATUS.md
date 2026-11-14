@@ -4,7 +4,7 @@
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
-| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.7（增加DeepSeek思考/输出预算选项） |
+| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.8（增加默认关闭的家长公共DTO） |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
@@ -20,11 +20,13 @@
 
 | C10 | 作文采访、孩子原话卡和读后反馈 | Codex / Sol high | 7 | C9、契约2.5 | 已合并 | reviews/C10.md：9747a8d通过，合并98450a1；独立/main781测试/构建，独立27浏览器，F1关闭 |
 
-| C11A | 夜间事实汇总、复述评分与日报 | Codex / Sol high | 8 | C10、契约2.6 | 待合并 | reviews/C11A.md：0477bbb通过，独立817测试/构建、22范围、27浏览器、两组对账 |
+| C11A | 夜间事实汇总、复述评分与日报 | Codex / Sol high | 8 | C10、契约2.6 | 已合并 | reviews/C11A.md：0477bbb通过，合并96824eb；独立/main817测试与构建、独立27浏览器/两组对账 |
 
-| D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 进行中 | tasks/codex/D2B-deepseek.md；不配置key/不真实联调 |
+| D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 待验收 | 2602d69，作者831测试/构建；root独立与C11A主线试合复验中 |
 
 | C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 进行中 | tasks/codex/C8B-deepseek.md；C8B-live真实联调仍待key |
+
+| C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 进行中 | tasks/codex/C11B-addendum.md；真实口令/接口不配置 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -125,3 +127,7 @@ C10@9747a8d第二次独立验收通过，F1受信问题模板/旧GET及历史响
 ## C8B代码阶段派发（2026-11-14）
 
 官方语音协议核实后，精确scope和阶段边界已冻结。Sol high在独立yuwen-c4-content/task/C8B实施规范WAV内存转码、服务端固定DeepSeek适配、批准报词及复述/采访的可编辑语音录入。默认无key/未开关零网络，长作文稿不被转录覆盖，不做任意文本朗读或自动判学习结果。C8B-live仍待安全配置key与真实合成材料验证，不能假报原真实验收项完成。所有全套build/browser预约串行。
+
+## C11A合并与C11B派发（2026-11-14）
+
+C11A@0477bbb独立817测试/实际构建、22范围、27浏览器及自编两组来源/计量对账通过，合并96824eb，main重装817测试/构建通过。C11B契约2.8/精确scope冻结，单Sol high复用yuwen-c2-ui/task/C11B；默认无凭据入口关闭，读取公开日报，人工审计/零删除预览。D2B独立验收、C8B语音验证并行，范围分离、构建串行；可能.env.example空配置文档合并由root协调。

@@ -5,7 +5,7 @@
 ## 已完成主线
 
 - C1、D2、D1、C3、C5、C2、C4、C6、C7、C8A、C9、C10均已合并。
-- 契约2.7，共8文件：schemas.ts、llm.ts、orchestrator.ts、session.ts、speech.ts、reading.ts、essay.ts、nightly.ts；只有总设计师维护。SpeechToText旧两参数调用仍兼容，可选第三参数提供MIME/取消。
+- 契约2.8，共9文件：schemas.ts、llm.ts、orchestrator.ts、session.ts、speech.ts、reading.ts、essay.ts、nightly.ts、parent.ts；只有总设计师维护。SpeechToText旧两参数调用仍兼容，可选第三参数提供MIME/取消。
 - C7@1baf3be合并d149377，关闭照片重放/快照和取消耗时问题。C8A@c15bda6合并6452b91，关闭起播成功后的原生media error退路缺口。
 - C8A全新独立克隆四项自查：38文件679测试、实际生产构建、17文件范围及报告通过；独立浏览器21项通过（C7原10+C8A原8+原生error3），自编服务/录音/Chromium探针通过。
 - 在真实main重新npm ci并verify，679测试及生产构建通过。完整记录见reviews/C7.md、reviews/C8A.md，首次不通过已被后续独立验收关闭。
@@ -60,3 +60,7 @@ C10@9747a8d修复F1后独立781测试/构建、23文件范围、27浏览器和�
 ## 新增C8B代码阶段（2026-11-14）
 
 正式任务C8B-deepseek.md已冻结，独立yuwen-c4-content工作树task/C8B，/root/implement_c8b_sol（Sol high）。保留原C8A限制与27浏览器；真实转码、短回答编辑输入和approved报词，不配置key，不把本地fake验收当真实供应商通过。C11A@0477bbb与D2B@2602d69已作者交付，root当前独立验收，尚未合并。主线仍C10通过后的781基线加契约/文档。
+
+## 最新：C11A已合并，C11B/D2B/C8B（2026-11-14）
+
+C11A@0477bbb合并96824eb，root独立与main817测试/构建、独立27浏览器/两组对账通过。D2B@2602d69正独立试合主线；C8B在yuwen-c4-content/task/C8B做代码阶段验证，真实key/live仍空。C11B契约2.8与scope正式冻结，yuwen-c2-ui/task/C11B，/root/implement_c11b_sol（Sol high）。旧preflight被正式任务替代，不重启已完成C11A。所有全量build/browser找root排队，原稿备份不覆盖新主线；.env.example只空值。

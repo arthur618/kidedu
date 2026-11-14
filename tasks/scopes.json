@@ -144,5 +144,21 @@
     "tests/integration/speech/",
     "tests/integration/deepseek-speech/",
     ".env.example"
+  ],
+  "C11B": [
+    "app/(parent)/",
+    "app/api/parent/",
+    "src/ui/parent/",
+    "src/server/parent/",
+    "src/server/effects.ts",
+    "src/server/reading/activity.ts",
+    "src/server/essay/activity.ts",
+    "src/db/parent/",
+    "src/db/incident.ts",
+    "prisma/schema.prisma",
+    "prisma/migrations/20261114_c11b_parent/",
+    "src/ui/parent.browser.ts",
+    "tests/integration/parent/",
+    ".env.example"
   ]
 }
