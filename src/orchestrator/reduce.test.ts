@@ -484,3 +484,20 @@ it("C7 [15] withResult 缺失stageOf/kindOf按recognize/recognize_only处理且�
   expect(transition.ctx.stageOf["休"]).toBe("understand");
   expect(JSON.stringify(transition)).not.toContain("undefined");
 });
+
+ describe("C10 作文确认路由", () => {
+  it.each([
+    { kind: "essay" as const, supported: true, text: "编造的一次散步", expected: true },
+    { kind: "essay" as const, supported: false, text: "编造主题", expected: false },
+    { kind: "essay" as const, supported: true, text: "  ", expected: false },
+    { kind: "other" as const, supported: true, text: "编造主题", expected: false },
+  ])("仅合法作文清单开启实际入口 $kind/$supported/$text", ({kind,supported,text,expected}) => {
+    const ctx = context({ hasEssayToday: false, plan: { newChars: [], reviewChars: [], carryOverChars: [] } });
+    const input = freeze(ctx);
+    const event = { type: "homework_confirmed" as const, items: [{ id: "essay-fixture", kind, supported, text, done: false }] };
+    const result = reduce("homework_confirm", input, event);
+    expect(result.ctx.hasEssayToday).toBe(expected); expect(result.state).toBe(expected ? "essay_interview" : "reading_offer");
+    expect(input.hasEssayToday).toBe(false); expect(reduce("homework_confirm", JSON.parse(JSON.stringify(input)), event)).toEqual(result);
+    expect(reduce("homework_confirm", { ...ctx, hasEssayToday: true }, event).ctx.hasEssayToday).toBe(true);
+  });
+ });

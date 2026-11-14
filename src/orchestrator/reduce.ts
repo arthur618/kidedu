@@ -85,6 +85,7 @@ export const reduce: Reduce = (state, ctx, event) => {
       const next = {
         ...ctx,
         homework: event.items.map((item) => ({ ...item })),
+        hasEssayToday: ctx.hasEssayToday || event.items.some(item => item.kind === "essay" && item.supported && !!item.text.trim()),
         queue: unique([...ctx.plan.newChars, ...ctx.plan.reviewChars]),
         understandQueue: unique(ctx.plan.carryOverChars.filter((char) => ctx.stageOf[char] === "understand")),
         writeQueue: unique(ctx.plan.carryOverChars.filter((char) => ctx.stageOf[char] === "write")),

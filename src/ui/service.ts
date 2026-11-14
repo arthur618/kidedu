@@ -1,3 +1,4 @@
+import { EssayActionSchema } from "../contracts/essay";
 import { ApprovedCharCard } from "../contracts/session";
 import { z } from "zod";
 import { ReadingActionSchema } from "../contracts/reading";
@@ -6,6 +7,7 @@ import { SessionPacketSchema as PacketSchema, SESSION_CLIENT_TIMEOUT_MS, SESSION
 import { SessionEventSchema, type SessionEvent } from "../contracts/orchestrator";
 
 export interface LearningService {
+  essay?(input: z.infer<typeof EssayActionSchema>, operationId?: string): Promise<Packet>;
   reading?(input: { text: string }, operationId?: string): Promise<Packet>;
   readingCard?(char: string): Promise<CharCard | null>;
   start(operationId?: string): Promise<Packet>;
@@ -32,6 +34,7 @@ export function createHttpService(options: { childId: string; lessonId: string; 
     return `/api/session/${encodeURIComponent(sessionId)}/${suffix}`;
   }
   return {
+    essay: (input, id) => request(path("essay"), EssayActionSchema.parse(input), id),
     reading: (input, id) => request(path("reading"), ReadingActionSchema.parse(input), id),
     readingCard: async char => {
       const response = await fetcher(path("reading/card") + "?char=" + encodeURIComponent(char), { cache: "no-store" });

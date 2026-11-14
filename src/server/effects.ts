@@ -1,3 +1,6 @@
+import { essayOutput, essayPacket, essaySnapshot, essayStates, withEssayOutput } from "./essay/activity";
+import { getEssayRuntime } from "../db/essayRuntime";
+import type { EssayRuntime } from "../contracts/essay";
 import { readingSnapshot } from "./reading/activity";
 import { randomUUID } from "node:crypto";
 import type { Effect } from "../contracts/orchestrator";
@@ -36,13 +39,22 @@ export async function coachOutput(deps: RuntimeDeps, sessionId: string, input: C
   if (result.output.next === "escalate") await incident(deps, "bad_question", "讲字活动需要帮助。");
   return result.output;
 }
-export interface EffectResult { packet: SessionPacket; coach?: CoachRuntime }
+export interface EffectResult { packet: SessionPacket; coach?: CoachRuntime; essay?: EssayRuntime }
 export interface PhotoCommandReference { scope: string; key: string }
 /** 只运行已提交效果；本函数不 reduce、不写学习阶段。 */
 export async function executeEffects(deps: RuntimeDeps, sessionId: string, effects: Effect[], photo?: string, photoCommand?: PhotoCommandReference): Promise<EffectResult> {
   const runtime = await deps.getSessionRuntime(sessionId);
   if (!runtime) throw new SessionNotFoundError(sessionId);
   const ctx = runtime.context;
+  const essayEffect = effects.find(effect => effect.type === "call_agent" && effect.agent === "essay");
+  if (essayEffect?.type === "call_agent" && essayEffect.agent === "essay") {
+    const activity = await getEssayRuntime(sessionId);
+    if (!activity) return { packet: await essaySnapshot(sessionId, runtime.state) };
+    const feedback = essayEffect.payload.step === "reader_feedback";
+    const output = await essayOutput(deps, sessionId, activity, feedback);
+    const essay = withEssayOutput(activity, output, feedback);
+    return { packet: essayPacket(sessionId, runtime.state, essay), essay };
+  }
   const charEffect = effects.find(effect => effect.type === "call_agent" && effect.agent === "char_coach");
   if (charEffect?.type === "call_agent" && charEffect.agent === "char_coach") {
     const char = charEffect.payload.char;
@@ -80,6 +92,7 @@ export async function snapshot(deps: RuntimeDeps, sessionId: string, photo?: str
   const runtime = await deps.getSessionRuntime(sessionId);
   if (!runtime) throw new SessionNotFoundError(sessionId);
   const { state, context: ctx } = runtime;
+  if (essayStates.includes(state)) return essaySnapshot(sessionId, state);
   if (state === "reading" || state === "retell") return readingSnapshot(sessionId, state);
   if (state === "ended") return { sessionId, state, effects: [] };
   if (state === "dictation_compare" && !photo) return unavailable(sessionId, state, "photo_not_available");

@@ -1,3 +1,6 @@
+import { checkpointEssay, essayOutput, essayPacket, essaySnapshot, withEssayOutput, validCard } from "./essay/activity";
+import { getEssayRuntime, saveEssayRuntime, getEssayCommand, saveEssayCommand, type EssayAction } from "../db/essayRuntime";
+import type { EssayRuntime } from "../contracts/essay";
 import { checkpointReading, readerOutput, readingSnapshot, readingUnavailable } from "./reading/activity";
 import { getReadingRuntime, saveReadingRuntime } from "../db/readingRuntime";
 import { getPassage } from "../db/passage";
@@ -17,7 +20,7 @@ import { measuredClient, persistTurns, redact, withinBudget, type PendingTurn } 
 
 export class RequestConflict extends Error { constructor() { super("这次操作已经用过，请重新试一次。"); } }
 export class CoachConflict extends Error { constructor() { super("现在先完成眼前这一步吧。"); } }
-export type CommandKind = "start" | "event" | "homework" | "coach" | "reading";
+export type CommandKind = "start" | "event" | "homework" | "coach" | "reading" | "essay";
 interface Pending { body?: unknown; effects?: Effect[] }
 const queues = new Map<string, Promise<unknown>>();
 /** 本轮只支持单 Node 进程。同会话不同 ID 排队，重放也走同一把锁。 */
@@ -37,9 +40,11 @@ function fingerprint(kind: CommandKind, scope: string, body: unknown): string {
 }
 export function createSessionService(deps: RuntimeDeps) {
   const photos = new Map<string, PhotoCommandReference & { url: string; fingerprint: string }>();
-  async function complete(command: SessionCommand, packet: SessionPacket, coach?: CoachRuntime): Promise<SessionPacket> {
+  async function complete(command: SessionCommand, packet: SessionPacket, coach?: CoachRuntime, essay?: EssayRuntime): Promise<SessionPacket> {
     const parsed = SessionPacketSchema.parse(packet);
     await withTransaction(async () => {
+      if (essay && command.sessionId) await saveEssayRuntime(command.sessionId, essay);
+      if (command.kind === "essay" && command.sessionId) await saveEssayCommand(command.sessionId, command.key, null);
       if (coach && command.sessionId) await saveCoachRuntime(command.sessionId, redact(coach) as CoachRuntime);
       await deps.beforeComplete?.();
       await saveCommand({ ...command, phase: "complete", response: redact(parsed) });
@@ -53,6 +58,7 @@ export function createSessionService(deps: RuntimeDeps) {
       const result = await handleEvent(deps, sessionId, event);
       const current = (await deps.getSessionRuntime(sessionId))!;
       await checkpointReading(deps, sessionId, before!.state, result.state, current.context);
+      await checkpointEssay(deps, sessionId, before!.state, result.state, current.context, event.type === "essay_step_done");
       const next: SessionCommand = { ...command, sessionId, phase: "transitioned", pending: redact({ effects: result.effects }), response: null };
       await saveCommand(next);
       return next;
@@ -74,7 +80,7 @@ export function createSessionService(deps: RuntimeDeps) {
     const held = photos.get(command.sessionId!);
     const currentPhoto = needsPhoto ? photo : held?.url;
     const result = await executeEffects(deps, command.sessionId!, effects, currentPhoto, needsPhoto ? command : held);
-    const packet = await complete(command, result.packet, result.coach);
+    const packet = await complete(command, result.packet, result.coach, result.essay);
     if (needsPhoto && photo) photos.set(command.sessionId!, { url: photo, fingerprint: command.fingerprint, scope: command.scope, key: command.key });
     return packet;
   }
@@ -88,6 +94,7 @@ export function createSessionService(deps: RuntimeDeps) {
     if (command.kind === "event") {
       const event = body as SessionEvent;
       if (event.type === "retell_done") throw new CoachConflict();
+      if (event.type === "essay_step_done" && (await deps.getSessionRuntime(id))?.state === "essay_cards") throw new CoachConflict();
       command = await transition(command, id, event);
       await deps.afterCheckpoint?.();
       return finishEffects(command, photo);
@@ -133,6 +140,42 @@ export function createSessionService(deps: RuntimeDeps) {
         const packet = await snapshot(deps, id, undefined, false);
         return complete(moved, { ...packet, notice: output.say });
       });
+    }
+    if (command.kind === "essay") {
+      const action = (await getEssayCommand(id, command.key) ?? body) as EssayAction;
+      const runtime = await deps.getSessionRuntime(id);
+      const activity = await getEssayRuntime(id);
+      if (!activity) throw new CoachConflict();
+      if (action.type === "answer") {
+        if (runtime?.state !== "essay_interview" || activity.phase !== "interview" || activity.utterances.length >= 5) throw new CoachConflict();
+        const text = action.text.trim();
+        let next: EssayRuntime = { ...activity, utterances: [...activity.utterances, text], history: [...activity.history, { role: "child" as const, text }].slice(-12) };
+        const output = await essayOutput(deps, id, next, false);
+        next = withEssayOutput(next, output, false);
+        if (output && validCard(output.newCard, text)) next.cards = [...next.cards, { id: `essay_card_${next.utterances.length}`, text: output.newCard, sourceUtterance: next.utterances.length - 1, selected: true }];
+        return withTransaction(async () => {
+          await saveEssayRuntime(id, next);
+          const moved = next.utterances.length === 5 ? await transition(command, id, { type: "essay_step_done" }) : command;
+          const state = (await deps.getSessionRuntime(id))!.state;
+          return complete(moved, await essaySnapshot(id, state));
+        });
+      }
+      if (runtime?.state !== "essay_cards" || activity.phase !== "cards") throw new CoachConflict();
+      if (action.type === "select_card" || action.type === "delete_card") {
+        if (!activity.cards.some(card => card.id === action.cardId)) throw new CoachConflict();
+        const cards = action.type === "delete_card" ? activity.cards.filter(card => card.id !== action.cardId) : activity.cards.map(card => card.id === action.cardId ? { ...card, selected: action.selected } : card);
+        const next = { ...activity, cards };
+        return complete(command, essayPacket(id, "essay_cards", next), undefined, next);
+      }
+      if (action.type !== "submit_essay") throw new CoachConflict();
+      // 正文、history、转换与transitioned检查点一同提交；模型在事务外。
+      command = await withTransaction(async () => {
+        const text = action.text.trim();
+        await saveEssayRuntime(id, { ...activity, phase: "feedback", essayText: text, output: null, feedbackQuote: null, history: [...activity.history, { role: "child" as const, text }].slice(-12) });
+        return transition(command, id, { type: "essay_step_done" });
+      });
+      await deps.afterCheckpoint?.();
+      return finishEffects(command);
     }
     if (command.kind === "coach") {
       const input = body as { char: string; text: string };
@@ -212,10 +255,10 @@ export function createSessionService(deps: RuntimeDeps) {
             for (const old of await unfinishedCommands(scopeId)) {
               const held = photos.get(scopeId);
               try { await resume(old, (old.pending as Pending).body ?? {}, held?.fingerprint === old.fingerprint ? held.url : undefined); }
-              catch (error) { if (!(error instanceof CoachConflict)) throw error; await saveCommand({ ...old, phase: "rejected" }); }
+              catch (error) { if (!(error instanceof CoachConflict)) throw error; await withTransaction(async () => { await saveCommand({ ...old, phase: "rejected" }); if (old.kind === "essay") await saveEssayCommand(scopeId, old.key, null); }); }
             }
           }
-          command = { scope, key, fingerprint: hash, kind, sessionId: kind === "start" ? null : scopeId, phase: "prepared", pending: redact({ body }), response: null };
+          command = { scope, key, fingerprint: hash, kind, sessionId: kind === "start" ? null : scopeId, phase: "prepared", pending: kind === "essay" ? { body: {} } : redact({ body }), response: null };
           if (kind === "start") {
             command = await withTransaction(async () => {
               const result = await startSession(deps, body as StartSessionInput);
@@ -226,9 +269,15 @@ export function createSessionService(deps: RuntimeDeps) {
             await deps.afterCheckpoint?.();
             return finishEffects(command);
           }
-          await saveCommand(command);
+          await withTransaction(async () => {
+            if (kind === "essay") {
+              if (!await deps.getSessionRuntime(scopeId)) throw new SessionNotFoundError(scopeId);
+              await saveEssayCommand(scopeId, key, body as EssayAction);
+            }
+            await saveCommand(command!);
+          });
           try { return await runPrepared(command, body, photo); }
-          catch (error) { if (error instanceof CoachConflict) await saveCommand({ ...command, phase: "rejected" }); throw error; }
+          catch (error) { if (error instanceof CoachConflict) await withTransaction(async () => { await saveCommand({ ...command!, phase: "rejected" }); if (kind === "essay") await saveEssayCommand(scopeId, key, null); }); throw error; }
         });
       });
     },
