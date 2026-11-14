@@ -1,5 +1,6 @@
 /** 契约版本 2.2：HTTP 孩子端响应；不改变纯编排器 Effect 的含义。 */
 import { z } from "zod";
+import { ReadingScreenSchema, RetellScreenSchema } from "./reading";
 import { CharCard, DictationMark, HomeworkItem } from "./schemas";
 import { SessionStateSchema, type SessionState } from "./orchestrator";
 
@@ -8,6 +9,8 @@ export const ApprovedCharCard = CharCard.refine(card => card.status === "approve
 
 /** 服务端执行完效果后填充；字词知识只取 approved 内容。 */
 export const SessionScreenDataSchemas = {
+  reading: ReadingScreenSchema,
+  retell: RetellScreenSchema,
   homework_confirm: z.object({ items: z.array(HomeworkItem) }),
   recognize: z.object({ char, word: z.string().optional() }).refine(data => !data.word || data.word.includes(data.char)),
   understand: z.object({ card: ApprovedCharCard, say: z.string().max(80), ask: z.string().max(60).nullable() }),

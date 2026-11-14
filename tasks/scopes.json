@@ -65,5 +65,29 @@
     "src/ui/ui.test.ts",
     "src/ui/speech.browser.ts",
     "tests/integration/speech/"
+  ],
+  "C9": [
+    "src/server/reading/",
+    "src/server/runtime.ts",
+    "src/server/effects.ts",
+    "src/server/http.ts",
+    "src/server/deps.ts",
+    "src/server/model.ts",
+    "app/api/session/[id]/reading/",
+    "src/db/passage.ts",
+    "src/db/passage.test.ts",
+    "src/db/readingRuntime.ts",
+    "src/db/readingRuntime.test.ts",
+    "prisma/schema.prisma",
+    "prisma/migrations/20261114_c9_reading/",
+    "src/ui/reading/",
+    "src/ui/screens.tsx",
+    "src/ui/service.ts",
+    "src/ui/controller.ts",
+    "src/ui/LearningApp.tsx",
+    "src/ui/demo.ts",
+    "src/ui/ui.test.ts",
+    "src/ui/reading.browser.ts",
+    "tests/integration/reading/"
   ]
 }

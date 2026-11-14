@@ -1,8 +1,8 @@
 # C9 课外阅读与复述
 
-- 状态：未派发；建议Sol high单独实施。
+- 状态：已派发；Sol high单独实施。正式裁决与精确scope见 [C9-addendum.md](C9-addendum.md)，冲突时以该文件为准。
 - 前提：C7已合并；文字复述可先于真实语音，语音可用后复用C8。
-- 总设计师先冻结阅读显示数据、独立ReadingRuntime及精确scope，保持SessionContext原样往返纪律。
+- 契约2.4已冻结阅读显示数据与独立ReadingRuntime，保持SessionContext原样往返纪律。
 
 ## 目标与流程
 

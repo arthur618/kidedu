@@ -5,11 +5,11 @@
 ## 已完成主线
 
 - C1、D2、D1、C3、C5、C2、C4、C6、C7、C8A均已合并。
-- 契约2.3，共5文件：schemas.ts、llm.ts、orchestrator.ts、session.ts、speech.ts；只有总设计师维护。SpeechToText旧两参数调用仍兼容，可选第三参数提供MIME/取消。
+- 契约2.4，共6文件：schemas.ts、llm.ts、orchestrator.ts、session.ts、speech.ts、reading.ts；只有总设计师维护。SpeechToText旧两参数调用仍兼容，可选第三参数提供MIME/取消。
 - C7@1baf3be合并d149377，关闭照片重放/快照和取消耗时问题。C8A@c15bda6合并6452b91，关闭起播成功后的原生media error退路缺口。
 - C8A全新独立克隆四项自查：38文件679测试、实际生产构建、17文件范围及报告通过；独立浏览器21项通过（C7原10+C8A原8+原生error3），自编服务/录音/Chromium探针通过。
 - 在真实main重新npm ci并verify，679测试及生产构建通过。完整记录见reviews/C7.md、reviews/C8A.md，首次不通过已被后续独立验收关闭。
-- 当前无实现agent在运行，不要重启旧任务覆盖已交付代码。
+- C9已冻结并派发Sol high；不要重启旧任务覆盖已交付代码。
 
 ## 实际能力与限制
 
@@ -36,3 +36,7 @@ C8A完成供应商无关语音服务、API、内存录音/试听/可编辑转录
 实现者只改任务scope和报告，不改contracts/reviews/主scripts/看板。总设计师不代写任务实现，在独立克隆重装、复跑、读生产代码、试合最新main后裁决。负责人已授权本对话直接合并验收通过的分支并同步GitHub，无需负责人执行命令。
 
 C8A只用一个Sol medium实现，原上下文返工一次，由root独立复验，无新增实现或审查agent。C9/C10/C11的复杂边界建议Sol high；机械操作直接工具完成。模型分配与历史见tasks/MODEL-ROUTING.md。
+
+## 当前执行覆盖（2026-11-14）
+
+负责人要求持续推进，外部接口配置及真实联调延后并保持空值，除非确实阻塞不可替代任务。C9契约/精确scope已冻结，复用yuwen-c2-ui worktree的task/C9；本地必要回归与root独立验收后直接合并推送，再依次C10、C11。下一步清单中“先冻结C9”已完成，原未派发叙述为历史。
