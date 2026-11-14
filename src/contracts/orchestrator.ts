@@ -166,7 +166,8 @@ export interface Transition {
  * a. 非法事件（当前状态不接受的事件）不改变状态，返回原 ctx，effects 为空，不抛异常。
  * b. 除 wrap_up 和 ended 外的任何状态收到 time_up 或 quit → wrap_up，发出 persist_session。
  * c. wrap_up 收到 wrap_up_done、quit 或 time_up → ended，发出 end_session。ended 不接受任何事件。
- * d. start：记录 hasEssayToday。认字环节结束后，为 true 进入 essay_interview，否则进入 reading_offer。
+ * d. start：记录 hasEssayToday。版本2.5：homework_confirmed 时，若确认清单中有 supported、非空主题的 essay，
+ *    同时把 hasEssayToday 置 true（原 true 保留）。认字环节结束后，为 true 进入 essay_interview，否则进入 reading_offer。
  * e. homework_confirmed 之后：
  *    - 认读队列 = newChars + reviewChars（去重，新字在前）。
  *    - understandQueue 初始为 carryOverChars 里 stage 为 understand 的字；

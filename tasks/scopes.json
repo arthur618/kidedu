@@ -89,5 +89,29 @@
     "src/ui/ui.test.ts",
     "src/ui/reading.browser.ts",
     "tests/integration/reading/"
+  ],
+  "C10": [
+    "src/orchestrator/reduce.ts",
+    "src/orchestrator/reduce.test.ts",
+    "src/server/essay/",
+    "src/server/runtime.ts",
+    "src/server/effects.ts",
+    "src/server/http.ts",
+    "src/server/deps.ts",
+    "src/server/model.ts",
+    "app/api/session/[id]/essay/",
+    "src/db/essayRuntime.ts",
+    "src/db/essayRuntime.test.ts",
+    "prisma/schema.prisma",
+    "prisma/migrations/20261114_c10_essay/",
+    "src/ui/essay/",
+    "src/ui/screens.tsx",
+    "src/ui/service.ts",
+    "src/ui/controller.ts",
+    "src/ui/LearningApp.tsx",
+    "src/ui/demo.ts",
+    "src/ui/ui.test.ts",
+    "src/ui/essay.browser.ts",
+    "tests/integration/essay/"
   ]
 }

@@ -1,7 +1,7 @@
 # C10 作文启发与读后反馈
 
-- 状态：未派发；建议Sol high。前提：C7及C9的活动持久化接口稳定。
-- 总设计师先冻结素材卡/采访显示与独立EssayRuntime契约、精确scope，再派发实现。
+- 状态：已派发，Sol high单agent。C7/C9已合并；正式覆盖裁决及精确scope见 [C10-addendum.md](C10-addendum.md)。
+- 契约2.5已冻结素材卡/三屏显示与独立EssayRuntime，并明确确认作文作业的纯状态机路由。
 
 ## 目标
 
