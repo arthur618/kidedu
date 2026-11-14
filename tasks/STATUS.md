@@ -4,7 +4,7 @@
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
-| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.6（新增实际学习流水/日报事实公共投影） |
+| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.7（增加DeepSeek思考/输出预算选项） |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
@@ -21,6 +21,8 @@
 | C10 | 作文采访、孩子原话卡和读后反馈 | Codex / Sol high | 7 | C9、契约2.5 | 已合并 | reviews/C10.md：9747a8d通过，合并98450a1；独立/main781测试/构建，独立27浏览器，F1关闭 |
 
 | C11A | 夜间事实汇总、复述评分与日报 | Codex / Sol high | 8 | C10、契约2.6 | 进行中 | tasks/codex/C11A-addendum.md；真实接口配置/联调延后 |
+
+| D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 进行中 | tasks/codex/D2B-deepseek.md；不配置key/不真实联调 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -113,3 +115,7 @@ C9@c8c98ee独立验收697测试/实际构建、22文件范围、23浏览器和�
 ## C10合并与C11A派发（2026-11-14）
 
 C10@9747a8d第二次独立验收通过，F1受信问题模板/旧GET及历史响应安全投影已关闭，合并98450a1。独立781测试/实际构建、23范围、27浏览器、五输出出口探针通过；真实main重装后781测试/构建通过。契约2.6冻结实际LearningOutcome和日报事实DTO，C11A由单Sol high实施；observer只在实际持久化同事务记append-only流水，历史缺覆盖诚实标记，日报仅来源受限事实。C11B等A验收后冻结，外部配置与真实联调继续延后。
+
+## DeepSeek现行能力核实与D2B派发（2026-11-14）
+
+负责人提供官方Chat文档并授权可行能力接入。已联网核实官方对话/图像、ASR、TTS、搜索、OCR与基础安全接口，评估见docs/DEEPSEEK-INTEGRATION.md。既有文本/图像已接，D2B由单Sol medium补预算/默认非思考/结束原因和审核，不重复SDK。语音选DeepSeek但需实际WAV转换，C8B本地适配后真实key联调单列；搜索先离线审校，不绕过approved。C11A中途额度错误已保存patch/untracked恢复包，新查询ordinaryUsageAllowed=true后原agent恢复成功；未消耗reset或换模型反复尝试。真实接口配置继续空缺。

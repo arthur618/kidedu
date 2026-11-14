@@ -4,7 +4,7 @@
  * 版本 2.3（2026-11-14）：SpeechToText增加可选第三参数MIME/取消信号；其余模型接口不变。
  * 所有 Agent 只通过 LlmClient 调模型，不直接引用任何厂商 SDK。
  */
-import type { z } from "zod";
+import { z } from "zod";
 import type { AgentName } from "./schemas";
 import type { SpeechMime } from "./speech";
 
@@ -61,6 +61,12 @@ export interface LlmTurnRecord {
   error?: "timeout" | "invalid_output" | "provider_error";
 }
 
+/** 契约2.7：现行DeepSeek协议的显式思考与生成上限；仅传给DeepSeek。 */
+export const DeepSeekOptionsSchema = z.object({
+  thinking: z.enum(["disabled", "enabled"]).optional(),
+  maxTokens: z.number().int().min(1).max(8192).optional(),
+}).strict();
+export type DeepSeekOptions = z.infer<typeof DeepSeekOptionsSchema>;
 /** config/models.json 的结构：每个 Agent 用哪个模型。换模型只改这个文件。 */
 export interface ModelRoute {
   provider: "deepseek" | "openai";
@@ -68,6 +74,8 @@ export interface ModelRoute {
   baseUrl: string;
   apiKeyEnv: string;
   timeoutMs: number;
+  /** 未配置仍须采用非思考和有限输出；供应商审核固定high、非流式，不开放工具权限。 */
+  deepseek?: DeepSeekOptions;
 }
 export type ModelConfig = Record<AgentName, ModelRoute>;
 

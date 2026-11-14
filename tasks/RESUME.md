@@ -5,7 +5,7 @@
 ## 已完成主线
 
 - C1、D2、D1、C3、C5、C2、C4、C6、C7、C8A、C9、C10均已合并。
-- 契约2.6，共8文件：schemas.ts、llm.ts、orchestrator.ts、session.ts、speech.ts、reading.ts、essay.ts、nightly.ts；只有总设计师维护。SpeechToText旧两参数调用仍兼容，可选第三参数提供MIME/取消。
+- 契约2.7，共8文件：schemas.ts、llm.ts、orchestrator.ts、session.ts、speech.ts、reading.ts、essay.ts、nightly.ts；只有总设计师维护。SpeechToText旧两参数调用仍兼容，可选第三参数提供MIME/取消。
 - C7@1baf3be合并d149377，关闭照片重放/快照和取消耗时问题。C8A@c15bda6合并6452b91，关闭起播成功后的原生media error退路缺口。
 - C8A全新独立克隆四项自查：38文件679测试、实际生产构建、17文件范围及报告通过；独立浏览器21项通过（C7原10+C8A原8+原生error3），自编服务/录音/Chromium探针通过。
 - 在真实main重新npm ci并verify，679测试及生产构建通过。完整记录见reviews/C7.md、reviews/C8A.md，首次不通过已被后续独立验收关闭。
@@ -52,3 +52,7 @@ C10@d14a0fb首次独立类型/范围通过，但F1问句夹带可抄句已真实
 ## 最新执行点：C11A（2026-11-14）
 
 C10@9747a8d修复F1后独立781测试/构建、23文件范围、27浏览器和五出口探针通过，合并98450a1；main重装复验781测试/构建通过。此前C10需修改为历史，reviews/C10.md顶部和第二次结论为准。契约2.6/nightly.ts与C11A精确scope已冻结，正式任务C11A-nightly.md和C11A-addendum.md；single Sol high，/root/implement_c11a_sol，原worktree的新task/C11A。原C11A-preflight已被正式文件替代。验收通过后继续C11B默认关闭的家长/人工复核；全部真实外部配置/联调仍延后，不因缺凭据停工。
+
+## 新增接入任务与额度恢复（2026-11-14）
+
+用户提供DeepSeek文档并授权接入可行能力，官方核实结论见docs/DEEPSEEK-INTEGRATION.md。D2B协议/预算精确scope和契约2.7已冻结，单Sol medium，复用yuwen-c6-evals工作树task/D2B。C11A曾额度中断，root保存草稿恢复包；只读账户显示普通用量允许，原/root/implement_c11a_sol恢复成功，仍继续原task/C11A。全套build/browser由root排队。后续C8B语音适配（供应商已选DeepSeek）与C4B离线检索再冻结，不把无密钥假HTTP验收当真实联调通过。

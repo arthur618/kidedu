@@ -126,5 +126,11 @@
     "prisma/schema.prisma",
     "prisma/migrations/20261114_c11a_nightly/",
     "tests/integration/nightly/"
+  ],
+  "D2B": [
+    "src/llm/",
+    "config/models.json",
+    "tests/integration/model.test.ts",
+    "tests/integration/deepseek/"
   ]
 }

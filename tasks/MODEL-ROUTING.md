@@ -77,3 +77,7 @@ C9由单Sol high实现，作者自审修正边界后root独立验收697测试/�
 ## C10完成与C11A派发（2026-11-14）
 
 C10单Sol high按正式review在原上下文返工一次，root独立781测试/构建、27浏览器与五出口探针通过，未新增审查agent。C11A仍单Sol high：真实流水来源、事务observer、跨日事实、持久步骤/依赖失效和租约发布边界复杂；C11B鉴权/归属也计划high，顺序实施避免共享runtime/Prisma冲突。不为机械操作开新agent，不重复已知返工版本全套build，作者focused后最终全套，root仍新clone独立复验。
+
+## DeepSeek协议小包D2B（2026-11-14）
+
+D2B选择单Sol medium：既有调用层与明确官方协议，只修请求预算/结束状态/拒答与fixture，根不引入自由工具/新SDK。C11A保留high上下文，C8B实际音频编码/取消/隐私复杂，后续high；公开资料离线检索C4B可medium。共用全套构建串行，不为机械操作再开agent。一次额度中断后只读证明普通用量仍允许，原agent一次恢复成功，没有消费reset、购买或反复切模型。
