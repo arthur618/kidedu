@@ -23,6 +23,6 @@
 
 ## 冻结范围与验收
 
-精确scope：app/(parent)/、app/api/parent/、src/ui/parent/、src/server/parent/、src/server/effects.ts及src/server/reading/activity.ts和essay对应仅Incident归属接线路径、src/db/parent/、src/db/incident.ts、prisma/schema.prisma及prisma/migrations/20261114_c11b_parent/、src/ui/parent.browser.ts、tests/integration/parent/、.env.example，package/lock及reports/C11B.md。不修改夜间统计定义或Agent内部。新增DTO缺口只找root维护契约。
+精确scope：src/server/runtime.ts（仅coach缺字卡分支补可信sessionId归属，不改编排/模型行为）、app/(parent)/、app/api/parent/、src/ui/parent/、src/server/parent/、src/server/effects.ts及src/server/reading/activity.ts和essay对应仅Incident归属接线路径、src/db/parent/、src/db/incident.ts、prisma/schema.prisma及prisma/migrations/20261114_c11b_parent/、src/ui/parent.browser.ts、tests/integration/parent/、.env.example，package/lock及reports/C11B.md。不修改夜间统计定义或Agent内部。新增DTO缺口只找root维护契约。
 
 逐条独立验收：默认关闭不泄露；正常登录/凭据错误/限速/伪造过期注销/配置变化/跨孩子全部ID；CSRF与cookie属性；Incident缺归属/去媒体/并发CAS及重放审计；删除预览零写入/计数引用清楚；事实/模型文案准确展示；两尺寸真实UI→handler→迁移SQLite本地假配置烟测、必要verify/build。外部接口联调延后，root新clone重装复跑读生产代码，问题写review由原作者改，通过后直接合并推送。
