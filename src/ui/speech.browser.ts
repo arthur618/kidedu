@@ -6,7 +6,11 @@ import { getCharCard } from '../db/charCard';
 import { createSpeechHandlers } from '../server/speech';
 let db: Awaited<ReturnType<typeof database>>; let server: Server; let origin: string; let h: ReturnType<typeof harness>;
 let asrCalls = 0; let ttsCalls: string[] = []; let mode = 'success'; let pending: (() => void)[] = [];
-const speech = createSpeechHandlers({ getCharCard, asr: { async transcribe() { ++asrCalls; if (mode === 'late-asr') await new Promise<void>(resolve => pending.push(resolve)); return { text: '我想读书', pinyin: [] }; } }, tts: { async synthesize(text) { ttsCalls.push(text); if (mode === 'late-tts') await new Promise<void>(resolve => pending.push(resolve)); if (mode === 'reject-tts') throw new Error(); return { bytes: new Uint8Array([82, 73, 70, 70]), mimeType: 'audio/wav' }; } } });
+// 内存合成的单采样静音WAV：避免虚构坏编码自行发出error，媒体事件由用例明确派发。
+const fixtureAudio = Buffer.alloc(46);
+fixtureAudio.write('RIFF', 0); fixtureAudio.writeUInt32LE(38, 4); fixtureAudio.write('WAVEfmt ', 8); fixtureAudio.writeUInt32LE(16, 16); fixtureAudio.writeUInt16LE(1, 20); fixtureAudio.writeUInt16LE(1, 22); fixtureAudio.writeUInt32LE(8000, 24); fixtureAudio.writeUInt32LE(16000, 28); fixtureAudio.writeUInt16LE(2, 32); fixtureAudio.writeUInt16LE(16, 34); fixtureAudio.write('data', 36); fixtureAudio.writeUInt32LE(2, 40);
+
+const speech = createSpeechHandlers({ getCharCard, asr: { async transcribe() { ++asrCalls; if (mode === 'late-asr') await new Promise<void>(resolve => pending.push(resolve)); return { text: '我想读书', pinyin: [] }; } }, tts: { async synthesize(text) { ttsCalls.push(text); if (mode === 'late-tts') await new Promise<void>(resolve => pending.push(resolve)); if (mode === 'reject-tts') throw new Error(); return { bytes: fixtureAudio, mimeType: 'audio/wav' }; } } });
 test.beforeAll(async () => {
   db = await database();
   server = createServer(async (incoming, outgoing) => {
@@ -24,7 +28,8 @@ test.afterAll(async () => { pending.forEach(resolve => resolve()); await new Pro
 test.beforeEach(async ({ page }) => {
   await seed(); h = harness(); asrCalls = 0; ttsCalls = []; mode = 'success'; pending = [];
   await page.route('**/api/**', async route => { const response = await route.fetch({ url: origin + new URL(route.request().url()).pathname }); await route.fulfill({ response }); });
-  await page.addInitScript(() => {
+  await page.route('**/fictional-approved.wav', route => route.fulfill({ status: 200, contentType: 'audio/wav', body: fixtureAudio }));
+  await page.addInitScript((fictionalAudio: number[]) => {
     const state = { denied: false, delay: false, tracks: 0, starts: 0, stops: 0, plays: 0, pauses: 0, created: 0, revoked: 0, active: 0, resolvePermission: null as (() => void) | null };
     Object.assign(window, { speechTest: state });
     const stream = () => ({ getTracks: () => [{ stop: () => { ++state.tracks; } }] });
@@ -33,13 +38,13 @@ test.beforeEach(async ({ page }) => {
       static isTypeSupported(mime: string) { return mime === 'audio/webm'; }
       state = 'inactive'; ondataavailable: ((event: { data: Blob }) => void) | null = null; onstop: (() => void) | null = null; onerror: (() => void) | null = null;
       start() { this.state = 'recording'; ++state.starts; }
-      stop() { this.state = 'inactive'; ++state.stops; this.ondataavailable?.({ data: new Blob(['fictional browser recording'], { type: 'audio/webm;codecs=opus' }) }); this.onstop?.(); }
+      stop() { this.state = 'inactive'; ++state.stops; this.ondataavailable?.({ data: new Blob([new Uint8Array(fictionalAudio)], { type: 'audio/webm;codecs=opus' }) }); this.onstop?.(); }
     }
     Object.defineProperty(window, 'MediaRecorder', { value: FakeRecorder });
     const create = URL.createObjectURL.bind(URL); const revoke = URL.revokeObjectURL.bind(URL);
     URL.createObjectURL = blob => { ++state.created; return create(blob); }; URL.revokeObjectURL = url => { ++state.revoked; revoke(url); };
     const playing = new Set<HTMLMediaElement>(); HTMLMediaElement.prototype.play = async function() { ++state.plays; playing.add(this); state.active = playing.size; }; HTMLMediaElement.prototype.pause = function() { ++state.pauses; playing.delete(this); state.active = playing.size; }; HTMLMediaElement.prototype.load = function() {};
-  });
+  }, [...fixtureAudio]);
 });
 async function open(page: Page) { await page.goto('/learn?childId=child-test-1&lessonId=c7-lesson'); await page.getByRole('button', { name: '我来说', exact: true }).click(); await expect(page.getByRole('button', { name: '开始说', exact: true })).toBeVisible(); }
 async function sendHomework(page: Page) { await page.getByLabel('今天要做什么？').fill('读一读自编课文的生字'); await page.getByRole('button', { name: '好了，给你看看' }).click(); await page.getByRole('button', { name: '对的，开始' }).click(); }
@@ -88,4 +93,60 @@ test('[8] 换字/退出后迟到TTS不生成URL或播放', async ({ page }) => {
 
 test('[7] 本地试听正在播放时退出，旧audio确实停止且URL回收', async ({ page }) => {
   await open(page); await page.getByRole('button', { name: '开始说', exact: true }).click(); await expect(page.getByRole('button', { name: '说好了', exact: true })).toBeVisible(); await page.getByRole('button', { name: '说好了', exact: true }).click(); await expect(page.getByLabel('今天要做什么？')).toHaveValue('我想读书'); await page.getByRole('button', { name: '听听我说的', exact: true }).click(); expect((await counters(page)).active).toBe(1); await page.getByRole('button', { name: '今天先到这' }).click(); await expect(page.getByText('现在的心情，像哪一个？')).toBeVisible(); expect((await counters(page)).active).toBe(0); expect((await counters(page)).created).toBe((await counters(page)).revoked);
+});
+
+for (const source of ['approved URL', 'TTS Blob']) test(`[F1/8] ${source} play成功后原生media error显示报词，换字/退出忽略旧元素error`, async ({ page }) => {
+  if (source === 'approved URL') await getPrisma().charCard.update({ where: { char: '水' }, data: { audioUrl: '/fictional-approved.wav' } });
+  await open(page); await dictation(page);
+  const context = (await getCharCard('水'))!.dictationContext;
+  const commands = await getPrisma().sessionCommand.count();
+  await page.getByRole('button', { name: '播放这个词', exact: true }).click();
+  await expect.poll(async () => (await counters(page)).active).toBe(1);
+  await expect(page.getByText(context, { exact: true })).toHaveCount(0);
+  // 保留真实DOM元素引用，随后向当前/已脱离DOM的旧元素派发原生事件。
+  const old = await page.locator('.child-app audio').elementHandle();
+  await old!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(page.getByRole('status')).toHaveText(`暂时听不到，看看这句报词吧：${context}`);
+  expect((await counters(page)).active).toBe(0);
+  expect((await counters(page)).created).toBe((await counters(page)).revoked);
+  expect(await getPrisma().sessionCommand.count()).toBe(commands);
+  await page.getByRole('button', { name: '下一个', exact: true }).click();
+  await expect(page.locator('.step')).toHaveText('第 2 个，共 3 个');
+  await page.getByRole('button', { name: '播放这个词', exact: true }).click();
+  await expect.poll(async () => (await counters(page)).active).toBe(1);
+  const beforeLate = await counters(page);
+  await old!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(page.getByRole('status')).toHaveCount(0);
+  await expect(page.getByText((await getCharCard('日'))!.dictationContext, { exact: true })).toHaveCount(0);
+  expect(await counters(page)).toEqual(beforeLate);
+  const current = await page.locator('.child-app audio').elementHandle();
+  await page.getByRole('button', { name: '今天先到这' }).click();
+  await expect(page.getByText('现在的心情，像哪一个？')).toBeVisible();
+  const afterExit = await counters(page); const exitCommands = await getPrisma().sessionCommand.count();
+  await current!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await old!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(page.getByRole('status')).toHaveCount(0);
+  expect(await counters(page)).toEqual(afterExit);
+  expect(afterExit.active).toBe(0); expect(afterExit.created).toBe(afterExit.revoked);
+  expect(await getPrisma().sessionCommand.count()).toBe(exitCommands);
+});
+
+test('[F1/7] 本地试听play成功后原生media error保留文字，重录/退出旧error不污染', async ({ page }) => {
+  await open(page);
+  async function record() { await page.getByRole('button', { name: '开始说', exact: true }).click(); await expect(page.getByRole('button', { name: '说好了', exact: true })).toBeVisible(); await page.getByRole('button', { name: '说好了', exact: true }).click(); await expect(page.getByLabel('今天要做什么？')).toHaveValue('我想读书'); await page.getByRole('button', { name: '听听我说的', exact: true }).click(); await expect.poll(async () => (await counters(page)).active).toBe(1); }
+  const commands = await getPrisma().sessionCommand.count();
+  await record(); const old = await page.locator('.child-app audio').elementHandle();
+  await old!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(page.getByRole('status')).toHaveText('这次没听清，写在这里也可以。');
+  await expect(page.getByLabel('今天要做什么？')).toHaveValue('我想读书');
+  expect((await counters(page)).active).toBe(0); expect((await counters(page)).created).toBe((await counters(page)).revoked);
+  expect(await getPrisma().sessionCommand.count()).toBe(commands);
+  await record(); const current = await page.locator('.child-app audio').elementHandle(); const beforeLate = await counters(page);
+  await old!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(page.getByRole('status')).toHaveText('看看有没有听错，再点下面的按钮。');
+  await expect(page.getByLabel('今天要做什么？')).toHaveValue('我想读书'); expect(await counters(page)).toEqual(beforeLate);
+  await page.getByRole('button', { name: '今天先到这' }).click(); await expect(page.getByText('现在的心情，像哪一个？')).toBeVisible();
+  const afterExit = await counters(page); const exitCommands = await getPrisma().sessionCommand.count();
+  await current!.evaluate(element => element.dispatchEvent(new Event('error'))); await old!.evaluate(element => element.dispatchEvent(new Event('error')));
+  await expect(page.getByRole('status')).toHaveCount(0); expect(await counters(page)).toEqual(afterExit); expect(afterExit.active).toBe(0); expect(afterExit.created).toBe(afterExit.revoked); expect(await getPrisma().sessionCommand.count()).toBe(exitCommands);
 });

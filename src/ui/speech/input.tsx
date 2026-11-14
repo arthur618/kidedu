@@ -20,6 +20,9 @@ export function useSpeechInput(onText: (text: string) => void) {
   useEffect(() => () => { recorder?.cancel(); audio.current?.pause(); if (previewUrl.current) URL.revokeObjectURL(previewUrl.current); }, [recorder]);
   return {
     cancel: () => { recorder?.reset(); clearPreview(); },
-    control: capabilities.asr ? <div><button type="button" style={{ minHeight: 56 }} onClick={() => { if (!recorder) { setMessage(recordingFallback); return; } if (state === 'recording') recorder.stop(); else { clearPreview(); void recorder.start(); } }}>{state === 'recording' ? '说好了' : state === 'permission' || state === 'transcribing' ? '重新说' : '开始说'}</button>{preview && <><audio ref={attachAudio} src={preview}/><button type="button" style={{ minHeight: 56 }} onClick={() => { if (audio.current) { audio.current.currentTime = 0; const current = previewUrl.current; void audio.current.play().catch(() => { if (previewUrl.current === current) setMessage(recordingFallback); }); } }}>听听我说的</button></>}{message && <p role="status">{message}</p>}</div> : null,
+    control: capabilities.asr ? <div><button type="button" style={{ minHeight: 56 }} onClick={() => { if (!recorder) { setMessage(recordingFallback); return; } if (state === 'recording') recorder.stop(); else { clearPreview(); void recorder.start(); } }}>{state === 'recording' ? '说好了' : state === 'permission' || state === 'transcribing' ? '重新说' : '开始说'}</button>{preview && <><audio key={preview} ref={attachAudio} preload="none" src={preview} onError={event => {
+      if (audio.current !== event.currentTarget || previewUrl.current !== preview) return;
+      clearPreview(); setMessage(recordingFallback);
+    }}/><button type="button" style={{ minHeight: 56 }} onClick={() => { if (audio.current) { audio.current.currentTime = 0; const current = previewUrl.current; void audio.current.play().catch(() => { if (previewUrl.current === current) setMessage(recordingFallback); }); } }}>听听我说的</button></>}{message && <p role="status">{message}</p>}</div> : null,
   };
 }
