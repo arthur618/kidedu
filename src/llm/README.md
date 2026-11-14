@@ -58,6 +58,7 @@ if (result.ok) {
 - `baseUrl`：接口地址，末尾有没有 `/` 都可以。
 - `timeoutMs`：单次请求超时。
 - `apiKeyEnv`：环境变量的名字，不是密钥本身。
+- `deepseek`：可选的 `{ thinking: "disabled" | "enabled", maxTokens: 1–8192的整数 }`，严格拒绝未知选项，仅DeepSeek路由可用。未配置时非思考、最多1024输出token；models.json逐Agent明确预算。DeepSeek请求固定`stream: false`、JSON和`safety_check: { level: "high" }`，不开工具。供应商审核不能代替项目护栏。
 
 **`provider` 必须保持 `"deepseek"`。** `loadRuntimeConfig` 会逐个检查八个运行时 Agent，任何一个不是 `deepseek` 都会拒绝启动。这是保护孩子数据的红线，没有跳过开关。
 
@@ -133,10 +134,11 @@ const reviewLlm = createOfflineClient({
 - 每次请求用 `AbortController` 限时；超时返回 `timeout`，不重试。
 - 网络异常或 5xx：等 500ms 重试一次；仍失败返回 `provider_error`。
 - 4xx：不重试，返回 `provider_error`。
-- 模型返回的文字不是合法 JSON 或不通过 schema：把模型输出和 zod 问题追加到消息里，重试一次；仍不通过返回 `invalid_output`。
-- 上游响应本身无法解析（HTTP 成功但响应体不是合法 JSON，或缺少 `choices[0].message.content`）：按可重试的服务端错误处理，等 500ms 再试一次，仍失败返回 `provider_error`，不会把空内容追加进对话。
+- 仅接受`finish_reason: "stop"`，且无拒答/工具调用的候选。`refusal`缺失、null或空白字符串视为无拒答，非空字符串或异常类型拒绝。截断、安全拦截、工具调用、资源中断、aborted、未知/缺失结束原因均返回`provider_error`且不重试；拒答及`reasoning_content`不展示、不入记录。
+- 完整stop候选的文字（包括空白）不是合法 JSON 或不通过 schema：把模型输出和 zod 问题追加到消息里，重试一次；仍不通过返回 `invalid_output`。
+- 上游响应本身无法解析（HTTP 成功但响应体不是合法 JSON，或缺少 `choices`）：按可重试的服务端错误处理，等 500ms 再试一次，仍失败返回 `provider_error`，不会把空内容追加进对话。
 - 整个 `call` 的预算上限是 `timeoutMs` 的两倍；第二次请求会在剩余预算内缩短超时，预算不够时不再发请求。
-- token 从 `usage.prompt_tokens`、`usage.completion_tokens` 读取；缓存 token 优先 `prompt_cache_hit_tokens`，否则 `prompt_tokens_details.cached_tokens`，都没有就是 0。重试的两次会相加。
+- token 从 `usage.prompt_tokens`、`usage.completion_tokens` 读取；缓存 token 优先 `prompt_cache_hit_tokens`，否则 `prompt_tokens_details.cached_tokens`，都没有就是 0。失败响应（含HTTP错误）也读取usage，重试的两次会相加。供应商没给token时0代表未知，不表示零费用；超时后迟到的usage无法计入已完成记录。
 - 密钥只通过 `getEnv` 读，只放进请求头 `Authorization`，不会进入请求体、返回值、`onTurn` 记录或错误信息。
 - `onTurn` 的记录类型是契约里的 `LlmTurnRecord`；失败时带 `error`，成功时不带。
 - `src/llm/internal.ts` 是运行时和离线共用的内部实现，只允许 `client.ts` 和 `offline.ts` 引用；其他路径不要 import。

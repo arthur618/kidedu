@@ -11,6 +11,7 @@ import type {
   LlmTurnRecord,
   ModelRoute,
 } from "../contracts/llm";
+import { DeepSeekOptionsSchema } from "../contracts/llm";
 import type { AgentName } from "../contracts/schemas";
 
 export const OUTPUT_ONLY_JSON_SUFFIX = "只输出一个 JSON 对象，不要输出其他任何文字。";
@@ -41,6 +42,10 @@ interface ChatRequestBody {
   model: string;
   messages: ChatMessage[];
   response_format: { type: "json_object" };
+  stream?: false;
+  thinking?: { type: "disabled" | "enabled" };
+  max_tokens?: number;
+  safety_check?: { level: "high" };
 }
 
 type HttpOutcome =
@@ -95,16 +100,28 @@ function readUsage(payload: unknown): TokenUsage {
   };
 }
 
-function readCompletion(payload: unknown): { text: string; usage: TokenUsage } | null {
+/** 只有完整结束、无拒答、无工具调用时才允许解析候选；其他结束不收费重试。 */
+function readCompletion(payload: unknown): HttpOutcome {
+  const usage = readUsage(payload);
   const root = asRecord(payload);
-  if (!root) return null;
-  const choices = root.choices;
-  if (!Array.isArray(choices) || choices.length === 0) return null;
+  const choices = root?.choices;
+  if (!Array.isArray(choices) || choices.length === 0) return { kind: "retryable", usage };
   const first = asRecord(choices[0]);
-  if (!first) return null;
+  if (!first || first.finish_reason !== "stop") return { kind: "fatal", usage };
   const message = asRecord(first.message);
-  if (!message || typeof message.content !== "string") return null;
-  return { text: message.content, usage: readUsage(payload) };
+  if (!message) return { kind: "fatal", usage };
+  const refusal = message.refusal;
+  if (refusal !== undefined && refusal !== null &&
+      (typeof refusal !== "string" || refusal.trim() !== "")) return { kind: "fatal", usage };
+  // 即使上游错误地标成stop，也不接收带有工具行为的候选，更不执行工具。
+  for (const key of ["tool_calls", "server_tool_calls", "function_call"]) {
+    const calls = message[key];
+    if (calls !== undefined && calls !== null && !(Array.isArray(calls) && calls.length === 0)) {
+      return { kind: "fatal", usage };
+    }
+  }
+  if (typeof message.content !== "string") return { kind: "fatal", usage };
+  return { kind: "success", text: message.content, usage };
 }
 
 /** 去掉模型常见的 ``` 或 ```json 包裹，其他文字原样保留。 */
@@ -146,11 +163,19 @@ export function buildMessages(
 export function buildRequestBody(
   req: Pick<LlmRequest<unknown>, "system" | "stablePrefix" | "user" | "images">,
   route: ModelRoute,
+  messages: ChatMessage[] = buildMessages(req),
 ): ChatRequestBody {
+  const options = DeepSeekOptionsSchema.parse(route.deepseek ?? {});
   return {
     model: route.model,
-    messages: buildMessages(req),
+    messages,
     response_format: { type: "json_object" },
+    ...(route.provider === "deepseek" ? {
+      stream: false as const,
+      thinking: { type: options.thinking ?? "disabled" },
+      max_tokens: options.maxTokens ?? 1024,
+      safety_check: { level: "high" as const },
+    } : {}),
   };
 }
 
@@ -197,6 +222,12 @@ function appendCorrection(
   ];
 }
 
+function isAborted(error: unknown, signal: AbortSignal): boolean {
+  // operation_timeout是既有服务端budgetFetch在操作预算耗尽时的拒绝。
+  return signal.aborted || (error instanceof Error &&
+    (error.name === "AbortError" || error.message === "operation_timeout"));
+}
+
 async function sendOnce(args: {
   route: ModelRoute;
   apiKey: string;
@@ -220,29 +251,19 @@ async function sendOnce(args: {
         signal: controller.signal,
       });
 
-      if (!response.ok) {
-        return response.status >= 500
-          ? { kind: "retryable", usage: emptyUsage() }
-          : { kind: "fatal", usage: emptyUsage() };
-      }
-
       let payload: unknown;
       try {
         payload = await response.json();
-      } catch {
-        // 上游响应本身坏了，按服务端错误重试，不把空内容追加进对话。
-        return { kind: "retryable", usage: emptyUsage() };
+      } catch (error) {
+        return { kind: !isAborted(error, controller.signal) && (response.ok || response.status >= 500) ? "retryable" : "fatal", usage: emptyUsage() };
       }
-
-      const completion = readCompletion(payload);
-      if (!completion) {
-        // 同样属于上游响应结构问题，不是模型输出的内容问题。
-        return { kind: "retryable", usage: readUsage(payload) };
+      if (!response.ok) {
+        return { kind: response.status >= 500 ? "retryable" : "fatal", usage: readUsage(payload) };
       }
-
-      return { kind: "success", text: completion.text, usage: completion.usage };
-    } catch {
-      return { kind: "retryable", usage: emptyUsage() };
+      return readCompletion(payload);
+    } catch (error) {
+      const aborted = isAborted(error, controller.signal);
+      return { kind: aborted ? "fatal" : "retryable", usage: emptyUsage() };
     }
   })();
 
@@ -291,11 +312,7 @@ async function runCall<TOut>(
       return { ok: false, error: "timeout", usage };
     }
 
-    const requestBody: ChatRequestBody = {
-      model: route.model,
-      messages,
-      response_format: { type: "json_object" },
-    };
+    const requestBody = buildRequestBody(req, route, messages);
 
     const outcome = await sendOnce({
       route,

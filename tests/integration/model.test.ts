@@ -18,7 +18,7 @@ function deps() {
   return createServerDeps({ config });
 }
 it("[23] 真实D2 onTurn与当前请求配对，准确保存token；Turn写失败明确传播", async () => {
-  vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify(output) } }], usage: { prompt_tokens: 99, prompt_cache_hit_tokens: 17, completion_tokens: 8 } }))));
+  vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: JSON.stringify(output) } }], usage: { prompt_tokens: 99, prompt_cache_hit_tokens: 17, completion_tokens: 8 } }))));
   const runtime = deps(); const turns: PendingTurn[] = [];
   await withinBudget(runtime.modelOptions, [], async () => {
     await runCharCoach({ child: testChild, card: testCard, step: "explain", history: [] }, { llm: measuredClient(runtime.llm, runtime.modelOptions, turns) });
@@ -33,7 +33,7 @@ it("[23] 真实D2 onTurn与当前请求配对，准确保存token；Turn写失�
 });
 it("[22] 真实fetch绑定整体预算取消信号，超时记录仍保留实际路由模型名", async () => {
   let signal: AbortSignal | undefined; let cancel: (() => void) | undefined; let clock = 1000;
-  vi.stubGlobal("fetch", vi.fn((_url: unknown, init: RequestInit) => new Promise((_resolve, reject) => { signal = init.signal!; signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true }); })));
+  vi.stubGlobal("fetch", vi.fn((_url: unknown, init: RequestInit) => new Promise((_resolve, reject) => { signal = init.signal!; signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")), { once: true }); })));
   const runtime = deps(); runtime.modelOptions.nowMs = () => clock; runtime.modelOptions.setTimer = ((callback: () => void) => { cancel = callback; return 1 as unknown as ReturnType<typeof setTimeout>; }); runtime.modelOptions.clearTimer = () => {};
   const turns: PendingTurn[] = [];
   const pending = withinBudget(runtime.modelOptions, [], async () => {
