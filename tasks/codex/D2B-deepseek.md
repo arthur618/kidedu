@@ -13,7 +13,7 @@
 1. 保留唯一LlmClient、缓存消息顺序、JSON校验/纠正重试、8秒单次/既有总预算、注入fetch/clock/onTurn。runtime provider仅DeepSeek红线不变，离线OpenAI能力不受DeepSeek专用字段污染。允许调用已合并真实模块作集成，不改Agent/护栏内部。
 2. 契约ModelRoute新增可选deepseek选项thinking/maxTokens；用共享DeepSeekOptionsSchema校验，未知字段拒绝。未配也采用thinking disabled、有限生成预算，不能落到供应商默认长思考。config/models.json为8个Agent明确配置，建议vision_homework=2048、vision_dictation=4096、char_coach/reader=512、essay/report=1024、guard/score=256；仍全部deepseek-flash。maxTokens契约限制1–8192，不能无限生成。
 3. DeepSeek请求固定非流式JSON，并开启供应商高等级内容检查；平台检查不能取代现有withGuard/字卡来源/作文模板。重试和第一次请求使用同一预算/审核设置，buildRequestBody与实际runCall不能各维护一套失配逻辑。OpenAI离线路由保持原合法参数，不能附thinking/safety_check。
-4. stop且无refusal才可取候选。length/content_filter/tool_calls/insufficient_system_resource/aborted及未知/缺失结束原因均不能当成功，即使content恰好是合法JSON；refusal存在亦拒绝，不把拒答原文给孩子，不把reasoning_content当输出或写日志。blocked/aborted/tool_calls不自动重发可能收费/联网的请求；不启用联网工具，不为工具调用追执行。错误映射保持现有LlmResult兼容，provider_error或invalid_output按现有语义，计量不丢。
+4. stop且无refusal才可取候选。length/content_filter/tool_calls/insufficient_system_resource/aborted及未知/缺失结束原因均不能当成功，即使content恰好是合法JSON；非空refusal或异常类型亦拒绝（null/缺失/空白不视为拒答，兼容离线OpenAI），不把拒答原文给孩子，不把reasoning_content当输出或写日志。blocked/aborted/tool_calls不自动重发可能收费/联网的请求；不启用联网工具，不为工具调用追执行。错误映射保持现有LlmResult兼容，provider_error或invalid_output按现有语义，计量不丢。
 5. 正常stop空白JSON按无有效候选处理，最多既定纠正重试。供应商安全拒答/异常与schema错误区分可在内部元数据/文档说明，不扩大孩子API错误字段。HTTP400/401/403等不重试，现有500/网络重试规则保留，429不无限重试。
 6. 使用官方usage/cache两个表示保持现有优先级和多次尝试求和；拒答/截断等失败也尽可能计量，供应商未给token时0代表未知，不能宣称等于零费用。既有同客户端并发/取消D2 onTurn归属必须正确，密钥/原文不进记录。
 7. 不把DeepSeek网页demo“key存浏览器”照搬，仍仅服务端环境变量。不给模型自由工具权限，不实现StreamingUI；所有模型内容完成校验/护栏后才给孩子。供应商baseUrl仍配置现有固定值，本任务不新设用户URL入口。

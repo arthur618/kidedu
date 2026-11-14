@@ -132,5 +132,17 @@
     "config/models.json",
     "tests/integration/model.test.ts",
     "tests/integration/deepseek/"
+  ],
+  "C8B": [
+    "src/speech/",
+    "src/server/speech.ts",
+    "src/ui/speech/",
+    "src/ui/speech.browser.ts",
+    "src/ui/deepseek-speech.browser.ts",
+    "src/ui/reading/screens.tsx",
+    "src/ui/essay/screens.tsx",
+    "tests/integration/speech/",
+    "tests/integration/deepseek-speech/",
+    ".env.example"
   ]
 }

@@ -24,6 +24,8 @@
 
 | D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 进行中 | tasks/codex/D2B-deepseek.md；不配置key/不真实联调 |
 
+| C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 进行中 | tasks/codex/C8B-deepseek.md；C8B-live真实联调仍待key |
+
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
 | 任务 | 内容 | 里程碑 |
@@ -119,3 +121,7 @@ C10@9747a8d第二次独立验收通过，F1受信问题模板/旧GET及历史响
 ## DeepSeek现行能力核实与D2B派发（2026-11-14）
 
 负责人提供官方Chat文档并授权可行能力接入。已联网核实官方对话/图像、ASR、TTS、搜索、OCR与基础安全接口，评估见docs/DEEPSEEK-INTEGRATION.md。既有文本/图像已接，D2B由单Sol medium补预算/默认非思考/结束原因和审核，不重复SDK。语音选DeepSeek但需实际WAV转换，C8B本地适配后真实key联调单列；搜索先离线审校，不绕过approved。C11A中途额度错误已保存patch/untracked恢复包，新查询ordinaryUsageAllowed=true后原agent恢复成功；未消耗reset或换模型反复尝试。真实接口配置继续空缺。
+
+## C8B代码阶段派发（2026-11-14）
+
+官方语音协议核实后，精确scope和阶段边界已冻结。Sol high在独立yuwen-c4-content/task/C8B实施规范WAV内存转码、服务端固定DeepSeek适配、批准报词及复述/采访的可编辑语音录入。默认无key/未开关零网络，长作文稿不被转录覆盖，不做任意文本朗读或自动判学习结果。C8B-live仍待安全配置key与真实合成材料验证，不能假报原真实验收项完成。所有全套build/browser预约串行。

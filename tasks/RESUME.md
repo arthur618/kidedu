@@ -56,3 +56,7 @@ C10@9747a8d修复F1后独立781测试/构建、23文件范围、27浏览器和�
 ## 新增接入任务与额度恢复（2026-11-14）
 
 用户提供DeepSeek文档并授权接入可行能力，官方核实结论见docs/DEEPSEEK-INTEGRATION.md。D2B协议/预算精确scope和契约2.7已冻结，单Sol medium，复用yuwen-c6-evals工作树task/D2B。C11A曾额度中断，root保存草稿恢复包；只读账户显示普通用量允许，原/root/implement_c11a_sol恢复成功，仍继续原task/C11A。全套build/browser由root排队。后续C8B语音适配（供应商已选DeepSeek）与C4B离线检索再冻结，不把无密钥假HTTP验收当真实联调通过。
+
+## 新增C8B代码阶段（2026-11-14）
+
+正式任务C8B-deepseek.md已冻结，独立yuwen-c4-content工作树task/C8B，/root/implement_c8b_sol（Sol high）。保留原C8A限制与27浏览器；真实转码、短回答编辑输入和approved报词，不配置key，不把本地fake验收当真实供应商通过。C11A@0477bbb与D2B@2602d69已作者交付，root当前独立验收，尚未合并。主线仍C10通过后的781基线加契约/文档。
