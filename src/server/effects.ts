@@ -1,3 +1,4 @@
+import { readingSnapshot } from "./reading/activity";
 import { randomUUID } from "node:crypto";
 import type { Effect } from "../contracts/orchestrator";
 import type { CharCoachInput, CharCoachOutput, Incident } from "../contracts/schemas";
@@ -79,6 +80,7 @@ export async function snapshot(deps: RuntimeDeps, sessionId: string, photo?: str
   const runtime = await deps.getSessionRuntime(sessionId);
   if (!runtime) throw new SessionNotFoundError(sessionId);
   const { state, context: ctx } = runtime;
+  if (state === "reading" || state === "retell") return readingSnapshot(sessionId, state);
   if (state === "ended") return { sessionId, state, effects: [] };
   if (state === "dictation_compare" && !photo) return unavailable(sessionId, state, "photo_not_available");
   const pending = await unfinishedCommands(sessionId);

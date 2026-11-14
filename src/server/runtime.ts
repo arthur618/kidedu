@@ -1,3 +1,6 @@
+import { checkpointReading, readerOutput, readingSnapshot, readingUnavailable } from "./reading/activity";
+import { getReadingRuntime, saveReadingRuntime } from "../db/readingRuntime";
+import { getPassage } from "../db/passage";
 import { createHash } from "node:crypto";
 import type { Effect, SessionEvent } from "../contracts/orchestrator";
 import type { CharCoachInput } from "../contracts/schemas";
@@ -14,7 +17,7 @@ import { measuredClient, persistTurns, redact, withinBudget, type PendingTurn } 
 
 export class RequestConflict extends Error { constructor() { super("这次操作已经用过，请重新试一次。"); } }
 export class CoachConflict extends Error { constructor() { super("现在先完成眼前这一步吧。"); } }
-export type CommandKind = "start" | "event" | "homework" | "coach";
+export type CommandKind = "start" | "event" | "homework" | "coach" | "reading";
 interface Pending { body?: unknown; effects?: Effect[] }
 const queues = new Map<string, Promise<unknown>>();
 /** 本轮只支持单 Node 进程。同会话不同 ID 排队，重放也走同一把锁。 */
@@ -46,7 +49,10 @@ export function createSessionService(deps: RuntimeDeps) {
   }
   async function transition(command: SessionCommand, sessionId: string, event: SessionEvent): Promise<SessionCommand> {
     return withTransaction(async () => {
+      const before = await deps.getSessionRuntime(sessionId);
       const result = await handleEvent(deps, sessionId, event);
+      const current = (await deps.getSessionRuntime(sessionId))!;
+      await checkpointReading(deps, sessionId, before!.state, result.state, current.context);
       const next: SessionCommand = { ...command, sessionId, phase: "transitioned", pending: redact({ effects: result.effects }), response: null };
       await saveCommand(next);
       return next;
@@ -81,6 +87,7 @@ export function createSessionService(deps: RuntimeDeps) {
     }
     if (command.kind === "event") {
       const event = body as SessionEvent;
+      if (event.type === "retell_done") throw new CoachConflict();
       command = await transition(command, id, event);
       await deps.afterCheckpoint?.();
       return finishEffects(command, photo);
@@ -104,6 +111,28 @@ export function createSessionService(deps: RuntimeDeps) {
       });
       await deps.afterCheckpoint?.();
       return complete(command, (command.pending as { packet: SessionPacket }).packet);
+    }
+    if (command.kind === "reading") {
+      const runtime = await deps.getSessionRuntime(id);
+      const activity = await getReadingRuntime(id);
+      if (runtime?.state !== "retell" || !activity || !["answer", "follow_up"].includes(activity.phase)) throw new CoachConflict();
+      if (!await getPassage(activity.passage.id)) return complete(command, readingUnavailable(id, "retell"));
+      await deps.afterCheckpoint?.();
+      const text = (body as { text: string }).text;
+      const output = await readerOutput(deps, id, activity, text);
+      return withTransaction(async () => {
+        if (!await getPassage(activity.passage.id)) return complete(command, readingUnavailable(id, "retell"));
+        const next = { ...activity, transcript: [...activity.transcript, text], history: [...activity.history, { role: "child" as const, text }, { role: "agent" as const, text: [output.say, output.ask].filter(Boolean).join("\n") }].slice(-12), output };
+        if (activity.phase === "answer") {
+          await saveReadingRuntime(id, { ...next, phase: "follow_up" });
+          return complete(command, await readingSnapshot(id, "retell"));
+        }
+        // 原话、活动完成、纯状态转换与命令complete同事务；故障全部回滚。
+        await saveReadingRuntime(id, { ...next, phase: "complete", completedAt: deps.now().toISOString() });
+        const moved = await transition(command, id, { type: "retell_done" });
+        const packet = await snapshot(deps, id, undefined, false);
+        return complete(moved, { ...packet, notice: output.say });
+      });
     }
     if (command.kind === "coach") {
       const input = body as { char: string; text: string };
@@ -156,6 +185,9 @@ export function createSessionService(deps: RuntimeDeps) {
       const isCurrentCompare = ownsPhoto && (await deps.getSessionRuntime(command.sessionId!))?.state === "dictation_compare";
       if (isCurrentCompare && photo && saved.unavailable?.reason === "photo_not_available") return finishEffects(command, photo);
       if (isCurrentCompare && photo) photos.set(command.sessionId!, { url: photo, fingerprint: command.fingerprint, scope: command.scope, key: command.key });
+      if (saved.state === "reading" || saved.state === "retell") {
+        if (!await getPassage((await getReadingRuntime(command.sessionId!))?.passage.id ?? "")) return readingUnavailable(command.sessionId!, saved.state);
+      }
       return restorePhoto(saved, ownsPhoto ? photo : (command.sessionId ? photos.get(command.sessionId)?.url : undefined));
     }
     if (command.phase === "transitioned") {

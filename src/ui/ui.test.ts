@@ -16,7 +16,7 @@ describe("C2 屏幕与语义", () => {
   for (const screen of SessionStateSchema.options) it(`1/6 ${screen} 有标题和出口`, () => {
     const html = renderToStaticMarkup(React.createElement(LearningScreen, { view: decodeScreen(demoPacket(screen)), actions }));
     expect(html).toContain("<h1"); expect(html).toContain("今天先到这"); expect(html).toContain("<button");
-    const keywords: Record<string,string> = { homework_capture: "拍下今天的作业", homework_confirm: "对的，开始", recognize: "还不认识", understand: "我听完了", dictation_play: "播放这个词", dictation_capture: "拍下我写的字", dictation_compare: "我看好了", reading_offer: "想读一读", wrap_up: "开心", reading: "即将开放", retell: "即将开放", essay_interview: "即将开放", essay_cards: "即将开放", essay_feedback: "即将开放", ended: "今天辛苦啦" };
+    const keywords: Record<string,string> = { homework_capture: "拍下今天的作业", homework_confirm: "对的，开始", recognize: "还不认识", understand: "我听完了", dictation_play: "播放这个词", dictation_capture: "拍下我写的字", dictation_compare: "我看好了", reading_offer: "想读一读", wrap_up: "开心", reading: "我读完了", retell: "好了，听听我的", essay_interview: "即将开放", essay_cards: "即将开放", essay_feedback: "即将开放", ended: "今天辛苦啦" };
     if (keywords[screen]) expect(html).toContain(keywords[screen]);
     expect(html).not.toMatch(/undefined|Error|失败|错误|提交|确认/);
   });
