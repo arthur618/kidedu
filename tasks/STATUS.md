@@ -16,7 +16,7 @@
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 已合并 | reviews/C7.md：1baf3be通过，合并d149377；main666测试/构建、独立浏览器10项 |
 | C8A | 语音接口、内存录音及文字退路 | Codex / Sol medium | 5 | C7、契约2.3 | 已合并 | reviews/C8A.md：c15bda6通过，合并6452b91；main679测试/构建，独立浏览器21项 |
 
-| C9 | 阅读与两轮文字复述 | Codex / Sol high | 6 | C7、契约2.4 | 进行中 | tasks/codex/C9-addendum.md；外部配置/真实接口测试延后 |
+| C9 | 阅读与两轮文字复述 | Codex / Sol high | 6 | C7、契约2.4 | 待合并 | reviews/C9.md：c8c98ee通过，独立697测试/构建、22文件范围、23浏览器与自编边界探针 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
