@@ -1,4 +1,4 @@
-import { checkpointEssay, essayOutput, essayPacket, essaySnapshot, withEssayOutput, validCard } from "./essay/activity";
+import { checkpointEssay, essayOutput, essayPacket, essaySnapshot, withEssayOutput, validCard, projectEssayResponse } from "./essay/activity";
 import { getEssayRuntime, saveEssayRuntime, getEssayCommand, saveEssayCommand, type EssayAction } from "../db/essayRuntime";
 import type { EssayRuntime } from "../contracts/essay";
 import { checkpointReading, readerOutput, readingSnapshot, readingUnavailable } from "./reading/activity";
@@ -231,6 +231,7 @@ export function createSessionService(deps: RuntimeDeps) {
       if (saved.state === "reading" || saved.state === "retell") {
         if (!await getPassage((await getReadingRuntime(command.sessionId!))?.passage.id ?? "")) return readingUnavailable(command.sessionId!, saved.state);
       }
+      if (saved.effects.some(effect => effect.screen === "essay_interview" || effect.screen === "essay_feedback")) return projectEssayResponse(saved, await getEssayRuntime(command.sessionId!));
       return restorePhoto(saved, ownsPhoto ? photo : (command.sessionId ? photos.get(command.sessionId)?.url : undefined));
     }
     if (command.phase === "transitioned") {

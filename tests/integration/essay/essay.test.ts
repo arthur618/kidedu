@@ -1,11 +1,13 @@
+import { getCommand, saveCommand } from "../../../src/db/sessionCommand";
+import type { SessionPacket } from "../../../src/contracts/session";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeAll, afterAll, it, expect, vi } from "vitest";
 import { database } from "../helpers";
 import { prepare, setup, essayModel, essayText, topic } from "./helpers";
-import { getEssayRuntime } from "../../../src/db/essayRuntime";
+import { getEssayRuntime, saveEssayRuntime } from "../../../src/db/essayRuntime";
 import { getPrisma } from "../../../src/db/client";
-import { feedbackQuote, validCard, outputValid, safeEssayOutput } from "../../../src/server/essay/activity";
+import { feedbackQuote, validCard, outputValid, safeEssayOutput, trustedEssayQuestion } from "../../../src/server/essay/activity";
 import { LearningScreen } from "../../../src/ui/screens";
 import { decodeScreen } from "../../../src/ui/model";
 let db: Awaited<ReturnType<typeof database>>;
@@ -146,4 +148,58 @@ it("开始与正文transitioned后故障恢复只运行剩余模型，时间预�
 
 it.each([{say:"长".repeat(80),ask:"你看到了什么？"},{say:"好呀。听见了。再聊聊。",ask:"你看到了什么？"},{say:"我听见了。",ask:"你看到了什么、听到了什么？"},{say:"长".repeat(81),ask:"你看到了什么？"}])("过长/多句/一次多问的候选 %j 有安全退路且无伪造通过",async candidate=>{
  const p=await prepare();await p.enter();p.h.fake.setHandler(req=>req.agent==="essay"?{...candidate,next:"wait_child",newCard:null}:essayModel(req));const response=await p.post(answer("孩子编造原话"));expect(response.status).toBe(200);const packet=await response.json();expect(packet.effects[0].data.say).toBe("先想一个小细节。");const turns=await getPrisma().turn.findMany({where:{agent:"essay"}});expect(turns.at(-1)?.guardVerdict).toBe("blocked");expect(await getPrisma().incident.count()).toBeGreaterThan(0);
+});
+
+const inventedSentence="小河弯弯像一条丝带";
+const sourceEssay="那天我和同学一起到河边散步。我看见桥边停着一只小船。";
+const suggestionForms=[
+ `要不要把${inventedSentence}记下来？`,
+ `把${inventedSentence}记下来好吗？`,
+ `首句用${inventedSentence}行吗？`,
+ `最后写${inventedSentence}合适吗？`,
+ `换成${inventedSentence}好吗？`,
+ `${inventedSentence}是不是更生动？`,
+ `${inventedSentence}这个比喻怎么样？`,
+ `我们就用${inventedSentence}好不好？`,
+ `可不可以把${inventedSentence}放进去？`,
+ `开头写${inventedSentence}可以吗？`,
+];
+const unsafeQuestionCases=[false,true].flatMap(feedback=>suggestionForms.map((question,index)=>({feedback,ask:feedback?"我还想知道"+(index===9?"":"，")+question:question})));
+it.each(unsafeQuestionCases)("F1 $feedback 两阶段新拟句变体均拒绝：$ask",async({feedback,ask})=>{
+ const p=await prepare();await p.enter();
+ if(feedback){await p.post(answer("我看见小桥。"));await p.h.event(p.id,{type:"essay_step_done"});}
+ const count=p.h.fake.calls.length;const incidentCount=await getPrisma().incident.count();
+ p.h.fake.setHandler(req=>req.agent==="essay"?{say:feedback?'我看见了：“桥边停着一只小船”':"先想一个小细节。",ask,next:"wait_child",newCard:null}:essayModel(req));
+ const response=await p.post(feedback?{type:"submit_essay",text:sourceEssay}:answer("我看见小桥。"));expect(response.status).toBe(200);const packet=await response.json();
+ expect(JSON.stringify(packet)).not.toContain(inventedSentence);const data=packet.effects[0].data;expect(trustedEssayQuestion(data.ask,feedback)).toBe(true);
+ const activity=(await getEssayRuntime(p.id))!;expect(outputValid(activity.output!,activity,feedback)).toBe(true);expect(JSON.stringify(activity.history)).not.toContain(inventedSentence);
+ if(feedback){expect(sourceEssay.includes(data.quote)).toBe(true);expect(activity.essayText).toBe(sourceEssay);}else expect(activity.utterances).toEqual(["我看见小桥。"]);
+ expect(p.h.fake.calls).toHaveLength(count+2);const turns=await getPrisma().turn.findMany({where:{sessionId:p.id,agent:"essay"}});
+ expect(turns.slice(-2).every(t=>t.guardVerdict==="blocked"&&t.inputTokens===10&&t.cachedInputTokens===2&&t.outputTokens===5&&JSON.parse(t.output).ok===true)).toBe(true);
+ expect(JSON.stringify(turns)).not.toContain(inventedSentence);expect(await getPrisma().incident.count()).toBeGreaterThan(incidentCount);
+});
+it.each([false,true])("F1 %s 首次新拟句blocked后仍接受受信重试，调用/护栏结论真实",async feedback=>{
+ const p=await prepare();await p.enter();if(feedback){await p.post(answer("我看见小桥。"));await p.h.event(p.id,{type:"essay_step_done"});}
+ let attempts=0;const count=p.h.fake.calls.length;const safeAsk=feedback?"我还想知道，当时你看到了什么？":"你看到了什么？";
+ p.h.fake.setHandler(req=>{if(req.agent!=="essay")return essayModel(req);attempts++;return{say:feedback?'我看见了：“桥边停着一只小船”':"我听见了。",ask:attempts===1?(feedback?"我还想知道，":"")+suggestionForms[5]:safeAsk,next:"wait_child",newCard:null};});
+ const response=await p.post(feedback?{type:"submit_essay",text:sourceEssay}:answer("我看见小桥。"));expect(response.status).toBe(200);const data=(await response.json()).effects[0].data;expect(data.ask).toBe(safeAsk);if(feedback)expect(data.quote).toBe("桥边停着一只小船");
+ expect(p.h.fake.calls).toHaveLength(count+2);const turns=await getPrisma().turn.findMany({where:{sessionId:p.id,agent:"essay"}});expect(turns.slice(-2).map(t=>t.guardVerdict)).toEqual(["blocked","pass"]);expect(await getPrisma().incident.count()).toBeGreaterThan(0);
+});
+it.each([false,true])("F1 %s 旧私有GET与complete历史响应重放均可信投影，零模型/零写入/零推进",async feedback=>{
+ const p=await prepare();await p.enter();const key=p.h.key();const body=feedback?{type:"submit_essay",text:sourceEssay}:answer("我看见小桥。");
+ if(feedback){await p.post(answer("我看见小桥。"));await p.h.event(p.id,{type:"essay_step_done"});}
+ expect((await p.post(body,key)).status).toBe(200);const activity=(await getEssayRuntime(p.id))!;
+ const unsafe={say:feedback?'我看见了：“桥边停着一只小船”':"先想一个小细节。",ask:(feedback?"我还想知道，":"")+suggestionForms[0],next:"wait_child" as const,newCard:null};
+ const scope=`session:${p.id}`;const command=(await getCommand(scope,key))!;const response=structuredClone(command.response as SessionPacket);
+ response.effects=response.effects.map(effect=>({...effect,data:{...(effect.data as object),say:unsafe.say,ask:unsafe.ask,...(feedback?{quote:"桥边停着一只小船"}:{})}}));
+ await saveCommand({...command,response});await saveEssayRuntime(p.id,{...activity,output:unsafe,...(feedback?{feedbackQuote:"桥边停着一只小船"}:{})});
+ const privateBefore=await getEssayRuntime(p.id);const commandBefore=await getCommand(scope,key);const runtimeBefore=await p.h.deps.getSessionRuntime(p.id);const calls=p.h.fake.calls.length;const turns=await getPrisma().turn.findMany();
+ const snapshot=await(await p.h.handlers().get(p.id)).json();const replay=await(await p.post(body,key)).json();
+ for(const packet of [snapshot,replay]){expect(JSON.stringify(packet)).not.toContain(inventedSentence);expect(trustedEssayQuestion(packet.effects[0].data.ask,feedback)).toBe(true);if(feedback)expect(sourceEssay.includes(packet.effects[0].data.quote)).toBe(true);}
+ expect(p.h.fake.calls).toHaveLength(calls);expect(await getPrisma().turn.findMany()).toEqual(turns);expect(await getEssayRuntime(p.id)).toEqual(privateBefore);expect(await getCommand(scope,key)).toEqual(commandBefore);expect(await p.h.deps.getSessionRuntime(p.id)).toEqual(runtimeBefore);
+ if(!feedback){p.h.fake.setHandler(req=>req.agent==="essay"?{say:"我听见了。",ask:"后来发生了什么？",next:"wait_child",newCard:null}:essayModel(req));await p.post(answer("我听见风声。"));expect((await getEssayRuntime(p.id))?.utterances).toHaveLength(2);}
+ await p.h.event(p.id,{type:feedback?"essay_step_done":"quit"});await p.h.event(p.id,{type:"quit"});p.h.restart();
+ const ended=await p.h.deps.getSessionRuntime(p.id);const completedActivity=await getEssayRuntime(p.id);const afterCalls=p.h.fake.calls.length;const afterTurns=await getPrisma().turn.findMany();
+ const historical=await(await p.post(body,key)).json();expect(JSON.stringify(historical)).not.toContain(inventedSentence);expect(historical.state).toBe(feedback?"essay_feedback":"essay_interview");expect(trustedEssayQuestion(historical.effects[0].data.ask,feedback)).toBe(true);if(!feedback){expect(historical.effects[0].data.remaining).toBe(4);expect(historical.effects[0].data.ask).toBe("你听到了什么？");}
+ expect(await p.h.deps.getSessionRuntime(p.id)).toEqual(ended);expect(await getEssayRuntime(p.id)).toEqual(completedActivity);expect(await getCommand(scope,key)).toEqual(commandBefore);expect(p.h.fake.calls).toHaveLength(afterCalls);expect(await getPrisma().turn.findMany()).toEqual(afterTurns);
 });
