@@ -1,3 +1,4 @@
+import { appendLearningOutcome, markLearningCoverage } from "../db/learningOutcome";
 import { checkpointEssay, essayOutput, essayPacket, essaySnapshot, withEssayOutput, validCard, projectEssayResponse } from "./essay/activity";
 import { getEssayRuntime, saveEssayRuntime, getEssayCommand, saveEssayCommand, type EssayAction } from "../db/essayRuntime";
 import type { EssayRuntime } from "../contracts/essay";
@@ -55,7 +56,9 @@ export function createSessionService(deps: RuntimeDeps) {
   async function transition(command: SessionCommand, sessionId: string, event: SessionEvent): Promise<SessionCommand> {
     return withTransaction(async () => {
       const before = await deps.getSessionRuntime(sessionId);
-      const result = await handleEvent(deps, sessionId, event);
+      const result = await handleEvent(deps, sessionId, event, async ({ before, after, result, effectIndex, nowIso }) => {
+        await appendLearningOutcome({ id: `outcome_${createHash("sha256").update(JSON.stringify([command.scope, command.key, effectIndex])).digest("hex")}`, sessionId, childId: before.childId, commandScope: command.scope, commandKey: command.key, effectIndex, char: before.char, kind: before.kind, stageBefore: before.stage, stageAfter: after.stage, result, occurredAt: nowIso });
+      });
       const current = (await deps.getSessionRuntime(sessionId))!;
       await checkpointReading(deps, sessionId, before!.state, result.state, current.context);
       await checkpointEssay(deps, sessionId, before!.state, result.state, current.context, event.type === "essay_step_done");
@@ -263,6 +266,7 @@ export function createSessionService(deps: RuntimeDeps) {
           if (kind === "start") {
             command = await withTransaction(async () => {
               const result = await startSession(deps, body as StartSessionInput);
+              await markLearningCoverage(result.sessionId, (await deps.getSession(result.sessionId))!.startedAt);
               const next: SessionCommand = { ...command!, sessionId: result.sessionId, phase: "transitioned", pending: { effects: result.effects } };
               await saveCommand(next);
               return next;

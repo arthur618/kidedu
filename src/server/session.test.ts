@@ -282,3 +282,22 @@ describe("不存在的会话", () => {
     ).rejects.toBeInstanceOf(SessionNotFoundError);
   });
 });
+
+describe("C11A 实际持久化observer", () => {
+  it("原effectIndex、真实DB before与upsert返回after，不用过时ctx推断", async () => {
+    const { sessionId, ctx } = await makeSession({ stageOf: { 山: "recognize" } });
+    await upsertChildChar({ ...testChildChar, stage: "review_2d" });
+    const deps = depsWith(() => ({ state: "understand", ctx, effects: [{ type: "show", screen: "understand" }, { type: "persist_char", char: "山", result: "correct" }] }), cc => ({ ...cc, stage: "review_7d" }));
+    deps.upsertChildChar = value => upsertChildChar({ ...value, stage: "mastered" });
+    const observe = vi.fn(async () => undefined);
+    await handleEvent(deps, sessionId, { type: "understand_done", char: "山", result: "correct" }, observe);
+    expect(observe).toHaveBeenCalledWith({ before: { ...testChildChar, stage: "review_2d" }, after: { ...testChildChar, stage: "mastered" }, result: "correct", effectIndex: 1, nowIso: now().toISOString() });
+    expect((await getChildChar(testChild.id, "山"))!.stage).toBe("mastered");
+  });
+  it("observer失败使真实ChildChar、SessionRuntime与结束保存整体回滚", async () => {
+    const { sessionId, ctx } = await makeSession(); const before = await getSessionRuntime(sessionId);
+    const deps = depsWith(() => ({ state: "ended", ctx: { ...ctx, homework: [] }, effects: [{ type: "persist_char", char: "山", result: "wrong" }, { type: "end_session" }] }), cc => ({ ...cc, wrongCount: cc.wrongCount + 1 }));
+    await expect(handleEvent(deps, sessionId, { type: "quit" }, async () => { throw new Error("模拟observer失败"); })).rejects.toThrow("模拟observer失败");
+    expect(await getChildChar(testChild.id, "山")).toEqual(testChildChar); expect(await getSessionRuntime(sessionId)).toEqual(before); expect((await getSession(sessionId))!.endedAt).toBeNull();
+  });
+});

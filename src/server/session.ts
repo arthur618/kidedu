@@ -1,5 +1,6 @@
 import type {
   AdvanceChar,
+  CharResult,
   DailyPlan,
   Effect,
   InitContext,
@@ -117,10 +118,13 @@ function planContextMaps(
  *
  * 同一事件的所有持久化效果和 SessionRuntime 在同一个数据库事务里提交或回滚。
  */
+export type PersistenceObserver = (item: { before: ChildChar; after: ChildChar; result: CharResult; effectIndex: number; nowIso: string }) => Promise<void>;
+
 export async function handleEvent(
   deps: SessionDeps,
   sessionId: string,
   event: SessionEvent,
+  observe?: PersistenceObserver,
 ): Promise<{ state: SessionState; effects: Effect[] }> {
   return withTransaction(async () => {
     const session = await deps.getSession(sessionId);
@@ -135,7 +139,7 @@ export async function handleEvent(
     let saveSession = false;
     let endSession = false;
 
-    for (const effect of transition.effects) {
+    for (const [effectIndex, effect] of transition.effects.entries()) {
       switch (effect.type) {
         case "persist_char": {
           // 新字第一次出现时 ChildChar 还不存在：按上下文里的类别造一条初始记录。
@@ -147,7 +151,8 @@ export async function handleEvent(
               transition.ctx.kindOf[effect.char] ?? "recognize_only",
             );
           const advanced = deps.advanceChar(current, effect.result, transition.ctx.today);
-          await deps.upsertChildChar(advanced);
+          const after = await deps.upsertChildChar(advanced);
+          await observe?.({ before: current, after, result: effect.result, effectIndex, nowIso });
           break;
         }
         case "persist_session":

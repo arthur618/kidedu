@@ -46,7 +46,7 @@ export async function withinBudget<T>(options: ModelOptions, photos: string[], r
 }
 export interface PendingTurn { request: LlmRequest<unknown>; result: LlmResult<unknown>; record?: LlmTurnRecord }
 /** 这里只竞速无副作用的模型结果。迟到结果不能执行任何数据库写入或状态推进。 */
-export function measuredClient(base: LlmClient, options: ModelOptions, turns: PendingTurn[]): LlmClient {
+export function measuredClient(base: LlmClient, options: ModelOptions, turns: PendingTurn[], metadataOnly = false): LlmClient {
   return { async call<T>(request: LlmRequest<T>): Promise<LlmResult<T>> {
     const current = operation.getStore();
     if (current && (current.abort.signal.aborted || options.nowMs() >= current.deadline)) {
@@ -65,15 +65,15 @@ export function measuredClient(base: LlmClient, options: ModelOptions, turns: Pe
       const pending = capture.run(slot, () => base.call(request)).catch((): LlmResult<T> => ({ ok: false, error: "provider_error", model: options.modelName?.(request.agent) ?? "unavailable", latencyMs: elapsed() }));
       result = current ? await Promise.race([pending, stopped]) : await pending;
     } finally { if (listener) current?.abort.signal.removeEventListener("abort", listener); }
-    turns.push({ request: redact({ ...request, schema: undefined }) as LlmRequest<unknown>, result: redact(result) as LlmResult<unknown>, record: slot.record });
+    turns.push({ request: (metadataOnly ? { agent: request.agent, sessionId: request.sessionId } : redact({ ...request, schema: undefined })) as LlmRequest<unknown>, result: (metadataOnly && result.ok ? { ...result, data: undefined } : redact(result)) as LlmResult<unknown>, record: slot.record });
     return result.ok ? { ...result, data: redact(result.data) as T } : result;
   } };
 }
 /** 明确 await 存库，避免 D2/Agent 吞掉 onTurn 抛错。 */
-export async function persistTurns(sessionId: string, turns: PendingTurn[], verdict: Turn["guardVerdict"], now: () => Date, metadata?: { activity: string; passageId?: string; step: string }): Promise<void> {
+export async function persistTurns(sessionId: string, turns: PendingTurn[], verdict: Turn["guardVerdict"], now: () => Date, metadata?: { activity: string; passageId?: string; step: string; jobId?: number; sourceVersion?: string; sourceSessionIds?: string[]; inputFingerprint?: string; errorCategory?: string }): Promise<void> {
   for (const { request, result, record } of turns.splice(0)) {
     await insertTurn({ id: `turn_${randomUUID()}`, sessionId, agent: request.agent,
-      model: record?.model ?? result.model, input: metadata ? { ...metadata, agent: request.agent } : redact(request), output: metadata ? { ok: result.ok, model: result.model, omitted: true, ...(result.ok ? {} : { error: result.error }) } : redact(result),
+      model: record?.model ?? result.model, input: metadata ? { ...metadata, agent: request.agent } : redact(request), output: metadata ? { ok: result.ok && !metadata.errorCategory, ...(metadata.errorCategory ? { error: metadata.errorCategory } : {}), model: result.model, omitted: true, ...(result.ok ? {} : { error: result.error }) } : redact(result),
       inputTokens: record?.inputTokens ?? (result.ok ? result.inputTokens : 0),
       cachedInputTokens: record?.cachedInputTokens ?? (result.ok ? result.cachedInputTokens : 0),
       outputTokens: record?.outputTokens ?? (result.ok ? result.outputTokens : 0),
