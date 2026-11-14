@@ -113,5 +113,18 @@
     "src/ui/ui.test.ts",
     "src/ui/essay.browser.ts",
     "tests/integration/essay/"
+  ],
+  "C11A": [
+    "src/nightly/",
+    "src/db/nightly/",
+    "src/db/learningOutcome.ts",
+    "src/db/learningOutcome.test.ts",
+    "src/server/runtime.ts",
+    "src/server/model.ts",
+    "src/server/session.ts",
+    "src/server/session.test.ts",
+    "prisma/schema.prisma",
+    "prisma/migrations/20261114_c11a_nightly/",
+    "tests/integration/nightly/"
   ]
 }
