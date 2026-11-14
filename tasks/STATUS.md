@@ -24,7 +24,7 @@
 
 | D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 已合并 | reviews/D2B.md：2602d69通过，合并c913f8d；独立/main867测试/构建、27浏览器及补充探针通过 |
 
-| C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 待验收 | ab15183；root已新clone，代码阶段验收排在D2B后；真实联调仍待key |
+| C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 待合并 | reviews/C8B.md：ab15183独立887测试/构建、33浏览器、手工WAV探针通过；live待key |
 
 | C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 进行中 | tasks/codex/C11B-addendum.md；真实口令/接口不配置 |
 
