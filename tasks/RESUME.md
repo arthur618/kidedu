@@ -2,6 +2,10 @@
 
 更新时间：2026-11-14。远端：https://github.com/arthur618/kidedu 。先读本文件与tasks/STATUS.md；docs/HANDOFF.md保留最初交接背景，旧进度不再代表现状。
 
+## 当前执行：C8A（2026-11-14）
+
+C8A已派发/root/implement_c8a_sol（gpt-6.1-sol medium），task/C8A从b0978bf开始，复用现存独立worktree。契约2.3新增speech.ts，SpeechToText仅增加可选mimeType/signal第三参数，类型检查通过。任务与scope已冻结；生产ASR/TTS固定关闭，所有录音和供应商只用测试替身，真实接入仍属C8B。此段取代下文“当前没有实现agent”的旧基线描述；后续先检查最新task/C8A和review，不能另起实现覆盖进行中的分支。
+
 ## 当前主线
 
 - C1、D2、D1、C3、C5、C2、C4、C6、C7均已合并；契约2.2，新增HTTP响应契约src/contracts/session.ts，原业务契约保留。
@@ -22,7 +26,7 @@ C8–C11任务书已建立，均未派发：
 
 ## 换电脑继续的顺序
 
-1. 获取远端main，读AGENTS.md、docs/ARCHITECTURE.md、docs/WORKFLOW.md、src/contracts所有文件、看板和对应任务/review。当前契约共有4个文件，不再只有原3个。
+1. 获取远端main，读AGENTS.md、docs/ARCHITECTURE.md、docs/WORKFLOW.md、src/contracts所有文件、看板和对应任务/review。当前契约已有5个文件，不再只有原3个。
 2. 先检查远端/本地分支和未提交内容，保留另一台电脑的工作；不强推，不用旧恢复包覆盖后续提交。
 3. npm ci后按迁移初始化本机开发数据库，必要时导入编造seed。生产孩子数据不参与测试；不要让编码agent读取真实private音频/照片。
 4. 本地孩子端入口为/learn。真实模型配置未验证时，不把页面能打开当模型质量通过；调试/验收仅使用编造数据、假模型或经负责人安排的本机真实评测。

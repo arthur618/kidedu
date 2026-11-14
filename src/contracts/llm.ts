@@ -1,6 +1,6 @@
 /**
  * 契约文件：模型调用层的接口。实现见任务 D2。
- * 版本 2.1（2026-11-13）：增加 LlmTurnRecord。
+ * 版本 2.1（2026-11-13）：增加 LlmTurnRecord。\n * 版本 2.3（2026-11-14）：SpeechToText增加可选第三参数MIME/取消信号；其余模型接口不变。
  * 所有 Agent 只通过 LlmClient 调模型，不直接引用任何厂商 SDK。
  */
 import type { z } from "zod";
