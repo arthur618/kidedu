@@ -2,8 +2,8 @@
 
 - 实现者：Codex，Sol high；唯一实现者，root独立验收。
 - 分支：task/C8B；基于 main@8107b98。
-- 代码验收基准SHA：待集中自查后填写；最终报告提交SHA由交付消息提供。
-- 自查结果：focused 33/33、typecheck通过；新增native浏览器6/6通过；最终verify/全browser执行中，以下状态暂为草稿。
+- 代码验收基准SHA：184c6df2c71636754fc08e61c405b5939a8ef128（代码及测试）；最终报告提交SHA由交付消息提供。
+- 自查结果：focused 33/33、typecheck通过；新增native浏览器6/6通过；最终 `bash scripts/verify.sh C8B`：46文件、801测试通过（包含src/server/build.test.ts真实Next生产构建），16文件scope/报告检查通过，输出“全部通过。”；最终全浏览器33/33通过（原27+新增6），单worker串行。
 
 ## 做了什么
 
@@ -17,20 +17,39 @@
 
 | 正式验收1–10 | 测试与证据 | 状态 |
 | --- | --- | --- |
-| 1. 缺key/关闭零网络、开启仅固定官方地址/服务端Bearer，key/媒体输出隔离，原27浏览器/文字不回退 | provider.test.ts“缺key/关闭”“真实FormData”；redirect:error断言；privacy.test.ts全表/console；native浏览器实际脚本检查；最终原27项回归待填 | 本地执行中 |
-| 2. Native编造MediaRecorder实际解码→PCM16 WAV，手算头/字节/采样/时长，两尺寸全内存 | wav.test.ts手算-32768/16384/32767及44+frames×2；deepseek-speech.browser.ts 375×667/1024×768三类录入，真实振荡器MediaStream→原生MediaRecorder(WebM)→真实AudioContext→16000Hz非零WAV；不stub转码 | 本地执行中 |
-| 3. 假HTTP真实multipart/WAV/无pinyin，格式/空/错误/拒绝/取消/忙边界 | provider.test.ts；privacy.test.ts真实回环HTTP与Request.formData；wav.test.ts真实header、帧、30秒/2MB限制；ASR只返回text及[] | focused通过 |
-| 4. TTS仅approved字段/完整有界WAV，空/截断/坏MIME/超长/失败/取消/URL优先及原生media error | provider.test.ts完整读取/分段完成/中断/长度/错误；原speech.browser.ts approved URL、TTS Blob、预览native error3项保持；service.test.ts审核卡/任意text拒绝 | 本地执行中 |
-| 5. 非合作解码/模型迟到，编辑/重录/退出无覆盖，生命周期/预算/并发/零自动重试 | ui/speech/wav.test.ts迟到解码、9秒转码+3秒HTTP；recorder.test.ts权限/30秒/取消；provider.test.ts2个并发、超时继续占位、reader.cancel、同步取消不泄漏；native浏览器跟踪context/轨道/URL及退出迟到 | focused通过，浏览器执行中 |
-| 6. 三类转录只填编辑框，阅读/采访确认仅提交一次，不自动判正确/素材/阶段，长稿保留 | 原speech.browser.ts作业/understand；新增native三类短录入全表计数/手动双击只+1/私有transcript与utterances/cards确认前为空；长稿手写/卡选择保留 | 本地执行中 |
-| 7. 全持久表/console/异常/静态包无音频和key，仅编造canary | privacy.test.ts遍历Prisma全部model，真回环HTTP前后快照相等，原字节/base64/key/canary隔离；provider.test.ts错误/key/媒体回显；native浏览器加载脚本检查服务端key与URL不进入client | 本地执行中 |
-| 8. focused集中自审后最终verify C8B含真实build、全浏览器串行、提交后scope/报告/contracts0 | focused/typecheck通过；最终verify/浏览器/scope/SHA待填；遵守root预约窗口 | 执行中 |
+| 1. 缺key/关闭零网络、开启仅固定官方地址/服务端Bearer，key/媒体输出隔离，原27浏览器/文字不回退 | provider.test.ts“缺key/关闭”“真实FormData”；redirect:error断言；privacy.test.ts全表/console；native浏览器实际脚本检查；最终原27项全部通过 | 本地通过 |
+| 2. Native编造MediaRecorder实际解码→PCM16 WAV，手算头/字节/采样/时长，两尺寸全内存 | src/speech/wav.test.ts手算-32768/16384/32767及44+frames×2；deepseek-speech.browser.ts 375×667/1024×768三类录入，真实振荡器MediaStream→原生MediaRecorder(WebM)→真实AudioContext→16000Hz非零WAV；不stub转码 | 本地通过 |
+| 3. 假HTTP真实multipart/WAV/无pinyin，格式/空/错误/拒绝/取消/忙边界 | provider.test.ts；privacy.test.ts真实回环HTTP与Request.formData；src/speech/wav.test.ts真实header、帧、30秒/2MB限制；ASR只返回text及[] | focused通过 |
+| 4. TTS仅approved字段/完整有界WAV，空/截断/坏MIME/超长/失败/取消/URL优先及原生media error | provider.test.ts完整读取/分段完成/中断/长度/错误；原speech.browser.ts approved URL、TTS Blob、预览native error3项保持；service.test.ts审核卡/任意text拒绝 | 本地通过 |
+| 5. 非合作解码/模型迟到，编辑/重录/退出无覆盖，生命周期/预算/并发/零自动重试 | src/ui/speech/wav.test.ts迟到解码、9秒转码+3秒HTTP；recorder.test.ts权限/30秒/取消；provider.test.ts2个并发、超时继续占位、reader.cancel、同步取消不泄漏；native浏览器跟踪context/轨道/URL及退出迟到 | 本地通过 |
+| 6. 三类转录只填编辑框，阅读/采访确认仅提交一次，不自动判正确/素材/阶段，长稿保留 | 原speech.browser.ts作业/understand；新增native三类短录入全表计数/手动双击只+1/私有transcript与utterances/cards确认前为空；长稿手写/卡选择保留 | 本地通过 |
+| 7. 全持久表/console/异常/静态包无音频和key，仅编造canary | privacy.test.ts遍历Prisma全部model，真回环HTTP前后快照相等，原字节/base64/key/canary隔离；provider.test.ts错误/key/媒体回显；native浏览器加载脚本检查服务端key与URL不进入client | 本地通过 |
+| 8. focused集中自审后最终verify C8B含真实build、全浏览器串行、提交后scope/报告/contracts0 | focused/typecheck通过；最终verify 801/801及真实build、全浏览器33/33、scope16文件通过；遵守root独占预约窗口，串行完成 | 本地通过 |
 | 9. 支持规范WAV/未测硬件、并发/费用/中断边界、依赖及真实限制 | 见以下明确范围和限制 | 已明确 |
 | 10. C8B-live待安全配置key，先合成材料真实ASR/TTS/取消/结构/费用，再负责人安排真实试点 | 本轮没有真实key、真实供应商请求或真实儿童材料；不计原C8第7条真实服务通过 | 未完成，按任务保留待key |
 
 ## 改动的文件
 
-提交后按git diff逐项填写。
+提交后 `git diff main...HEAD --name-only` 的16个实际文件：
+
+- `.env.example`
+- `reports/C8B.md`
+- `src/server/speech.ts`
+- `src/speech/deepseek.ts`
+- `src/speech/http.ts`
+- `src/speech/wav.test.ts`
+- `src/speech/wav.ts`
+- `src/ui/deepseek-speech.browser.ts`
+- `src/ui/essay/screens.tsx`
+- `src/ui/reading/screens.tsx`
+- `src/ui/speech/client.ts`
+- `src/ui/speech/recorder.test.ts`
+- `src/src/ui/speech/wav.test.ts`
+- `src/ui/speech/wav.ts`
+- `tests/integration/deepseek-speech/privacy.test.ts`
+- `tests/integration/deepseek-speech/provider.test.ts`
+
+提交后scope检查通过，`git diff main...HEAD -- src/contracts`为空；contracts文件改动0。Next生成的AGENTS.md/next-env.d.ts/tsconfig.json及既有截图差异已保存至工作树外的生成差异patch并仅还原这些已知生成文件，不提交范围外变更。
 
 ## 新增依赖
 
