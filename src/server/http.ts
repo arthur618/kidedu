@@ -1,3 +1,4 @@
+import { EssayActionSchema } from "../contracts/essay";
 import { ReadingActionSchema } from "../contracts/reading";
 import { getReadingRuntime } from "../db/readingRuntime";
 import { getPassage } from "../db/passage";
@@ -10,7 +11,7 @@ import { createSessionService, CoachConflict, RequestConflict, type CommandKind 
 const startSchema = z.object({ childId: z.string().min(1), lessonId: z.string().min(1), hasEssayToday: z.boolean() }).strict();
 const homeworkSchema = z.object({ imageDataUrl: z.string().optional(), spokenText: z.string().trim().min(1).max(10000).optional() }).strict().refine(body => body.imageDataUrl || body.spokenText);
 const coachSchema = z.object({ char: z.string().length(1), text: z.string().max(10000) }).strict();
-const schemas = { start: startSchema, event: SessionEventSchema, homework: homeworkSchema, coach: coachSchema, reading: ReadingActionSchema };
+const schemas = { start: startSchema, event: SessionEventSchema, homework: homeworkSchema, coach: coachSchema, reading: ReadingActionSchema, essay: EssayActionSchema };
 export function validPhoto(value: string): boolean {
   const match = /^data:image\/(jpeg|png);base64,([A-Za-z0-9+/]+={0,2})$/.exec(value);
   if (!match || !match[2] || match[2].length % 4 !== 0) return false;

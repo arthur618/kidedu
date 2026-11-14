@@ -133,3 +133,19 @@ describe("C7 HTTP重试与预算", () => {
     expect(html).toContain("字卡还没准备好。"); expect(html).toContain("今天先到这"); expect(html).toContain("今天先歇一歇。");
   });
 });
+
+ describe("C10 作文公共三屏与HTTP操作",()=>{
+ it("ready投影有原话选择删除、独立正文编辑框和一个反馈问题",()=>{
+  const fixtures: Parameters<typeof decodeScreen>[0][]=[
+   {state:"essay_interview",effects:[{type:"show",screen:"essay_interview",data:{mode:"ready",topic:"编造散步",say:"我听见了。",ask:"你听到了什么？",remaining:4}}]},
+   {state:"essay_cards",effects:[{type:"show",screen:"essay_cards",data:{mode:"ready",topic:"编造散步",cards:[{id:"stable",text:"蓝 伞",sourceUtterance:0,selected:true}]}}]},
+   {state:"essay_feedback",effects:[{type:"show",screen:"essay_feedback",data:{mode:"ready",say:'我看见了：“蓝伞”',ask:"我还想知道，当时你听到了什么？",quote:"蓝伞"}}]},
+  ];
+  const html=fixtures.map(packet=>renderToStaticMarkup(React.createElement(LearningScreen,{view:decodeScreen(packet),actions})));expect(html[0]).toContain("这些够了");expect(html[1]).toContain("你的原话");expect(html[1]).toContain("aria-pressed");expect(html[1]).toContain("删除想法：蓝 伞");expect(html[1]).toContain("我自己写的文章");expect(html[2]).toContain("先写到这里");
+ });
+ it("HTTP essay使用同一操作ID重试并按契约校验，不带外层上下文",async()=>{
+  const packet={...demoPacket("essay_cards"),effects:[{type:"show" as const,screen:"essay_cards" as const,data:{mode:"ready",topic:"编造",cards:[]}}]};
+  const fetcher=vi.fn().mockImplementation(async()=>new Response(JSON.stringify(packet)));const service=createHttpService({childId:"child",lessonId:"lesson",fetcher});await service.start("stable-start-key-0001");await service.essay!({type:"answer",text:" 编造原话 "},"stable-essay-key-0001");
+  const [path,init]=fetcher.mock.calls[1]!;expect(path).toBe("/api/session/fixture-session/essay");expect(JSON.parse(init.body)).toEqual({type:"answer",text:"编造原话"});expect(init.headers["Idempotency-Key"]).toBe("stable-essay-key-0001");
+ });
+ });

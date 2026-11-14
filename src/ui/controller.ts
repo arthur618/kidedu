@@ -33,6 +33,7 @@ export class LearningController {
     return this.run(() => this.service.event(event, id));
   };
   homework = (input: { imageDataUrl?: string; spokenText?: string }) => { const id = this.idFactory(); return this.run(() => this.service.homework(input, id)); };
+  essay = (input: Parameters<NonNullable<LearningService["essay"]>>[0]) => { const id = this.idFactory(); return this.run(() => this.service.essay ? this.service.essay(input, id) : Promise.reject()); };
   reading = (input: { text: string }) => { const id = this.idFactory(); return this.run(() => this.service.reading ? this.service.reading(input, id) : Promise.reject()); };
   coach = (input: { char: string; text: string }) => { const id = this.idFactory(); return this.run(() => this.service.coach(input, id)); };
 }

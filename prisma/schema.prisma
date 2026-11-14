@@ -142,3 +142,10 @@ model ReadingRuntime {
   sessionId String @id
   data String
 }
+
+// C10 原话、正文与恢复载荷仅在私有活动表。
+model EssayRuntime {
+  sessionId String @id
+  data String?
+  commands String @default("{}")
+}
