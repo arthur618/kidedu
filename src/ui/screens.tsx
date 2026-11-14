@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HomeworkItem } from "../contracts/schemas";
 import type { SessionEvent } from "../contracts/orchestrator";
 import type { ScreenData, View } from "./model";
+import { useSpeechInput } from "./speech/input";
+import { SpeechPlayback } from "./speech/playback";
 import { compressPhoto, cropPhoto } from "./images";
 
 export function Robot() {
@@ -25,7 +27,8 @@ export function PhotoPicker({ label, onPhoto }: { label: string; onPhoto: (photo
 export function HomeworkCapture({ onPhoto, onText }: { onPhoto: (photo: string) => void; onText: (text: string) => void }) {
   const [speaking, setSpeaking] = useState(false);
   const [text, setText] = useState("");
-  return <><p className="lead">把今天的作业给我看看，<br/>我们一起慢慢做。</p><div className="capture-art" aria-hidden="true"><span>语 文</span><i/><i/><i/><b>✦</b></div>{!speaking ? <div className="actions"><PhotoPicker label="拍下今天的作业" onPhoto={onPhoto}/><button onClick={() => setSpeaking(true)}>我来说</button></div> : <form onSubmit={event => { event.preventDefault(); if (text.trim()) onText(text.trim()); }}><label htmlFor="homework-text">今天要做什么？</label><textarea id="homework-text" value={text} onChange={event => setText(event.target.value)} placeholder="把作业写在这里"/><button className="primary" disabled={!text.trim()}>好了，给你看看</button><button type="button" onClick={() => setSpeaking(false)}>还是拍照吧</button></form>}</>;
+  const voice = useSpeechInput(setText);
+  return <><p className="lead">把今天的作业给我看看，<br/>我们一起慢慢做。</p><div className="capture-art" aria-hidden="true"><span>语 文</span><i/><i/><i/><b>✦</b></div>{!speaking ? <div className="actions"><PhotoPicker label="拍下今天的作业" onPhoto={onPhoto}/><button onClick={() => setSpeaking(true)}>我来说</button></div> : <form onSubmit={event => { event.preventDefault(); if (text.trim()) onText(text.trim()); }}><label htmlFor="homework-text">今天要做什么？</label><textarea id="homework-text" value={text} onChange={event => { voice.cancel(); setText(event.target.value); }} placeholder="把作业写在这里"/>{voice.control}<button className="primary" disabled={!text.trim()}>好了，给你看看</button><button type="button" onClick={() => { voice.cancel(); setSpeaking(false); }}>还是拍照吧</button></form>}</>;
 }
 export function HomeworkList({ items, onDone }: { items: HomeworkItem[]; onDone: (items: HomeworkItem[]) => void }) {
   const [draft, setDraft] = useState(items);
@@ -37,16 +40,14 @@ export function Recognize({ data, onAnswer }: { data: ScreenData["recognize"]; o
 }
 export function Understand({ data, onText }: { data: ScreenData["understand"]; onText: (text: string) => void }) {
   const [text, setText] = useState("");
-  return <><div className="char-card"><p className="pinyin">{data.card.pinyin}</p><div className="big-char">{data.card.char}</div></div><div className="speech"><p>{data.say}</p>{data.ask && <p className="ask">{data.ask}</p>}</div><form onSubmit={event => { event.preventDefault(); onText(text.trim()); }}><label htmlFor="child-answer">我想说</label><textarea id="child-answer" value={text} onChange={event => setText(event.target.value)} placeholder="写下你的想法"/><button className="primary">{text.trim() ? "好了，听听我的" : "我听完了"}</button></form></>;
+  const voice = useSpeechInput(setText);
+  return <><div className="char-card"><p className="pinyin">{data.card.pinyin}</p><div className="big-char">{data.card.char}</div></div><div className="speech"><p>{data.say}</p>{data.ask && <p className="ask">{data.ask}</p>}</div><form onSubmit={event => { event.preventDefault(); onText(text.trim()); }}><label htmlFor="child-answer">我想说</label><textarea id="child-answer" value={text} onChange={event => { voice.cancel(); setText(event.target.value); }} placeholder="写下你的想法"/>{voice.control}<button className="primary">{text.trim() ? "好了，听听我的" : "我听完了"}</button></form></>;
 }
 export function DictationPlay({ data, onDone }: { data: ScreenData["dictation_play"]; onDone: () => void }) {
   const [index, setIndex] = useState(0);
   const [played, setPlayed] = useState(false);
-  const [audioRetry, setAudioRetry] = useState(false);
-  const audio = useRef<HTMLAudioElement>(null);
   const card = data.cards[index]!;
-  async function play() { setPlayed(true); setAudioRetry(false); if (audio.current) { audio.current.currentTime = 0; try { await audio.current.play(); } catch { setAudioRetry(true); } } }
-  return <><p className="step">第 {index + 1} 个，共 {data.cards.length} 个</p><div className="sound-art" aria-hidden="true">♫</div><p>拿好纸和笔，听一听，再写下来。</p>{card.audioUrl ? <audio ref={audio} src={card.audioUrl} preload="none"/> : <p className="speech">{card.dictationContext}</p>}<button className={played ? "" : "primary"} onClick={() => void play()}>{played ? "再听一遍" : "播放这个词"}</button>{audioRetry && <p role="status">暂时听不到，看看这句报词吧：{card.dictationContext}</p>}{played && <button className="primary" onClick={() => { if (index === data.cards.length - 1) onDone(); else { setIndex(index + 1); setPlayed(false); setAudioRetry(false); } }}>下一个</button>}</>;
+  return <><p className="step">第 {index + 1} 个，共 {data.cards.length} 个</p><div className="sound-art" aria-hidden="true">♫</div><p>拿好纸和笔，听一听，再写下来。</p><SpeechPlayback key={card.char} card={card} played={played} onPlayed={() => setPlayed(true)}/>{played && <button className="primary" onClick={() => { if (index === data.cards.length - 1) onDone(); else { setIndex(index + 1); setPlayed(false); } }}>下一个</button>}</>;
 }
 export function DictationCapture({ onPhoto }: { onPhoto: (photo: string) => void }) {
   return <><p>把刚才写的字拍下来，<br/>我们放在一起看看。</p><div className="paper-art" aria-hidden="true"><span>田</span><span>田</span><span>田</span></div><p className="gentle">把纸放平，让每个字都拍清楚。</p><PhotoPicker label="拍下我写的字" onPhoto={onPhoto}/></>;
