@@ -10,7 +10,7 @@ export function loadConfig(env: Record<string, string | undefined>): ParentConfi
   const password = env.PARENT_ACCESS_PASSWORD ?? "";
   const raw = env.PARENT_ALLOWED_CHILD_IDS ?? "";
   const childIds = [...new Set(raw.split(",").map(id => id.trim()))].sort();
-  if (password.length < 24 || password.length > 512 || !raw.trim() || childIds.some(id => !/^[\p{L}\p{N}_-]{1,128}$/u.test(id))) return null;
+  if (!password.trim() || password.length < 24 || password.length > 512 || !raw.trim() || childIds.some(id => !/^[\p{L}\p{N}_-]{1,128}$/u.test(id))) return null;
   return { password, childIds, fingerprint: hash(JSON.stringify([password, childIds])) };
 }
 export function tokenFrom(request: Request): string | null {

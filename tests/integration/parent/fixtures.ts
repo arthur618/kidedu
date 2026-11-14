@@ -12,7 +12,7 @@ export function daily(childId: string, date = "2026-11-14") {
 }
 export async function seedParent() {
   const db = getPrisma();
-  for (const table of ["parentReviewRequest", "parentReviewAudit", "incidentContext", "parentAccessSession", "parentLoginLimit", "nightlyPublication", "nightlyStep", "nightlyJob", "incident", "turn", "childChar", "session", "child"] as const) await (db[table] as { deleteMany(): Promise<unknown> }).deleteMany();
+  for (const table of ["sessionRuntime", "coachRuntime", "readingRuntime", "essayRuntime", "sessionCommand", "learningOutcome", "sessionLearningCoverage", "parentReviewRequest", "parentReviewAudit", "incidentContext", "parentAccessSession", "parentLoginLimit", "nightlyPublication", "nightlyStep", "nightlyJob", "incident", "turn", "childChar", "session", "child"] as const) await (db[table] as { deleteMany(): Promise<unknown> }).deleteMany();
   for (const [id, nickname] of [["parent-a", "编造小禾"], ["parent-b", "编造小雨"], ["other-child", "不可见孩子"]]) {
     await db.child.create({ data: { id: id!, nickname: nickname!, grade: 3, interests: "[]", dailyLimitMinutes: 40 } });
     await db.session.create({ data: { id: `s-${id}`, childId: id!, startedAt: NOW, endedAt: NOW, homework: "[]" } });

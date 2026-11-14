@@ -84,3 +84,9 @@ test("C11B 注销后的晚到日报响应保持登录空态", async ({ page }) =
   await routeNetwork(page, async path => { if (active && !held && path.endsWith("parent-a/reports")) { held = true; arrived(); await wait; } });
   await signIn(page); active = true; await page.getByRole("button", { name: "刷新记录", exact: true }).click(); await signal; await page.getByRole("button", { name: "退出登录", exact: true }).click(); await expect(page.getByLabel("家长口令")).toBeVisible(); release(); await expect(page.getByRole("heading", { name: "学习事实", exact: true })).toHaveCount(0);
 });
+test("C11B 翻页晚到响应不覆盖新筛选", async ({ page }) => {
+  let held = false; let release!: () => void; let arrived!: () => void;
+  const wait = new Promise<void>(resolve => { release = resolve; }); const signal = new Promise<void>(resolve => { arrived = resolve; });
+  await routeNetwork(page, async path => { if (!held && path.includes("parent-a/progress?cursor=")) { held = true; arrived(); await wait; } });
+  await signIn(page); await page.getByRole("button", { name: "下一页进度", exact: true }).click(); await signal; await page.getByLabel("按阶段查看").selectOption("mastered"); await expect(page.locator(".parent-chars li")).toHaveCount(3); release(); await expect(page.locator(".parent-chars li")).toHaveCount(3); await expect(page.getByLabel("按阶段查看")).toHaveValue("mastered");
+});

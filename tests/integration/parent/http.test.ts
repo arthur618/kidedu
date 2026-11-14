@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, afterEach, expect, it, vi } from "vitest";
 import { database } from "../helpers";
 import { getPrisma, disconnectPrisma } from "../../../src/db/client";
 import { insertIncident } from "../../../src/db/incident";
@@ -8,6 +8,7 @@ import { daily, ENV, NOW, PASSWORD, seedParent } from "./fixtures";
 let db: Awaited<ReturnType<typeof database>>;
 let env: Record<string, string | undefined>; let now: Date; let handler: ReturnType<typeof createParentHandler>;
 let cookie = "";
+afterEach(() => vi.restoreAllMocks());
 beforeAll(async () => { db = await database(); }); afterAll(async () => { await db?.cleanup(); });
 beforeEach(async () => { await seedParent(); env = { ...ENV }; now = new Date(NOW); cookie = ""; restart(); });
 function restart() { handler = createParentHandler({ getEnv: () => env, now: () => now }); }
@@ -20,7 +21,7 @@ function request(path: string, body?: unknown, options: { cookie?: string; origi
 async function signIn() { const response = await request("login", { password: PASSWORD }); expect(response.status).toBe(200); cookie = response.headers.get("set-cookie")!.split(";")[0]!; return response; }
 const resource = (path: string, id = "parent-a") => `children/${id}/${path}`;
 it("验收1：缺配置默认关闭，公开status仅开关，无任何家庭字段；其他入口403", async () => {
-  for (const invalid of [{}, { PARENT_ACCESS_PASSWORD: "short", PARENT_ALLOWED_CHILD_IDS: "parent-a" }, { PARENT_ACCESS_PASSWORD: PASSWORD, PARENT_ALLOWED_CHILD_IDS: "parent-a,," }]) {
+  for (const invalid of [{}, { PARENT_ACCESS_PASSWORD: " ".repeat(24), PARENT_ALLOWED_CHILD_IDS: "parent-a" }, { PARENT_ACCESS_PASSWORD: "short", PARENT_ALLOWED_CHILD_IDS: "parent-a" }, { PARENT_ACCESS_PASSWORD: PASSWORD, PARENT_ALLOWED_CHILD_IDS: "parent-a,," }]) {
     env = invalid; expect(await (await request("status")).json()).toEqual({ enabled: false, authenticated: false });
     for (const path of ["children", resource("reports"), resource("progress"), resource("incidents"), resource("deletion-preview")]) expect((await request(path)).status).toBe(403);
     expect((await request("login", { password: PASSWORD })).status).toBe(403);
@@ -154,4 +155,20 @@ it("验收2/4：context正确但引用不存在Turn也隐藏；模型元信息�
   await signIn(); await getPrisma().incident.update({ where: { id: "incident-parent-a" }, data: { turnId: "missing-turn" } }); expect((await request(resource("incidents/incident-parent-a"))).status).toBe(404);
   await getPrisma().turn.create({ data: { id: "metadata-turn", sessionId: "s-parent-a", agent: "reader", model: "https://private.example/media", input: "PRIVATE", output: "PRIVATE", inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, latencyMs: 0, guardVerdict: "blocked", createdAt: NOW } });
   await getPrisma().incident.update({ where: { id: "incident-parent-a" }, data: { turnId: "metadata-turn" } }); const response = await request(resource("incidents/incident-parent-a")); expect(response.status).toBe(200); expect(await response.text()).not.toMatch(/private.example|PRIVATE|https/);
+});
+it("验收2：关闭/未登录/越权child在任何家庭查询之前被拒绝", async () => {
+  const childLookup = vi.spyOn(getPrisma().child, "findUnique"); const childList = vi.spyOn(getPrisma().child, "findMany"); const progressLookup = vi.spyOn(getPrisma().childChar, "findMany"); const reportsLookup = vi.spyOn(getPrisma().nightlyPublication, "findMany"); const rawLookup = vi.spyOn(getPrisma(), "$queryRaw");
+  env = {}; await request("status"); await request(resource("deletion-preview")); env = { ...ENV }; await request(resource("reports")); await request(resource("incidents")); await request(resource("progress")); await signIn(); await request(resource("reports", "other-child")); await request(resource("deletion-preview", "missing-child"));
+  for (const spy of [childLookup, childList, progressLookup, reportsLookup, rawLookup]) expect(spy).not.toHaveBeenCalled();
+});
+it("验收5：18类完整私有/学习引用计数、预览无任何业务写入，私有快照不投影", async () => {
+  const db = getPrisma(); const sessionId = "s-parent-a";
+  await db.sessionRuntime.create({ data: { sessionId, state: "ended", context: "PRIVATE-CONTEXT" } }); await db.coachRuntime.create({ data: { sessionId, data: "PRIVATE-COACH" } }); await db.readingRuntime.create({ data: { sessionId, data: "PRIVATE-READING" } }); await db.essayRuntime.create({ data: { sessionId, data: "PRIVATE-ESSAY", commands: "PRIVATE-COMMANDS" } });
+  await db.sessionCommand.create({ data: { scope: "child:parent-a", key: "preview-scope", fingerprint: "abc", kind: "start", sessionId: null, phase: "pending", pending: "PRIVATE-PENDING" } });
+  await db.learningOutcome.create({ data: { id: "preview-outcome", sessionId, childId: "parent-a", commandScope: "scope", commandKey: "key", effectIndex: 0, char: "山", kind: "write", stageBefore: "recognize", stageAfter: "understand", result: "wrong", occurredAt: NOW } }); await db.sessionLearningCoverage.create({ data: { sessionId, startedAt: NOW } });
+  const job = await db.nightlyJob.findFirstOrThrow({ where: { childId: "parent-a" } }); await db.nightlyStep.create({ data: { jobId: job.id, key: "score", inputFingerprint: "private-step", status: "done", result: "PRIVATE-STEP" } });
+  await signIn(); await request(resource("incidents/incident-parent-a/resolve"), { resolved: true, expectedRevision: 0 }, { key: "preview-complete-request" });
+  const tables = ["child", "childChar", "session", "turn", "incident", "incidentContext", "sessionRuntime", "coachRuntime", "readingRuntime", "essayRuntime", "sessionCommand", "learningOutcome", "sessionLearningCoverage", "nightlyJob", "nightlyStep", "nightlyPublication", "parentReviewRequest", "parentReviewAudit", "parentAccessSession", "parentLoginLimit"] as const;
+  const snapshot = async () => JSON.stringify(await Promise.all(tables.map(table => (db[table] as { findMany(): Promise<unknown> }).findMany()))); const before = await snapshot();
+  const response = await request(resource("deletion-preview")); const raw = await response.text(); expect(response.status).toBe(200); expect(raw).not.toContain("PRIVATE"); expect(JSON.parse(raw).counts).toEqual({ Child: 1, ChildChar: 105, Session: 2, Turn: 0, Incident: 1, IncidentContext: 1, SessionRuntime: 1, CoachRuntime: 1, ReadingRuntime: 1, EssayRuntime: 1, SessionCommand: 1, LearningOutcome: 1, SessionLearningCoverage: 1, NightlyJob: 1, NightlyStep: 1, NightlyPublication: 1, ParentReviewRequest: 1, ParentReviewAudit: 1 }); expect(await snapshot()).toBe(before);
 });
