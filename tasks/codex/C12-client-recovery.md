@@ -15,7 +15,7 @@ HttpLearningApp每次挂载都start新会话，已有GET/幂等恢复没有接�
 
 ## 客户端
 
-5. 只用sessionStorage，按child+lesson绑定存SessionRecoveryHint，精确schema无额外字段，8KiB上限；在网络提交前先存标识，成功校验响应后更新会话ID并清pending。不得存完整Packet/ctx/请求body、孩子原话、作文、图片、音频、base64/BlobURL或其可逆表示，也不用localStorage/IndexedDB。SSR/禁用或损坏/额度满的存储正常退为本次内存流程，不裁剪ID、不阻止学习、不输出存储内容。
+5. 只用sessionStorage，按child+lesson绑定存SessionRecoveryHint，精确schema无额外字段，序列化UTF-16长度8192上限（以冻结schema为准，不称严格字节限额）；在网络提交前先存标识，成功校验响应后更新会话ID并清pending。不得存完整Packet/ctx/请求body、孩子原话、作文、图片、音频、base64/BlobURL或其可逆表示，也不用localStorage/IndexedDB。SSR/禁用或损坏/额度满的存储正常退为本次内存流程，不裁剪ID、不阻止学习、不输出存储内容。
 6. 有sessionId挂载先resume，pendingID存在则由服务端取既有载荷继续，不要求孩子重说导致跳轮。未知操作保留原会话/当前屏幕、清旧pending并提示重新填写；不存在/错误绑定会话给正常明确重新开始入口，不自动无限start。ended保持结束，只有孩子明确点击重新开始才清hint并生成新start ID。无stash才正常start。
 7. child/lesson变更必须新controller/service绑定并取消/隔离旧代次；旧响应不能覆盖新孩子，不能给新sessionId误发旧请求。网络重试仍同ID，新实际动作新ID；换绑定/卸载/整页reload清媒体资源、不写媒体存储。保持busy时quit排队语义；React StrictMode挂载/清理/重挂不能双建会话或永久卡busy。未发送编辑草稿/未确认录音跨整页刷新不保存，文档明确这一点。
 8. 不为恢复新增供应商/模型调用；常规只读reload零模型，只有真正未完成效果恢复可能按既有重试收费，不能宣称exactly-once。默认文字路径/语音关闭继续可用；不泄露实现/存储/供应商术语给孩子。
