@@ -195,6 +195,13 @@
     "tests/integration/recovery/",
     "src/db/parent/store.ts",
     "src/ui/parent/ParentApp.tsx",
-    "tests/integration/parent/http.test.ts"
+    "tests/integration/parent/http.test.ts",
+    "src/ui/speech.browser.ts",
+    "src/ui/e2e.browser.ts"
+  ],
+  "C13": [
+    "vitest.config.ts",
+    "tests/integration/dependencies/",
+    "docs/DEPENDENCIES.md"
   ]
 }
