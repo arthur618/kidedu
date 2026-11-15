@@ -82,3 +82,5 @@ C11A在真实persist_char事务中追加LearningOutcome不可变流水；夜间�
 D2B统一对话请求显式非思考、有限生成、非流式JSON及供应商high审核；只有完整stop且无拒答/工具调用才解析候选。原护栏、approved来源和运行时DeepSeek限制继续适用。
 
 C8B在C8A服务上接固定官方DeepSeek ASR/TTS：浏览器内存真实解码→PCM16单声道16k WAV，后端验证帧和时长；转录只填可编辑框，TTS只取approved字卡报词。DEEPSEEK_SPEECH_ENABLED与服务端key同时有效才开启，默认关闭；客户端12秒、服务8秒及有限并发。真实供应商WAV变体/质量/计费仍未验证，原C8A“真实供应商待定”是历史描述。
+
+C11B已接`/parent`，默认无口令/授权集合时关闭；opaque哈希会话/持久单调限速、公共日报与进度分页、可信事件归属和CAS人工审计。所有变更有同源检查，原文/媒体不进入复核投影。数据删除仅预览，不自动清理；根任务C12增加的SessionOrigin也须纳入可信计数。

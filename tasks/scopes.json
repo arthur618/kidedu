@@ -175,5 +175,26 @@
     "tests/integration/nightly/score-eligibility.test.ts",
     "tests/integration/nightly/helpers.ts",
     "tests/integration/nightly/facts.test.ts"
+  ],
+  "C12": [
+    "src/server/runtime.ts",
+    "src/server/http.ts",
+    "src/server/README.md",
+    "app/api/session/[id]/resume/",
+    "src/db/sessionOrigin.ts",
+    "prisma/schema.prisma",
+    "prisma/migrations/20261115_c12_origin/",
+    "src/ui/recovery/",
+    "src/ui/HttpLearningApp.tsx",
+    "src/ui/service.ts",
+    "src/ui/controller.ts",
+    "src/ui/LearningApp.tsx",
+    "src/ui/screens.tsx",
+    "src/ui/ui.test.ts",
+    "src/ui/recovery.browser.ts",
+    "tests/integration/recovery/",
+    "src/db/parent/store.ts",
+    "src/ui/parent/ParentApp.tsx",
+    "tests/integration/parent/http.test.ts"
   ]
 }

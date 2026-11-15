@@ -76,3 +76,7 @@ main aad4e27重装复验887测试/构建通过，C8B正式结论见reviews/C8B.m
 ## 最新：C4B已合并、C11B修复中（2026-11-15）
 
 main5bf3bbe重装948测试/实际构建通过，C4B已独立验收，见reviews/C4B.md；真实检索live待key。C11B@770cad9阶段检查发现登录慢body跨窗口限速F1，见reviews/C11B.md；原/root/implement_c11b_sol已修并focused27通过，等待最终verify/browser及root新clone独立验收，不得提前合并。昨天额度中断草稿备份在root工作区work/20261115-agent-backups；今日ordinaryUsageAllowed=true后只恢复原agent一次，未用reset。全部接口/口令留空。
+
+## 最新：家长已合并、评分修正待验收、刷新恢复实施（2026-11-15）
+
+main7d8addc复验976测试/构建通过，C11B正式review顶部通过，历史F1已关闭。当前冻结契约2.10；C11C@3eff287在root/work/review-C11C与家长主线试合验收，无需作者重复build。C12复用已接受C8B工作树yuwen-c4-content/task/C12，单Sol high /root/implement_c8b_sol；正式任务tasks/codex/C12-client-recovery.md。root维护契约/独立验收，不写实现，全套重型串行。真实接口配置和联调仍延后。

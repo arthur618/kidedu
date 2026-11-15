@@ -93,3 +93,5 @@ C11A由原Sol high恢复并完成，独立817测试/构建、27浏览器和额�
 - C4B：Sol medium，固定单次离线检索与受限文件输出，复用契约/Node fetch，无需高档模型。root独立读生产代码及验收；全套build/browser串行。
 
 - C11C：Sol medium，2个生产文件内的明确评分资格/来源版本修正，复用现有真实流水与持久步骤；不使用额外审查agent，root独立复验。
+
+- C12：复用Sol high实现agent，跨服务端检查点/媒体缺失/客户端持久标识与生命周期，需高思考；单实现，root另clone验收，不新增审查agent。

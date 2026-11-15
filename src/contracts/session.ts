@@ -61,3 +61,27 @@ export const SessionRequestIdSchema = z.string().min(16).max(128).regex(/^[A-Za-
 /** 服务端外部效果总预算100秒，客户端120秒；都必须可注入时钟/定时器测试。 */
 export const SESSION_SERVER_BUDGET_MS = 100_000;
 export const SESSION_CLIENT_TIMEOUT_MS = 120_000;
+
+/** 契约2.10：页面刷新恢复；只存标识，不把孩子输入或媒体写浏览器存储。 */
+export const SessionOriginSchema = z.object({
+  sessionId: z.string().min(1), childId: z.string().min(1), lessonId: z.string().min(1),
+}).strict();
+export type SessionOrigin = z.infer<typeof SessionOriginSchema>;
+export const SessionRecoveryRequestSchema = z.object({
+  childId: z.string().min(1), lessonId: z.string().min(1),
+  operationId: SessionRequestIdSchema.optional(),
+}).strict();
+export const SessionRecoveryResponseSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("ok"), packet: SessionPacketSchema }).strict(),
+  z.object({ status: z.literal("operation_missing"), packet: SessionPacketSchema }).strict(),
+]);
+export type SessionRecoveryResponse = z.infer<typeof SessionRecoveryResponseSchema>;
+export const SessionRecoveryHintSchema = z.object({
+  version: z.literal(1), childId: z.string().min(1), lessonId: z.string().min(1), hasEssayToday: z.boolean(),
+  startRequestId: SessionRequestIdSchema,
+  sessionId: z.string().min(1).nullable(), pendingRequestId: SessionRequestIdSchema.nullable(),
+}).strict().superRefine((hint, ctx) => {
+  if (hint.sessionId === null && hint.pendingRequestId !== null) ctx.addIssue({ code: "custom", message: "尚未得到会话时只能恢复原始开始请求。" });
+  if (JSON.stringify(hint).length > 8192) ctx.addIssue({ code: "custom", message: "会话恢复标识过长。" });
+});
+export type SessionRecoveryHint = z.infer<typeof SessionRecoveryHintSchema>;
