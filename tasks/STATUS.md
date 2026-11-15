@@ -30,7 +30,7 @@
 
 | C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；live待key |
 
-| C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 待验收 | 3eff287作者964测试/构建；root已试合家长主线，资格/缓存探针通过，完整独验排队 |
+| C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 待合并 | reviews/C11C.md：3eff287独立992测试/构建，实际nightly资格/缓存/零分探针通过 |
 
 | C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 进行中 | tasks/codex/C12-client-recovery.md；不持久孩子正文/媒体 |
 
