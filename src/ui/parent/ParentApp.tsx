@@ -12,7 +12,7 @@ type Incidents = z.infer<typeof ParentIncidentsPageSchema>;
 type Preview = z.infer<typeof ParentDeletionPreviewSchema>;
 const stages: Record<z.infer<typeof CharStage>, string> = { recognize: "认读", understand: "理解", write: "书写", review_2d: "两天后复习", review_7d: "七天后复习", mastered: "已掌握" };
 const types = { recognition: "识别", knowledge: "知识内容", bad_question: "提问", ghostwriting: "作文引导", safety: "安全" };
-const tableLabels: Record<string, string> = { Child: "孩子资料", ChildChar: "当前认字进度", Session: "学习会话", Turn: "模型调用记录", SessionRuntime: "会话快照", CoachRuntime: "认字活动", ReadingRuntime: "阅读活动与原话", EssayRuntime: "作文活动与原文", SessionCommand: "操作与重试记录", LearningOutcome: "学习流水", SessionLearningCoverage: "流水覆盖记录", Incident: "需留意的事件", IncidentContext: "事件归属", ParentReviewAudit: "人工处理审计", ParentReviewRequest: "人工请求记录", NightlyJob: "日报来源版本", NightlyStep: "日报分步记录", NightlyPublication: "已发布日报" };
+const tableLabels: Record<string, string> = { Child: "孩子资料", ChildChar: "当前认字进度", Session: "学习会话", SessionOrigin: "会话孩子与课次归属", Turn: "模型调用记录", SessionRuntime: "会话快照", CoachRuntime: "认字活动", ReadingRuntime: "阅读活动与原话", EssayRuntime: "作文活动与原文", SessionCommand: "操作与重试记录", LearningOutcome: "学习流水", SessionLearningCoverage: "流水覆盖记录", Incident: "需留意的事件", IncidentContext: "事件归属", ParentReviewAudit: "人工处理审计", ParentReviewRequest: "人工请求记录", NightlyJob: "日报来源版本", NightlyStep: "日报分步记录", NightlyPublication: "已发布日报" };
 export function ReportView({ report }: { report: DailyReport }) {
   const facts = report.facts;
   return <article className="parent-card"><h3>{report.date} 日报</h3><p>按{report.timezone === "UTC" ? "世界标准时间" : "北京时间"}统计</p>

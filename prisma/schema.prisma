@@ -244,3 +244,11 @@ model ParentReviewRequest {
   response String
   @@index([childId])
 }
+
+// C12：仅由真实start同事务建立，历史会话不猜课次。
+model SessionOrigin {
+  sessionId String @id
+  childId String
+  lessonId String
+  @@index([childId])
+}

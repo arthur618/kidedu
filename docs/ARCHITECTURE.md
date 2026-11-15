@@ -84,3 +84,5 @@ D2B统一对话请求显式非思考、有限生成、非流式JSON及供应商h
 C8B在C8A服务上接固定官方DeepSeek ASR/TTS：浏览器内存真实解码→PCM16单声道16k WAV，后端验证帧和时长；转录只填可编辑框，TTS只取approved字卡报词。DEEPSEEK_SPEECH_ENABLED与服务端key同时有效才开启，默认关闭；客户端12秒、服务8秒及有限并发。真实供应商WAV变体/质量/计费仍未验证，原C8A“真实供应商待定”是历史描述。
 
 C11B已接`/parent`，默认无口令/授权集合时关闭；opaque哈希会话/持久单调限速、公共日报与进度分页、可信事件归属和CAS人工审计。所有变更有同源检查，原文/媒体不进入复核投影。数据删除仅预览，不自动清理；根任务C12增加的SessionOrigin也须纳入可信计数。
+
+C12增加仅标识sessionStorage hint与`/api/session/[id]/resume`；可信SessionOrigin在真实start同事务记录child/lesson，旧无归属不猜补。恢复在服务端续原检查点，未知操作只读当前快照，完整/退出不重做；浏览器不存正文/媒体/完整响应，跨绑定卸载与StrictMode隔离已通过真实测试。Origin纳入家长19类只读预览。

@@ -32,7 +32,7 @@
 
 | C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 已合并 | reviews/C11C.md：3eff287通过，合并71ff1db；独立/main992测试/构建，实际nightly探针通过 |
 
-| C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 进行中 | tasks/codex/C12-client-recovery.md；不持久孩子正文/媒体 |
+| C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 已合并 | reviews/C12.md：0f0630b通过，合并25a51c2；独立/main1023测试/构建、53浏览器、恢复/事务探针通过 |
 
 | C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 进行中 | tasks/codex/C13-safe-dependencies.md；Zod另冻契约迁移 |
 
@@ -175,3 +175,7 @@ C11C@3eff287独立试合最新家长/契约主线后58文件992测试/真实构�
 ## C13正式安全维护准备（2026-11-15）
 
 root核实官方advisory/release/registry后冻结C13，Sol medium独立准备Vitest4.1.12+Vite6.4.4、Prisma/client6.19.3及精确deepmerge8兼容评估；C12主线不动，待C12合并后再最终组合验证。已发布Zod3无安全修补版，后续由root单独冻结迁移，不隐藏剩余风险。原C12 agent额度中断草稿已备份work/20261115-1909-C12-backup，普通额度新窗口可用后仅原agent恢复一次，审批元数据核对也在新审批成功后执行，未绕过或消费reset。
+
+## C12最终合并（2026-11-15晚）
+
+C12@0f0630b独立新clone61文件1023测试/真实构建、27范围/契约差异0、53浏览器和实际client→handler→SQLite丢响应/检查点/无写入/Origin回滚探针通过，合并25a51c2。实际main重装1023测试/构建通过。仅标识存储与可信Origin/恢复、真实StrictMode/复用隔离、未发草稿不保存边界已验收。C13将合此实现后完成新依赖最终组合，候选audit目前仅Zod high1，不代表main告警已修；Zod迁移尚未冻。
