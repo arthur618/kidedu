@@ -92,13 +92,14 @@ export function createNightlyRunner(options: NightlyOptions = {}) {
       }
       const retellScores: DailyReport["retellScores"] = [];
       for (const activity of source.retells) {
-        const result = await step(`score:${activity.sessionId}`, activity.input, ScoreOutput, activity.sessionId, client => scoreRetell(client, activity.input, activity.sessionId));
+        // 不合格活动保留完成事实，但没有收费步骤、Turn或参考分数。
+        const result = activity.eligible ? await step(`score:${activity.sessionId}`, activity.input, ScoreOutput, activity.sessionId, client => scoreRetell(client, activity.input, activity.sessionId)) : null;
         retellScores.push({ sessionId: activity.sessionId, completedAt: activity.completedAt, status: result ? "scored" : "unavailable", result: result ? { score: result.score, reason: "模型评分完成，仅供参考。" } : null });
       }
       const input = ReportInput.parse({ child: source.child, date: request.date, minutes: source.facts.minutes, homework: source.facts.homework.map(h => h.item), wrongChars: source.facts.wrongChars, retellScore: retellScores.at(-1)?.result?.score ?? null });
       // 确定的最新来源会话承载日报调用；无会话不造Session、不调用。
       const anchor = source.sessions.at(-1)?.id;
-      const summary = anchor ? await step("report", input, ReportOutput, anchor, client => generateReport(client, input, anchor), value => faithfulReport(input, value)) : null;
+      const summary = anchor ? await step("report", { scoringPolicyVersion: source.scoringPolicyVersion, input }, ReportOutput, anchor, client => generateReport(client, input, anchor), value => faithfulReport(input, value)) : null;
       const report = DailyReportSchema.parse({ id: `daily_${job.id}`, childId: request.childId, date: request.date, timezone: request.timezone, sourceVersion: job.sourceVersion, facts: source.facts, retellScores, summary: summary ?? factualFallback(input), summaryStatus: !anchor ? "not_needed" : summary ? "generated" : "fallback", generatedAt: now().toISOString() });
       await options.beforePublish?.();
       await publishJob(job, token, report, now());

@@ -7,8 +7,12 @@ import { DailyFactsSchema, LearningOutcomeSchema, NightlyRunRequestSchema, type 
 import { getPrisma, withTransaction } from "../db/client";
 
 export type RunRequest = z.infer<typeof NightlyRunRequestSchema>;
-export interface RetellSource { sessionId: string; completedAt: string; input: z.infer<typeof ScoreInput> }
+type RetellEligibility =
+  | { eligible: true; input: z.infer<typeof ScoreInput> }
+  | { eligible: false; reason: "missing_question" | "question_mismatch" | "missing_key_points" | "missing_transcript" };
+export type RetellSource = { sessionId: string; completedAt: string } & RetellEligibility;
 export interface SourceSnapshot {
+  scoringPolicyVersion: 2;
   child: { id: string; nickname: string };
   facts: DailyFacts;
   sessions: z.infer<typeof Session>[];
@@ -65,9 +69,17 @@ export async function loadSource(request: RunRequest): Promise<SourceSnapshot> {
     const retells: RetellSource[] = [];
     const essays: SourceSnapshot["essays"] = [];
     for (const row of await db.readingRuntime.findMany({ where: { sessionId: { in: sessionIds } }, orderBy: { sessionId: "asc" } })) {
-      const activity = ReadingRuntimeSchema.parse(JSON.parse(row.data));
-      if (activity.phase === "complete" && activity.completedAt && inDay(activity.completedAt) && activity.transcript.join("\n").trim()) {
-        retells.push({ sessionId: row.sessionId, completedAt: activity.completedAt, input: ScoreInput.parse({ question: activity.passage.question, keyPoints: activity.passage.keyPoints, transcript: activity.transcript.join("\n") }) });
+      const raw = JSON.parse(row.data);
+      // 旧活动缺首问时只补null供共享schema校验；缺失不意味着可以沿用原题评分。
+      const activity = ReadingRuntimeSchema.parse({ ...raw, question: raw.question ?? null });
+      if (activity.phase === "complete" && activity.completedAt && inDay(activity.completedAt)) {
+        const base = { sessionId: row.sessionId, completedAt: activity.completedAt };
+        const transcript = activity.transcript.join("\n");
+        if (!activity.question?.trim()) retells.push({ ...base, eligible: false, reason: "missing_question" });
+        else if (activity.question !== activity.passage.question) retells.push({ ...base, eligible: false, reason: "question_mismatch" });
+        else if (!activity.passage.keyPoints.length || activity.passage.keyPoints.some(point => !point.trim())) retells.push({ ...base, eligible: false, reason: "missing_key_points" });
+        else if (!transcript.trim()) retells.push({ ...base, eligible: false, reason: "missing_transcript" });
+        else retells.push({ ...base, eligible: true, input: ScoreInput.parse({ question: activity.question, keyPoints: activity.passage.keyPoints, transcript }) });
       }
     }
     retells.sort((a, b) => Date.parse(a.completedAt) - Date.parse(b.completedAt) || (a.sessionId < b.sessionId ? -1 : a.sessionId > b.sessionId ? 1 : 0));
@@ -85,6 +97,6 @@ export async function loadSource(request: RunRequest): Promise<SourceSnapshot> {
       minutes: sessionMinutes(sessions, start, end), learningCoverage: sessions.length > 0 && covered === sessions.length ? "complete" : covered > 0 || outcomes.length > 0 ? "partial" : "none",
       outcomeCount: outcomes.length, practicedChars: unique(outcomes.map(o => o.char)), reviewedChars: unique(outcomes.filter(o => ["review_2d", "review_7d"].includes(o.stageBefore)).map(o => o.char)), wrongChars: unique(outcomes.filter(o => o.result === "wrong").map(o => o.char)),
       completedEssaySessionIds: essays.map(e => e.sessionId), homework: sessions.filter(s => s.endedAt && inDay(s.endedAt)).flatMap(s => s.homework.map(item => ({ sessionId: s.id, item }))) });
-    return { child, facts, sessions, coverage, outcomes, retells, essays };
+    return { scoringPolicyVersion: 2, child, facts, sessions, coverage, outcomes, retells, essays };
   });
 }

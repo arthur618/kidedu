@@ -31,7 +31,7 @@ export async function outcome(s: Session, char: string, result: "correct" | "wro
   await appendLearningOutcome({ id, sessionId: s.id, childId: s.childId, commandScope: `session:${s.id}`, commandKey: id, effectIndex: 2, char, kind: "write", stageBefore, stageAfter: result === "wrong" ? "understand" : stageBefore === "review_7d" ? "mastered" : "understand", result, occurredAt });
 }
 export async function reading(s: Session, completedAt: string | null, phase: "complete" | "abandoned" | "answer" = "complete", lines = transcript) {
-  await saveReadingRuntime(s.id, { passage: { id: "snapshot-passage", title: "虚构石桥", body: "编造短文正文", topic: "溪水", sourceType: "original", targetChars: [], outOfScopeCount: 0, question, keyPoints: [keyPoint], status: "approved" }, phase, question: "不能替换原题的运行时追问？", history: [], transcript: lines, output: null, startedAt: s.startedAt, completedAt });
+  await saveReadingRuntime(s.id, { passage: { id: "snapshot-passage", title: "虚构石桥", body: "编造短文正文", topic: "溪水", sourceType: "original", targetChars: [], outOfScopeCount: 0, question, keyPoints: [keyPoint], status: "approved" }, phase, question, history: [], transcript: lines, output: null, startedAt: s.startedAt, completedAt });
 }
 export async function essay(s: Session, completedAt: string | null, phase: "complete" | "abandoned" | "feedback" = "complete") {
   await saveEssayRuntime(s.id, { topic: "作文私有主题", homeworkItemId: item.id, phase, utterances: ["私有作文点子"], cards: [], history: [], essayText: "编造作文正文不能给日报模型", output: null, feedbackQuote: null, startedAt: s.startedAt, completedAt });

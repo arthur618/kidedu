@@ -28,7 +28,7 @@ it("固定日手工对账：实际错字/复习去重、裁日重叠合并47分�
   expect(source.facts).toMatchObject({ minutes: 47, learningCoverage: "complete", outcomeCount: 4, practicedChars: ["山", "月", "水"], reviewedChars: ["月", "水"], wrongChars: ["山", "月"], completedEssaySessionIds: [b.id] });
   expect(source.facts.sessionIds).toEqual([a.id, b.id, open.id, c.id]); expect(source.facts.finishedSessionIds).toEqual([a.id, b.id, c.id]); expect(source.facts.unfinishedSessionIds).toEqual([open.id]);
   expect(source.facts.homework).toEqual([{ sessionId: a.id, item }, { sessionId: b.id, item: { ...item, done: true } }]);
-  expect(source.retells).toHaveLength(1); expect(source.retells[0]!.sessionId).toBe(b.id); expect(source.retells[0]!.input.question).not.toContain("运行时追问");
+  expect(source.retells).toHaveLength(1); expect(source.retells[0]!.sessionId).toBe(b.id); expect(source.retells[0]!.eligible).toBe(true); if (!source.retells[0]!.eligible) throw new Error("合格fixture必须可评分"); expect(source.retells[0]!.input.question).not.toContain("运行时追问");
   expect(JSON.stringify(source)).not.toContain("编造作文正文"); expect(source.facts.practicedChars).not.toContain("假");
   const utc = await loadSource(NightlyRunRequestSchema.parse(request(id, "UTC")));
   expect(utc.facts.minutes).toBe(19); expect(utc.facts.outcomeCount).toBe(1); expect(utc.facts.wrongChars).toEqual(["日"]); expect(utc.facts.homework).toEqual([{ sessionId: c.id, item: { ...item, text: "明日结束不纳入清单" } }]);
@@ -60,13 +60,13 @@ it("真实日历、两时区闭开边界、未结束不猜时长，坏时间和�
   await getPrisma().session.update({ where: { id: open.id }, data: { endedAt: "坏时间" } });
   await expect(loadSource(NightlyRunRequestSchema.parse(request(id)))).rejects.toThrow();
 });
-it("完成复述需非空原话、当日completedAt与approved快照；同时间按sessionId稳定序，弃置/计划/作文不评分", async () => {
+it("当日完成复述保留空原话不可评分事实与approved快照；同时间稳定排序，弃置/计划/作文不评分", async () => {
   const id = await child(); const a = await session(id, "2026-11-13T01:00:00.000Z", "2026-11-13T01:10:00.000Z");
   const b = await session(id, a.startedAt, a.endedAt); const c = await session(id, a.startedAt, a.endedAt); const d = await session(id, a.startedAt, a.endedAt);
   await reading(a, "2026-11-14T00:00:00.000Z"); await reading(b, "2026-11-14T00:00:00.000Z"); await reading(c, "2026-11-14T01:00:00.000Z", "complete", []); await reading(d, null, "answer"); await essay(d, "2026-11-14T01:00:00.000Z");
   const source = await loadSource(NightlyRunRequestSchema.parse(request(id)));
-  expect(source.retells.map(r => r.sessionId)).toEqual([a.id, b.id].sort()); expect(source.facts.completedEssaySessionIds).toEqual([d.id]);
-  expect(source.facts.minutes).toBe(0); expect(source.facts.homework).toEqual([]); expect(source.facts.sessionIds).not.toContain(c.id);
+  expect(source.retells.map(r => r.sessionId)).toEqual([...([a.id, b.id].sort()), c.id]); expect(source.retells.find(r => r.sessionId === c.id)).toMatchObject({ eligible: false, reason: "missing_transcript" }); expect(source.facts.completedEssaySessionIds).toEqual([d.id]);
+  expect(source.facts.minutes).toBe(0); expect(source.facts.homework).toEqual([]); expect(source.facts.sessionIds).toContain(c.id);
 });
 it("裁日合并也支持Unix纪元前的真实日历日，不以0时间戳充当初始区间", async () => {
   const id = await child(); const s = await session(id, "1969-12-31T01:00:00.000Z", "1969-12-31T01:12:30.000Z");
