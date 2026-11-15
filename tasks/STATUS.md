@@ -34,6 +34,8 @@
 
 | C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 进行中 | tasks/codex/C12-client-recovery.md；不持久孩子正文/媒体 |
 
+| C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 进行中 | tasks/codex/C13-safe-dependencies.md；Zod另冻契约迁移 |
+
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
 | 任务 | 内容 | 里程碑 |
@@ -169,3 +171,7 @@ C11C@3eff287独立试合最新家长/契约主线后58文件992测试/真实构�
 ## 在线依赖审计复核（2026-11-15）
 
 有效官方npm在线审计仍为11项：2 critical、6 high、3 moderate，证据docs/audits/npm-20261115.json；离线npm ci的0不代表在线无漏洞。C13当前仅Sol medium只读预检官方修复/Node兼容，未授权自动audit fix或改契约/工具链，不移动正在实施C12目标。重点核实Zod运行时、Prisma传递与Vitest/Vite/tinypool链，冻结明确方案后再交实现，不能盲目按audit建议大升级/降级。
+
+## C13正式安全维护准备（2026-11-15）
+
+root核实官方advisory/release/registry后冻结C13，Sol medium独立准备Vitest4.1.12+Vite6.4.4、Prisma/client6.19.3及精确deepmerge8兼容评估；C12主线不动，待C12合并后再最终组合验证。已发布Zod3无安全修补版，后续由root单独冻结迁移，不隐藏剩余风险。原C12 agent额度中断草稿已备份work/20261115-1909-C12-backup，普通额度新窗口可用后仅原agent恢复一次，审批元数据核对也在新审批成功后执行，未绕过或消费reset。

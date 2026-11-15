@@ -196,5 +196,10 @@
     "src/db/parent/store.ts",
     "src/ui/parent/ParentApp.tsx",
     "tests/integration/parent/http.test.ts"
+  ],
+  "C13": [
+    "vitest.config.ts",
+    "tests/integration/dependencies/",
+    "docs/DEPENDENCIES.md"
   ]
 }
