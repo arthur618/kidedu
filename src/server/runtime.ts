@@ -1,3 +1,5 @@
+import { ContractDataError } from "../db/errors";
+import { createSessionOrigin, getSessionOrigin } from "../db/sessionOrigin";
 import { appendLearningOutcome, markLearningCoverage } from "../db/learningOutcome";
 import { checkpointEssay, essayOutput, essayPacket, essaySnapshot, withEssayOutput, validCard, projectEssayResponse } from "./essay/activity";
 import { getEssayRuntime, saveEssayRuntime, getEssayCommand, saveEssayCommand, type EssayAction } from "../db/essayRuntime";
@@ -8,7 +10,7 @@ import { getPassage } from "../db/passage";
 import { createHash } from "node:crypto";
 import type { Effect, SessionEvent } from "../contracts/orchestrator";
 import type { CharCoachInput } from "../contracts/schemas";
-import { SessionPacketSchema, type SessionPacket } from "../contracts/session";
+import { SessionPacketSchema, SessionRecoveryResponseSchema, type SessionRecoveryResponse, type SessionPacket } from "../contracts/session";
 import { withTransaction } from "../db/client";
 import { getCommand, saveCommand, unfinishedCommands, type SessionCommand } from "../db/sessionCommand";
 import { getCoachRuntime, saveCoachRuntime, type CoachRuntime } from "../db/coachRuntime";
@@ -266,6 +268,7 @@ export function createSessionService(deps: RuntimeDeps) {
           if (kind === "start") {
             command = await withTransaction(async () => {
               const result = await startSession(deps, body as StartSessionInput);
+              await createSessionOrigin({ sessionId: result.sessionId, childId: (body as StartSessionInput).childId, lessonId: (body as StartSessionInput).lessonId });
               await markLearningCoverage(result.sessionId, (await deps.getSession(result.sessionId))!.startedAt);
               const next: SessionCommand = { ...command!, sessionId: result.sessionId, phase: "transitioned", pending: { effects: result.effects } };
               await saveCommand(next);
@@ -283,6 +286,45 @@ export function createSessionService(deps: RuntimeDeps) {
           });
           try { return await runPrepared(command, body, photo); }
           catch (error) { if (error instanceof CoachConflict) await withTransaction(async () => { await saveCommand({ ...command!, phase: "rejected" }); if (kind === "essay") await saveEssayCommand(scopeId, key, null); }); throw error; }
+        });
+      });
+    },
+    async recover(sessionId: string, input: { childId: string; lessonId: string; operationId?: string }): Promise<SessionRecoveryResponse> {
+      return serial(`session:${sessionId}`, async () => {
+        const origin = await getSessionOrigin(sessionId);
+        const session = await deps.getSession(sessionId);
+        let runtime;
+        try { runtime = await deps.getSessionRuntime(sessionId); } catch (error) { if (error instanceof ContractDataError) throw new SessionNotFoundError(sessionId); throw error; }
+        if (!origin || !session || !runtime || !runtime.context || origin.childId !== input.childId || origin.lessonId !== input.lessonId || session.childId !== origin.childId || runtime.context.childId !== origin.childId || runtime.context.sessionId !== sessionId) throw new SessionNotFoundError(sessionId);
+        const current = async (status: "ok" | "operation_missing" = "ok") => SessionRecoveryResponseSchema.parse({ status, packet: SessionPacketSchema.parse(await snapshot(deps, sessionId, photos.get(sessionId)?.url, true, photos.get(sessionId))) });
+        if (!input.operationId) return current();
+        const command = await getCommand(`session:${sessionId}`, input.operationId) ?? await getCommand(`child:${origin.childId}`, input.operationId);
+        if (!command || command.sessionId !== sessionId) return current("operation_missing");
+        if (["complete", "rejected"].includes(command.phase) || ["wrap_up", "ended"].includes(runtime.state)) return current();
+        return withinBudget(deps.modelOptions, [], async () => {
+          // 先恢复sequence较早的检查点；绝不拿空请求正文代替私有载荷。
+          for (const old of await unfinishedCommands(sessionId)) {
+            const state = (await deps.getSessionRuntime(sessionId))!.state;
+            if (["wrap_up", "ended"].includes(state)) break;
+            try {
+              if (await expired(sessionId)) {
+                const timedOut = await transition(old, sessionId, { type: "time_up" });
+                await deps.afterCheckpoint?.();
+                await finishEffects(timedOut);
+              } else {
+                const held = photos.get(sessionId);
+                const body = old.kind === "essay" ? await getEssayCommand(sessionId, old.key) : (old.pending as Pending).body;
+                // Essay prepared必须有同事务保存的私有action；缺失不伪造回答。
+                if (old.phase === "prepared" && (body === undefined || old.kind === "essay" && body === null)) throw new CoachConflict();
+                await resume(old, body, held?.fingerprint === old.fingerprint ? held.url : undefined);
+              }
+            } catch (error) {
+              if (!(error instanceof CoachConflict)) throw error;
+              await withTransaction(async () => { await saveCommand({ ...old, phase: "rejected" }); if (old.kind === "essay") await saveEssayCommand(sessionId, old.key, null); });
+            }
+            if (old.scope === command.scope && old.key === command.key) break;
+          }
+          return current();
         });
       });
     },
