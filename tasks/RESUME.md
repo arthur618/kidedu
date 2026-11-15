@@ -68,3 +68,7 @@ C11A@0477bbb合并96824eb，root独立与main817测试/构建、独立27浏览�
 ## 2026-11-14 当前接续：D2B已合并、C8B独立验收、C11B/C4B实施
 
 main c913f8d已复验867测试与实际构建；本提交冻结契约2.9。C8B ab15183待root独立复验，C11B由implement_c11b_sol继续，C4B单Sol medium复用已接受D2B工作树。key/口令全留空，真实DeepSeek质量/计费/硬件验证仍延后。不要重做已合并包，不读取私有数据。
+
+## 最新：C8B代码已合并（2026-11-14）
+
+main aad4e27重装复验887测试/构建通过，C8B正式结论见reviews/C8B.md；独立浏览器33项通过，真实ASR/TTS验证仍未做。D2B已合并，C11A已合并。C11B /root/implement_c11b_sol在yuwen-c2-ui/task/C11B，C4B /root/implement_c4b_sol在yuwen-c6-evals/task/C4B；最终全套build/browser必须先预约root串行窗口。不要重启已接受包，未验收分支不合并。main及通过分支由root直接同步GitHub。

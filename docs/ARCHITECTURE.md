@@ -11,7 +11,7 @@
 | --- | --- | --- | --- |
 | 离线内容生产 | 否 | 可以用 OpenAI | `scripts/content/`、`content/` |
 | 运行时 | 是 | 只用 DeepSeek | `app/`、`src/` |
-| 夜间批处理 | 是 | 只用 DeepSeek | `src/nightly/`（后续任务） |
+| 夜间批处理 | 是 | 只用 DeepSeek | `src/nightly/`（C11A已接） |
 
 ## 运行时的调用关系
 
@@ -72,3 +72,13 @@ Next.js（App Router）+ TypeScript + Prisma + SQLite（本地开发，之后可
 ## C8A语音边界（2026-11-14）
 
 src/speech为供应商无关服务，src/server/speech与app/api/speech提供能力/转录/报词接口，src/ui/speech负责内存录音、试听、编辑与播放。生产ASR/TTS固定关闭，只有测试工厂注入假适配器；真实国内供应商留C8B。转录不判认字正误、不自动推进学习，孩子确认后只有文字走C7原操作；音频不写入任何持久表、日志或磁盘。实际媒体编码/声学时长及供应商质量验证尚未完成。
+
+## 当前集成扩展（2026-11-14）
+
+C9/C10通过持久活动快照和稳定命令ID实现阅读/两轮复述、作文采访/孩子原话素材/受信读后反馈，模型仍在数据库事务外；公开投影不带阅读参考要点或私有活动输入。作文只引导，不提供可抄新句。
+
+C11A在真实persist_char事务中追加LearningOutcome不可变流水；夜间按孩子/日期/时区汇总实际来源，区分历史覆盖缺失、有效0分与不可用评分。持久步骤与公开NightlyPublication分离，家长后续只读公共DTO，打开页面不触发模型。
+
+D2B统一对话请求显式非思考、有限生成、非流式JSON及供应商high审核；只有完整stop且无拒答/工具调用才解析候选。原护栏、approved来源和运行时DeepSeek限制继续适用。
+
+C8B在C8A服务上接固定官方DeepSeek ASR/TTS：浏览器内存真实解码→PCM16单声道16k WAV，后端验证帧和时长；转录只填可编辑框，TTS只取approved字卡报词。DEEPSEEK_SPEECH_ENABLED与服务端key同时有效才开启，默认关闭；客户端12秒、服务8秒及有限并发。真实供应商WAV变体/质量/计费仍未验证，原C8A“真实供应商待定”是历史描述。
