@@ -22,3 +22,11 @@ it('StrictMode式双start只请求一次/不挂busy，双击retry仍同ID；禁�
 it('客户端120秒整体网络/body预算，取消不等待非合作响应；控制台无异常原文',async()=>{
  vi.useFakeTimers();try{let signal:AbortSignal|undefined;const client=createHttpService({...options,storage:()=>null,fetcher:async(_url,init)=>{signal=init!.signal as AbortSignal;return new Response(new ReadableStream({start(){}}));}});const pending=client.start();const rejection=expect(pending).rejects.toThrow('request_unavailable');await vi.advanceTimersByTimeAsync(120000);await rejection;expect(signal?.aborted).toBe(true);expect(vi.getTimerCount()).toBe(0);}finally{vi.useRealTimers();}
 });
+it('重新开始丢响应时排队quit不覆盖原start重试，仍用同一新ID',async()=>{
+ const memory=memoryStorage();let reject!:(error:Error)=>void;let restarting=false;const keys:string[]=[];const paths:string[]=[];
+ const client=createHttpService({...options,storage:()=>memory.storage,fetcher:async(path,init)=>{paths.push(String(path));keys.push(new Headers(init?.headers).get('Idempotency-Key')!);if(restarting)return new Promise((_resolve,fail)=>{reject=fail;});return Response.json({...packet,state:'ended',effects:[]});}});
+ const controller=new LearningController(client);await controller.start();restarting=true;const attempt=controller.restart();await controller.event({type:'quit'});reject(new Error('response_lost'));await attempt;expect(controller.snapshot().retry).toBe(true);expect(paths).toEqual(['/api/session','/api/session']);restarting=false;await controller.retry();expect(paths).toEqual(['/api/session','/api/session','/api/session']);expect(keys[1]).toBe(keys[2]);expect(keys[0]).not.toBe(keys[1]);expect(controller.snapshot().retry).toBe(false);
+});
+it('开始响应丢失保留原hasEssayToday而不采用重挂时的新选项',async()=>{
+ const m=memoryStorage();const bodies:unknown[]=[];let lose=true;const fetcher:typeof fetch=async(_url,init)=>{bodies.push(JSON.parse(init!.body as string));if(lose){lose=false;throw new Error('response_lost');}return Response.json(packet);};await expect(createHttpService({...options,hasEssayToday:true,storage:()=>m.storage,fetcher}).start('original-start-0001')).rejects.toThrow();await createHttpService({...options,hasEssayToday:false,storage:()=>m.storage,fetcher}).start('unrelated-start-0001');expect(bodies).toEqual([{...options,hasEssayToday:true},{...options,hasEssayToday:true}]);
+});

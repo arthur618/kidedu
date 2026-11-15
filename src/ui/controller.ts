@@ -31,7 +31,7 @@ export class LearningController {
     if (this.quitting) { const quit = this.quitting; this.quitting = undefined; if (this.hasSession) await this.run(quit); }
   }
   start = () => { if (this.started) return Promise.resolve(); this.started = true; const id = this.idFactory(); return this.run(() => this.service.start(id)); };
-  restart = () => { const id = this.idFactory(); return this.run(() => this.service.restart ? this.service.restart(id) : this.service.start(id)); };
+  restart = () => { if (this.disposed || this.value.busy) return Promise.resolve(); this.hasSession = false; const id = this.idFactory(); return this.run(() => this.service.restart ? this.service.restart(id) : this.service.start(id)); };
   retry = () => this.again ? this.run(this.again) : this.start();
   event = (event: SessionEvent) => {
     if (event.type === "quit" && this.value.busy) { if (!this.quitting) { const id = this.idFactory(); this.quitting = () => this.service.event(event, id); } return Promise.resolve(); }

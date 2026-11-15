@@ -36,4 +36,15 @@
 
 ## C9阅读边界
 
-approved内容稳定选文，公共正文只投影id/title/body/targetChars，keyPoints仅在私有ReadingRuntime快照。首问取审核question并规则审查；两条孩子原话/一次follow_up/收尾用真实Reader和护栏，模型事务外，活动/转换/命令原子。阅读Turn只存白名单计量元数据。GET重查approved且只读当前活动，撤审后正常unavailable。整页重载接续原会话的客户端能力尚未实现，此处恢复指GET快照与稳定ID重放。真实外部配置/联调仍延后。
+approved内容稳定选文，公共正文只投影id/title/body/targetChars，keyPoints仅在私有ReadingRuntime快照。首问取审核question并规则审查；两条孩子原话/一次follow_up/收尾用真实Reader和护栏，模型事务外，活动/转换/命令原子。阅读Turn只存白名单计量元数据。GET重查approved且只读当前活动，撤审后正常unavailable。C12已将整页重载接到同一会话的可信恢复入口；旧GET兼容含context/homework，浏览器恢复不使用该旧投影。真实外部配置/联调仍延后。
+
+
+## C12页面刷新恢复
+
+新POST `/api/session/[id]/resume`只接受契约2.10的`{childId,lessonId,operationId?}`，不接收孩子输入、任意事件或媒体，无需另建操作ID。SessionOrigin在真实start和其命令检查点的同一短事务建立；旧会话不猜课次，不从浏览器回填归属。恢复核对Session、runtime.context和Origin，错配/无可信来源统一404。此端点响应是经过RecoveryResponse/SessionPacket parse的公共值，不带ctx或私有命令载荷；不改变旧GET。
+
+无operationId或已complete/rejected只读当前权威快照，零模型、零业务写入。未知/其他会话操作返回operation_missing和当前快照，不建空回答。真正未完成操作按原sequence先恢复较早检查点，只读服务端持久原载荷/私有Essay action；学习reduce、流水、原话卡/正文沿用原原子边界。已wrap_up/ended不复活旧动作，执行待办仍遵守原startedAt/limitMinutes及100秒模型预算，缺图正常退路，不向模型发送占位符。模型调用成功但最终存库前崩溃仍可能再次调用和计费，不承诺模型恰好一次。
+
+浏览器仅在sessionStorage按child+lesson保存严格SessionRecoveryHint（序列化UTF16长度最多8192），网络前写稳定标识，合法响应后清pending；不保存Packet、ctx、正文、草稿、录音、图片、base64或BlobURL，不使用localStorage/IndexedDB。开始响应丢失后沿用原startRequestId及原IDs/hasEssayToday。存储禁用/损坏/容量不足退为本次内存流程；无法写入时不能承诺下一次刷新恢复。未知操作清pending并说明重新填写，404提供明确重新开始入口；ended不自动建新会话，只有孩子点击重新开始才新建start ID。
+
+切孩子/课次更换controller/service与媒体子树，旧网络abort/迟到结果隔离。StrictMode同步清理重挂复用同一启动操作；真正卸载取消请求。busy期间quit仍由controller排队。**未发送文字、长作文草稿及未确认录音仅在内存，整页刷新会丢失，不属于恢复范围。**SessionOrigin纳入家长19类可信只读预览，仍executable=false，无删除。
