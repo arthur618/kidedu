@@ -34,7 +34,7 @@
 
 | C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 已合并 | reviews/C12.md：0f0630b通过，合并25a51c2；独立/main1023测试/构建、53浏览器、恢复/事务探针通过 |
 
-| C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 进行中 | tasks/codex/C13-safe-dependencies.md；Zod另冻契约迁移 |
+| C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 待合并 | reviews/C13.md：64ce6cb独立1027测试/构建、在线仅Zod high1、恢复/事务/生产探针通过 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 

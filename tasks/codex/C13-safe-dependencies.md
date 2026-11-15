@@ -6,7 +6,7 @@
 
 基线docs/audits/npm-20261115.json为有效在线审计11节点（2 critical/6 high/3 moderate，不等于11条独立CVE）。只读预检已完成，root核实[Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)、[Prisma6.19.3](https://github.com/prisma/orm/releases/tag/6.19.3)、[deepmerge advisory](https://github.com/advisories/GHSA-ggr8-5vv4-36mx)、[v8 breaking changes](https://github.com/RebeccaStevens/deepmerge-ts/releases/tag/v8.0.0)、[Vitest4迁移指南](https://v4.vitest.dev/guide/migration)及官方registry确切版本元数据。
 
-Vitest4.1.12 engine为^20/^22/>=24，依赖Vite^6/^7/^8；Vite6.4.6声明允许Node22.1，并用esbuild^0.25。固定选6.4.4，避免解析到要求22.12的7/8。Prisma config6.19.3用effect3.21.0但仍deepmerge7.1.5。不能照audit建议倒退Prisma6.12或直接force升级所有包；不能把包告警外推成已确认本项目可利用。
+Vitest4.1.12 engine为^20/^22/>=24，依赖Vite^6/^7/^8；Vite6.4.6声明允许Node22.1，并用esbuild^0.25。固定选6.4.6，避免解析到要求22.12的7/8。Prisma config6.19.3用effect3.21.0但仍deepmerge7.1.5。不能照audit建议倒退Prisma6.12或直接force升级所有包；不能把包告警外推成已确认本项目可利用。
 
 ## 裁决
 
