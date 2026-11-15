@@ -24,7 +24,7 @@ HttpLearningApp每次挂载都start新会话，已有GET/幂等恢复没有接�
 
 ## 精确scope
 
-src/server/runtime.ts、src/server/http.ts、src/server/README.md、app/api/session/[id]/resume/、src/db/sessionOrigin.ts、prisma/schema.prisma、prisma/migrations/20261115_c12_origin/、src/ui/recovery/、src/ui/HttpLearningApp.tsx、src/ui/service.ts、src/ui/controller.ts、src/ui/LearningApp.tsx、src/ui/screens.tsx、src/ui/ui.test.ts、src/ui/recovery.browser.ts、tests/integration/recovery/；另精确允许src/db/parent/store.ts仅新增可信origin预览计数、src/ui/parent/ParentApp.tsx仅新增该表中文标签、tests/integration/parent/http.test.ts仅18→19计数及origin归属回归；package/lock及reports/C12.md。contracts/reviews/看板/root scripts只读，不改C11B鉴权/评分语义；迁移只增加origin内部表。
+src/server/runtime.ts、src/server/http.ts、src/server/README.md、app/api/session/[id]/resume/、src/db/sessionOrigin.ts、prisma/schema.prisma、prisma/migrations/20261115_c12_origin/、src/ui/recovery/、src/ui/HttpLearningApp.tsx、src/ui/service.ts、src/ui/controller.ts、src/ui/LearningApp.tsx、src/ui/screens.tsx、src/ui/ui.test.ts、src/ui/recovery.browser.ts、tests/integration/recovery/；另精确允许src/db/parent/store.ts仅新增可信origin预览计数、src/ui/parent/ParentApp.tsx仅新增该表中文标签、tests/integration/parent/http.test.ts仅18→19计数及origin归属回归；package/lock及reports/C12.md。另精确允许src/ui/speech.browser.ts仅[7]编辑/重录/退出用例把同绑定再打开改为先验证续接wrap_up、显式开心结束与重新开始再进权限子场景，保留全部track/迟到断言；同时仅允许该文件测试HTTP分派增加resume→真实h.handlers().resume分支以验证实际恢复，不fake响应、不改其他路由；src/ui/e2e.browser.ts仅每屏幕quit循环及图片压缩第二独立mock子场景使用不同fixture lessonId隔离hint，不新增fake resume或删断言。contracts/reviews/看板/root scripts只读，不改C11B鉴权/评分语义；迁移只增加origin内部表。
 
 ## 验收
 
