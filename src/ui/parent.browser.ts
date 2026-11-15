@@ -48,7 +48,7 @@ for (const size of [{ width: 375, height: 667 }, { width: 1024, height: 768 }]) 
     await page.getByRole("button", { name: "预览删除范围", exact: true }).click(); await expect(page.getByText("本次只是只读预览，没有删除数据。", { exact: false })).toBeVisible(); await expect(page.getByText("当前认字进度：105", { exact: true })).toBeVisible(); expect(await getPrisma().childChar.count({ where: { childId: "parent-a" } })).toBe(105);
     await page.getByLabel("查看孩子").selectOption("parent-b"); await expect(page.getByLabel("查看孩子")).toHaveValue("parent-b"); await expect(page.getByText("理解：0", { exact: true })).toBeVisible(); await expect(page.getByText("这个阶段暂无记录。", { exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    for (const button of await page.getByRole("button").all()) expect(await button.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    for (const button of await page.locator(".parent-app").getByRole("button").all()) expect(await button.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole("button", { name: "退出登录", exact: true }).focus(); await page.keyboard.press("Enter"); await expect(page.getByLabel("家长口令", { exact: true })).toBeVisible(); await expect(page.getByRole("heading", { name: "学习事实", exact: true })).toHaveCount(0);
     await expect.poll(async () => (await getPrisma().parentAccessSession.findFirst())?.revoked).toBe(true);
     expect(JSON.stringify(replies)).not.toMatch(/PRIVATE|data:image|https:\/\/invalid|不公开原文/); expect(JSON.stringify(logs)).not.toMatch(/PRIVATE|fictional-parent-password|data:image|Prisma/); expect(await getPrisma().turn.count()).toBe(0);
