@@ -84,3 +84,5 @@ main7d8addc复验976测试/构建通过，C11B正式review顶部通过，历史F
 ## 最新：评分来源补强已合并，C12继续（2026-11-15）
 
 main71ff1db重装复验992测试/实际构建通过，C11C正式review通过，旧不合格评分不能被复用。C12在yuwen-c4-content/task/C12由/root/implement_c8b_sol（Sol high）进行，基线1aabdfe；最终重型前合最新主线。root独立验收，不代实现。原/root/implement_c4b_sol已完成C11C不再重跑，真实key/live仍空。
+
+依赖既有欠账已在线复核仍11项，原/root/implement_c4b_sol（Sol medium）只读研究，草稿work/C13-dependency-preflight.md在root工作区；未授权改锁/实现。C12原high agent继续，不受预检阻塞。
