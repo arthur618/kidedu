@@ -90,3 +90,7 @@ main71ff1db重装复验992测试/实际构建通过，C11C正式review通过，�
 ## 最新：C12恢复实现与C13隔离准备（2026-11-15晚）
 
 main仍992测试/构建基线；C12阶段fc334dc已保存，原/root/implement_c8b_sol恢复，在task/C12补真实浏览器。C13预检已存docs/audits/C13-preflight.md并冻结正式任务，/root/implement_c4b_sol复用Sol medium独立分支先准备安全依赖；C12合并后才能做C13最终组合验证，不移动C12契约2.10。Zod4迁移尚未冻结，不能提前改contracts。源码不放真实key/数据，所有重型先找root排队。
+
+## 最新：C12已合并、C13最终组合（2026-11-15晚）
+
+main25a51c2复验1023测试/构建，root独立53浏览器；C12正式review通过，原agent不再重跑。C13原/root/implement_c4b_sol在yuwen-c6-evals/task/C13候选2048169，Prisma/client6.19.3、限定deepmerge8、Vitest4.1.12+Vite6.4.6，在线候选仅Zod1项。下一步合最新C12主线保留esbuild0.25.12、干净安装与最终verify，root新clone独验后合。Zod4迁移须root先冻结契约，当前2.10不动。所有真实key/口令/接口联调仍空。
