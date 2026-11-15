@@ -24,3 +24,11 @@
 D2B协议/预算为范围明确的小包，选Sol medium；C8B涉及浏览器音频转换/供应商适配/隐私与取消，选Sol high；C4B公开资料离线检索可Sol medium。C11A原工作保留继续，构建/浏览器串行排队，不同时跑整套。
 
 代码验收与真实联调分开：先假fetch/编造音频/真实浏览器检查，再在负责人安全配置密钥后用合成材料实际调DeepSeek。后者未发生前不记“真实语音通过”，也不把API key贴到聊天或Git。
+
+## 代码阶段结果（2026-11-15）
+
+- D2B已合并c913f8d：[正式验收](../reviews/D2B.md)，显式有限预算/非思考/high审核和完整结束判断。
+- C8B已合并aad4e27：[正式验收](../reviews/C8B.md)，真实浏览器内存WAV转换、固定ASR/TTS、可编辑短回答和approved报词。
+- C4B已合并5bf3bbe：[正式验收](../reviews/C4B.md)，独立公开搜索、单请求/8秒/1MiB、reference_only文件及原有审批隔离。
+
+上文“当前差距”是接入前背景。最新main948测试/构建通过，语音原生浏览器33项已独立验证；无真实DeepSeek请求、硬件或费用证据。DEEPSEEK_API_KEY、DEEPSEEK_SPEECH_ENABLED、DEEPSEEK_RESEARCH_ENABLED示例全空，语音/检索默认关闭。后续安全配置服务端key后，先合成材料核对模型可用性/拒答/usage、ASR时长与准确性、TTS实际WAV头/完整性、取消/延迟/收费，再考虑试点；不收集key到聊天或编码对话。

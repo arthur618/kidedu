@@ -72,3 +72,7 @@ main c913f8d已复验867测试与实际构建；本提交冻结契约2.9。C8B a
 ## 最新：C8B代码已合并（2026-11-14）
 
 main aad4e27重装复验887测试/构建通过，C8B正式结论见reviews/C8B.md；独立浏览器33项通过，真实ASR/TTS验证仍未做。D2B已合并，C11A已合并。C11B /root/implement_c11b_sol在yuwen-c2-ui/task/C11B，C4B /root/implement_c4b_sol在yuwen-c6-evals/task/C4B；最终全套build/browser必须先预约root串行窗口。不要重启已接受包，未验收分支不合并。main及通过分支由root直接同步GitHub。
+
+## 最新：C4B已合并、C11B修复中（2026-11-15）
+
+main5bf3bbe重装948测试/实际构建通过，C4B已独立验收，见reviews/C4B.md；真实检索live待key。C11B@770cad9阶段检查发现登录慢body跨窗口限速F1，见reviews/C11B.md；原/root/implement_c11b_sol已修并focused27通过，等待最终verify/browser及root新clone独立验收，不得提前合并。昨天额度中断草稿备份在root工作区work/20261115-agent-backups；今日ordinaryUsageAllowed=true后只恢复原agent一次，未用reset。全部接口/口令留空。

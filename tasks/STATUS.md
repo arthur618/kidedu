@@ -26,9 +26,9 @@
 
 | C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 已合并 | reviews/C8B.md：ab15183通过，合并aad4e27；独立/main887测试/构建、33浏览器；live待key |
 
-| C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 进行中 | tasks/codex/C11B-addendum.md；真实口令/接口不配置 |
+| C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 需修改 | reviews/C11B.md阶段检查：770cad9登录限速慢body跨窗口重置F1；原作者修复后最终验收 |
 
-| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 进行中 | tasks/codex/C4B-research.md；真实key联调延后 |
+| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；live待key |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -141,3 +141,11 @@ D2B@2602d69独立867测试/构建、27浏览器和真实客户端合成HTTP探�
 ## C8B代码阶段合并（2026-11-14）
 
 C8B@ab15183独立53文件887测试/实际构建、16文件范围、33浏览器和手工WAV探针通过，合并aad4e27。实际main重装复验887测试/构建通过。规范PCM16 WAV转换、固定DeepSeek ASR/TTS与短回答可编辑语音已接，默认关闭；真实头结构、质量、硬件/计费/取消仍属C8B-live。C11B和C4B继续实施，未配置任何真实接口或口令。
+
+## C11B阶段检查F1（2026-11-15）
+
+独立clone@770cad9/真实handler/迁移SQLite探针复现慢登录body在新窗口耗尽后倒拨持久限速桶，持续绕过429。reviews/C11B.md列明确F1，原Sol high作者修改，root不代实现、不合并。昨晚C11B/C4B额度中断草稿已备份；今天只读额度允许后仅原agent恢复一次，未消费reset。C4B已保存79da65e并合715bead，待串行最终verify。
+
+## C4B代码合并（2026-11-15）
+
+C4B@727a292独立新clone948测试/实际构建、10文件范围、契约差异0及自编Unicode/来源投影/hash/原子文件探针通过，合并5bf3bbe；实际main重装948测试/构建通过。公开检索固定单请求与reference_only隔离，默认关闭，未配key，未做真实供应商联调。C11B F1仍由原作者修，未把阶段自查当最终验收。
