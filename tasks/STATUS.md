@@ -30,7 +30,7 @@
 
 | C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；live待key |
 
-| C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 待合并 | reviews/C11C.md：3eff287独立992测试/构建，实际nightly资格/缓存/零分探针通过 |
+| C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 已合并 | reviews/C11C.md：3eff287通过，合并71ff1db；独立/main992测试/构建，实际nightly探针通过 |
 
 | C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 进行中 | tasks/codex/C12-client-recovery.md；不持久孩子正文/媒体 |
 
@@ -161,3 +161,7 @@ C11A review已记录安全替换首问后的评分可比性缺口，现冻结C11
 ## C11B最终合并与C12派发（2026-11-15）
 
 C11B@0d2f340独立976测试/实际构建、19范围、41浏览器、原F1六次429/事务回滚重试/14JS与默认closed canary通过，合并7d8addc；main重装976测试/构建通过，原F1关闭保留历史。契约2.10追加最小恢复hint/API/可信SessionOrigin，不改既有字段。C12由单Sol high解决已记录整页reload新开会话和child/lesson变化保留旧controller的问题，浏览器仅存标识，尚未发送草稿不保存；新内部表计入只读删除预览。C11C继续独立验收，公共评分DTO不变。真实接口、口令仍全空。
+
+## C11C合并（2026-11-15）
+
+C11C@3eff287独立试合最新家长/契约主线后58文件992测试/真实构建、7范围/契约差异0、实际nightly资格/零分/旧分复用及不合格拒绝/显式retry不绕过探针通过，合并71ff1db；实际main重装992测试/构建通过。C11A首问替换后的评分来源设计缺口关闭，公共DTO未变。C12仍在原Sol high agent实现，仅标识恢复/生命周期隔离，无真实配置。
