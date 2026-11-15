@@ -32,7 +32,7 @@
 
 | C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 已合并 | reviews/C11C.md：3eff287通过，合并71ff1db；独立/main992测试/构建，实际nightly探针通过 |
 
-| C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 进行中 | tasks/codex/C12-client-recovery.md；不持久孩子正文/媒体 |
+| C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 待合并 | reviews/C12.md：0f0630b独立1023测试/构建、53浏览器、真实恢复/事务探针通过 |
 
 | C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 进行中 | tasks/codex/C13-safe-dependencies.md；Zod另冻契约迁移 |
 
