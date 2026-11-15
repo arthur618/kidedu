@@ -173,6 +173,7 @@
     "src/nightly/run.ts",
     "src/nightly/README.md",
     "tests/integration/nightly/score-eligibility.test.ts",
-    "tests/integration/nightly/helpers.ts"
+    "tests/integration/nightly/helpers.ts",
+    "tests/integration/nightly/facts.test.ts"
   ]
 }

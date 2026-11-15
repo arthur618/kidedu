@@ -12,7 +12,7 @@
 
 ## 精确scope
 
-src/nightly/source.ts、src/nightly/run.ts、src/nightly/README.md、tests/integration/nightly/score-eligibility.test.ts、tests/integration/nightly/helpers.ts（仅把既有合格评分用例默认question改为原题；新不一致用例须显式构造，禁止放宽原评分/复用/重试断言）；package/lock及reports/C11C.md按总规则。其余nightly实现只读；contracts/reviews/主scripts/看板/DB/家长/Agent只读。允许导入已合并真实模块测试，遇契约缺口找root。
+src/nightly/source.ts、src/nightly/run.ts、src/nightly/README.md、tests/integration/nightly/score-eligibility.test.ts、tests/integration/nightly/helpers.ts（仅把既有合格评分用例默认question改为原题；新不一致用例须显式构造，禁止放宽原评分/复用/重试断言）；package/lock及reports/C11C.md按总规则。另允许tests/integration/nightly/facts.test.ts仅对既有合格retell的input断言增加eligible:true类型收窄，不改原输入值/其他事实预期；其余nightly实现只读；contracts/reviews/主scripts/看板/DB/家长/Agent只读。允许导入已合并真实模块测试，遇契约缺口找root。
 
 ## 验收
 
