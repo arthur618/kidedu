@@ -55,7 +55,7 @@ test("6 每个屏幕出口都发 quit，包括等待与重试", async ({ page })
       if (input.type) events.push(input);
       await route.fulfill({ json: demoPacket(input.type ? "ended" : screen) });
     });
-    await page.goto("/learn");
+    await page.goto(`/learn?lessonId=exit-fixture-${screen}`);
     await page.getByRole("button", { name: "今天先到这", exact: true }).click();
     await expect.poll(() => events).toEqual([{ type: "quit" }]);
     await page.unroute("**/api/session**");
@@ -107,7 +107,7 @@ test("图片长边压缩、裁切与空坐标整图回退", async ({ page }) => 
     const show = packet.effects[0] as { data: { marks: { box: null }[] } }; show.data.marks[0]!.box = null;
     return route.fulfill({ json: packet });
   });
-  await page.goto("/learn"); await expect(page.getByText("在照片里找：")).toBeVisible(); expect(await page.locator(".comparison img").getAttribute("src")).toBe(demoPhoto);
+  await page.goto("/learn?lessonId=image-fallback-fixture"); await expect(page.getByText("在照片里找：")).toBeVisible(); expect(await page.locator(".comparison img").getAttribute("src")).toBe(demoPhoto);
 });
 
 test("照片不可用时不能判断，可重试恢复", async ({ page }) => {
