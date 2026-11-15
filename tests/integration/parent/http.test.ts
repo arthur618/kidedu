@@ -8,7 +8,8 @@ import { daily, ENV, NOW, PASSWORD, seedParent } from "./fixtures";
 let db: Awaited<ReturnType<typeof database>>;
 let env: Record<string, string | undefined>; let now: Date; let handler: ReturnType<typeof createParentHandler>;
 let cookie = "";
-afterEach(() => vi.restoreAllMocks());
+// Prisma代理上的spy恢复后重建客户端，避免代理缓存污染下一条回归。
+afterEach(async () => { vi.restoreAllMocks(); await disconnectPrisma(); });
 beforeAll(async () => { db = await database(); }); afterAll(async () => { await db?.cleanup(); });
 beforeEach(async () => { await seedParent(); env = { ...ENV }; now = new Date(NOW); cookie = ""; restart(); });
 function restart() { handler = createParentHandler({ getEnv: () => env, now: () => now }); }
