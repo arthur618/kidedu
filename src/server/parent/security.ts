@@ -32,17 +32,24 @@ export async function readJson(request: Request): Promise<unknown> {
   const text = await request.text(); if (text.length > 4096) throw new ParentError(400, "提交内容太长了。");
   try { return JSON.parse(text); } catch { throw new ParentError(400, "请检查提交内容。"); }
 }
-export async function login(password: string, config: ParentConfig, now: Date): Promise<string> {
-  // 单户入口共用持久桶；不信任X-Forwarded-For，重启也不能重新获得预算。
-  await withTransaction(async () => {
-    const start = new Date(Math.floor(now.getTime() / 900_000) * 900_000).toISOString();
-    await getPrisma().$executeRaw`INSERT INTO ParentLoginLimit(bucket, windowStart, attempts) VALUES ('household', ${start}, 1) ON CONFLICT(bucket) DO UPDATE SET windowStart=excluded.windowStart, attempts=CASE WHEN ParentLoginLimit.windowStart=excluded.windowStart THEN ParentLoginLimit.attempts+1 ELSE 1 END`;
+export async function login(password: string, config: ParentConfig, now: () => Date): Promise<string> {
+  // 只在实际事务执行时读可信时钟；慢body/排队不能携带旧窗口倒拨预算。
+  const allowed = await withTransaction(async () => {
+    const executedAt = now();
+    const start = new Date(Math.floor(executedAt.getTime() / 900_000) * 900_000).toISOString();
+    // 判断与递增取同一条写入的RETURNING；旧窗口只耗预算，永不回退，拒绝后饱和为9。
+    const rows = await getPrisma().$queryRaw<{ attempts: number }[]>`INSERT INTO ParentLoginLimit(bucket, windowStart, attempts) VALUES ('household', ${start}, 1)
+      ON CONFLICT(bucket) DO UPDATE SET
+        windowStart=CASE WHEN excluded.windowStart > ParentLoginLimit.windowStart THEN excluded.windowStart ELSE ParentLoginLimit.windowStart END,
+        attempts=CASE WHEN excluded.windowStart > ParentLoginLimit.windowStart THEN 1 ELSE MIN(ParentLoginLimit.attempts+1, 9) END
+      RETURNING attempts`;
+    return !!rows[0] && rows[0].attempts <= 8;
   });
-  const limit = await getPrisma().parentLoginLimit.findUnique({ where: { bucket: "household" } });
-  if ((limit?.attempts ?? 9) > 8) throw new ParentError(429, "尝试次数较多，请稍后再试。");
+  // 预算先提交，拒绝也不能回滚已消耗的次数。
+  if (!allowed) throw new ParentError(429, "尝试次数较多，请稍后再试。");
   if (!timingSafeEqual(Buffer.from(hash(password), "hex"), Buffer.from(hash(config.password), "hex"))) throw new ParentError(401, "口令不正确，请重试。");
   const token = randomBytes(32).toString("base64url");
-  await getPrisma().parentAccessSession.create({ data: { tokenHash: hash(token), configFingerprint: config.fingerprint, expiresAt: new Date(now.getTime() + TTL).toISOString() } });
+  await getPrisma().parentAccessSession.create({ data: { tokenHash: hash(token), configFingerprint: config.fingerprint, expiresAt: new Date(now().getTime() + TTL).toISOString() } });
   return token;
 }
 export function cookie(value: string, production: boolean, clear = false): string {

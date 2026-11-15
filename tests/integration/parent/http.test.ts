@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { database } from "../helpers";
 import { getPrisma, disconnectPrisma } from "../../../src/db/client";
 import { insertIncident } from "../../../src/db/incident";
@@ -8,10 +8,9 @@ import { daily, ENV, NOW, PASSWORD, seedParent } from "./fixtures";
 let db: Awaited<ReturnType<typeof database>>;
 let env: Record<string, string | undefined>; let now: Date; let handler: ReturnType<typeof createParentHandler>;
 let cookie = "";
-// Prisma代理上的spy恢复后重建客户端，避免代理缓存污染下一条回归。
-afterEach(async () => { vi.restoreAllMocks(); await disconnectPrisma(); });
-beforeAll(async () => { db = await database(); }); afterAll(async () => { await db?.cleanup(); });
-beforeEach(async () => { await seedParent(); env = { ...ENV }; now = new Date(NOW); cookie = ""; restart(); });
+// 每例独立迁移库，尊重LearningOutcome追加约束，不靠删除历史流水重置测试。
+afterEach(async () => { await db?.cleanup(); });
+beforeEach(async () => { db = await database(); await seedParent(); env = { ...ENV }; now = new Date(NOW); cookie = ""; restart(); });
 function restart() { handler = createParentHandler({ getEnv: () => env, now: () => now }); }
 function request(path: string, body?: unknown, options: { cookie?: string; origin?: string | null; type?: string; key?: string } = {}) {
   const headers: Record<string, string> = { cookie: options.cookie ?? cookie };
@@ -157,10 +156,14 @@ it("验收2/4：context正确但引用不存在Turn也隐藏；模型元信息�
   await getPrisma().turn.create({ data: { id: "metadata-turn", sessionId: "s-parent-a", agent: "reader", model: "https://private.example/media", input: "PRIVATE", output: "PRIVATE", inputTokens: 0, cachedInputTokens: 0, outputTokens: 0, latencyMs: 0, guardVerdict: "blocked", createdAt: NOW } });
   await getPrisma().incident.update({ where: { id: "incident-parent-a" }, data: { turnId: "metadata-turn" } }); const response = await request(resource("incidents/incident-parent-a")); expect(response.status).toBe(200); expect(await response.text()).not.toMatch(/private.example|PRIVATE|https/);
 });
-it("验收2：关闭/未登录/越权child在任何家庭查询之前被拒绝", async () => {
-  const childLookup = vi.spyOn(getPrisma().child, "findUnique"); const childList = vi.spyOn(getPrisma().child, "findMany"); const progressLookup = vi.spyOn(getPrisma().childChar, "findMany"); const reportsLookup = vi.spyOn(getPrisma().nightlyPublication, "findMany"); const rawLookup = vi.spyOn(getPrisma(), "$queryRaw");
-  env = {}; await request("status"); await request(resource("deletion-preview")); env = { ...ENV }; await request(resource("reports")); await request(resource("incidents")); await request(resource("progress")); await signIn(); await request(resource("reports", "other-child")); await request(resource("deletion-preview", "missing-child"));
-  for (const spy of [childLookup, childList, progressLookup, reportsLookup, rawLookup]) expect(spy).not.toHaveBeenCalled();
+it("验收2：家庭资料表不可用时，关闭/未登录/越权child仍先被正确拒绝", async () => {
+  // 只在本测试迁移创建的临时SQLite中临时更名；若先读取家庭资料，必然报500。
+  await getPrisma().$executeRaw`ALTER TABLE Child RENAME TO ParentTestUnavailableChild`;
+  try {
+    env = {}; expect((await request("status")).status).toBe(200); expect((await request(resource("deletion-preview"))).status).toBe(403);
+    env = { ...ENV }; for (const path of ["children", resource("reports"), resource("incidents"), resource("progress")]) expect((await request(path)).status).toBe(401);
+    await signIn(); expect((await request(resource("reports", "other-child"))).status).toBe(404); expect((await request(resource("deletion-preview", "missing-child"))).status).toBe(404);
+  } finally { await getPrisma().$executeRaw`ALTER TABLE ParentTestUnavailableChild RENAME TO Child`; }
 });
 it("验收5：18类完整私有/学习引用计数、预览无任何业务写入，私有快照不投影", async () => {
   const db = getPrisma(); const sessionId = "s-parent-a";
@@ -172,4 +175,32 @@ it("验收5：18类完整私有/学习引用计数、预览无任何业务写入
   const tables = ["child", "childChar", "session", "turn", "incident", "incidentContext", "sessionRuntime", "coachRuntime", "readingRuntime", "essayRuntime", "sessionCommand", "learningOutcome", "sessionLearningCoverage", "nightlyJob", "nightlyStep", "nightlyPublication", "parentReviewRequest", "parentReviewAudit", "parentAccessSession", "parentLoginLimit"] as const;
   const snapshot = async () => JSON.stringify(await Promise.all(tables.map(table => (db[table] as { findMany(): Promise<unknown> }).findMany()))); const before = await snapshot();
   const response = await request(resource("deletion-preview")); const raw = await response.text(); expect(response.status).toBe(200); expect(raw).not.toContain("PRIVATE"); expect(JSON.parse(raw).counts).toEqual({ Child: 1, ChildChar: 105, Session: 2, Turn: 0, Incident: 1, IncidentContext: 1, SessionRuntime: 1, CoachRuntime: 1, ReadingRuntime: 1, EssayRuntime: 1, SessionCommand: 1, LearningOutcome: 1, SessionLearningCoverage: 1, NightlyJob: 1, NightlyStep: 1, NightlyPublication: 1, ParentReviewRequest: 1, ParentReviewAudit: 1 }); expect(await snapshot()).toBe(before);
+});
+function delayedLogin(password: string) {
+  let finish!: () => void;
+  const body = new ReadableStream<Uint8Array>({ start(controller) { finish = () => { controller.enqueue(new TextEncoder().encode(JSON.stringify({ password }))); controller.close(); }; } });
+  const response = handler(new Request("http://localhost/api/parent/login", { method: "POST", headers: { origin: "http://localhost", "content-type": "application/json" }, body, duplex: "half" } as RequestInit));
+  return { response, finish };
+}
+it("F1：真实慢body跨窗口不能倒拨持久桶，耗尽后交替补旧body/新body持续429，重启不绕过", async () => {
+  now = new Date("2026-11-15T00:14:59.900Z"); const delayed = [delayedLogin("wrong"), delayedLogin("wrong"), delayedLogin("wrong")];
+  now = new Date("2026-11-15T00:15:00.100Z");
+  for (let n = 0; n < 8; n++) expect((await request("login", { password: "wrong" })).status).toBe(401);
+  expect((await request("login", { password: "wrong" })).status).toBe(429); await disconnectPrisma(); restart();
+  for (const pending of delayed) { pending.finish(); expect((await pending.response).status).toBe(429); expect((await request("login", { password: "wrong" })).status).toBe(429); }
+  expect(await getPrisma().parentLoginLimit.findUnique({ where: { bucket: "household" } })).toEqual({ bucket: "household", windowStart: "2026-11-15T00:15:00.000Z", attempts: 9 });
+  now = new Date("2026-11-15T00:30:00.000Z"); await signIn(); expect((await request("children")).status).toBe(200);
+});
+it("F1：时钟回退不重置已耗尽桶，实际并发预算最多八次且下一新窗口恢复", async () => {
+  now = new Date("2026-11-15T00:15:00.100Z"); const responses = await Promise.all(Array.from({ length: 12 }, () => request("login", { password: "wrong" })));
+  expect(responses.filter(response => response.status === 401)).toHaveLength(8); expect(responses.filter(response => response.status === 429)).toHaveLength(4);
+  now = new Date("2026-11-15T00:14:59.900Z"); expect((await request("login", { password: PASSWORD })).status).toBe(429);
+  expect(await getPrisma().parentLoginLimit.findUnique({ where: { bucket: "household" } })).toMatchObject({ windowStart: "2026-11-15T00:15:00.000Z", attempts: 9 });
+  now = new Date("2026-11-15T00:30:00.000Z"); await signIn();
+});
+it("F1：慢body登录的24小时绝对期从实际签发算起，配置变化不签发旧凭证", async () => {
+  now = new Date("2026-11-15T00:14:59.900Z"); const pending = delayedLogin(PASSWORD);
+  now = new Date("2026-11-15T00:30:00.000Z"); pending.finish(); const response = await pending.response; expect(response.status).toBe(200); cookie = response.headers.get("set-cookie")!.split(";")[0]!;
+  expect((await getPrisma().parentAccessSession.findFirst())?.expiresAt).toBe("2026-11-16T00:30:00.000Z"); now = new Date("2026-11-16T00:30:00.000Z"); expect((await request("children")).status).toBe(401);
+  const changed = delayedLogin(PASSWORD); env.PARENT_ACCESS_PASSWORD = PASSWORD + "changed"; changed.finish(); expect((await changed.response).status).toBe(403); expect(await getPrisma().parentAccessSession.count()).toBe(1);
 });

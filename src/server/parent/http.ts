@@ -16,22 +16,27 @@ export function createParentHandler(options: { getEnv?: () => Record<string, str
     const respond = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers });
     try {
       const env = options.getEnv?.() ?? process.env;
-      const config = loadConfig(env); const now = options.now?.() ?? new Date();
+      const clock = options.now ?? (() => new Date());
+      const config = loadConfig(env);
       const url = new URL(request.url); const path = url.pathname.slice("/api/parent/".length).split("/").map(decodeURIComponent);
-      if (request.method === "GET" && path.join("/") === "status") return respond({ enabled: !!config, authenticated: !!config && await authenticated(request, config, now) });
+      if (request.method === "GET" && path.join("/") === "status") return respond({ enabled: !!config, authenticated: !!config && await authenticated(request, config, clock()) });
       if (!config) throw new ParentError(403, "家长入口暂未开启。");
       if (request.method !== "GET" && request.method !== "POST") throw new ParentError(405, "暂不支持这个操作。");
       if (request.method === "POST") checkMutation(request);
       if (request.method === "POST" && path.join("/") === "login") {
         const body = ParentLoginSchema.parse(await readJson(request));
-        const token = await serial("login", () => login(body.password, config, now));
+        const token = await serial("login", () => {
+          const current = loadConfig(options.getEnv?.() ?? process.env);
+          if (!current || current.fingerprint !== config.fingerprint) throw new ParentError(403, "家长入口配置已更新，请重新打开页面。");
+          return login(body.password, current, clock);
+        });
         headers.set("Set-Cookie", cookie(token, env.NODE_ENV === "production"));
         return respond({ enabled: true, authenticated: true });
       }
       const assertAccess = async () => {
         // 操作在事务真正执行时也复查撤销/过期；配置变化不得继续操作。
         const current = loadConfig(options.getEnv?.() ?? process.env);
-        if (!current || current.fingerprint !== config.fingerprint || !await authenticated(request, config, options.now?.() ?? new Date())) throw new ParentError(401, "请先登录家长入口。");
+        if (!current || current.fingerprint !== config.fingerprint || !await authenticated(request, config, clock())) throw new ParentError(401, "请先登录家长入口。");
       };
       await assertAccess();
       if (request.method === "POST" && path.join("/") === "logout") {
@@ -50,7 +55,7 @@ export function createParentHandler(options: { getEnv?: () => Record<string, str
         if (resource === "progress") return respond(await store.progress(config, childId, url.searchParams.get("stage"), url.searchParams.get("cursor")));
         if (resource === "reports") return respond(await store.reports(config, childId, url.searchParams.get("cursor")));
         if (resource === "incidents") return respond(await store.incidents(config, childId, url.searchParams.get("cursor")));
-        if (resource === "deletion-preview") return respond(await store.deletionPreview(config, childId, now));
+        if (resource === "deletion-preview") return respond(await store.deletionPreview(config, childId, clock()));
       }
       if (request.method === "GET" && path.length === 4 && path[3]) {
         if (resource === "reports") return respond(await store.report(config, childId, path[3]));
@@ -59,7 +64,7 @@ export function createParentHandler(options: { getEnv?: () => Record<string, str
       if (request.method === "POST" && path.length === 5 && resource === "incidents" && path[3] && path[4] === "resolve") {
         const body = ParentIncidentResolveSchema.parse(await readJson(request));
         const requestId = SessionRequestIdSchema.parse(request.headers.get("Idempotency-Key"));
-        return respond(await serial("review", () => store.resolve(config, childId, path[3]!, requestId, body, now, assertAccess)));
+        return respond(await serial("review", () => store.resolve(config, childId, path[3]!, requestId, body, clock(), assertAccess)));
       }
       throw notFound();
     } catch (error) {
