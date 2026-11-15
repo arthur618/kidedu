@@ -104,6 +104,7 @@ model Incident {
   turnId    String?
   note      String
   resolved  Boolean
+  revision  Int @default(0)
   createdAt String
 }
 
@@ -201,4 +202,45 @@ model NightlyPublication {
   jobId Int
   data String
   @@id([childId, date, timezone])
+}
+
+// C11B 仅hash凭证；过期不触发学习数据清理。
+model ParentAccessSession {
+  tokenHash String @id
+  configFingerprint String
+  expiresAt String
+  revoked Boolean @default(false)
+}
+model ParentLoginLimit {
+  bucket String @id
+  windowStart String
+  attempts Int
+}
+model IncidentContext {
+  incidentId String @id
+  childId String
+  sessionId String
+  @@index([childId, incidentId])
+  @@index([sessionId])
+}
+model ParentReviewAudit {
+  id String @id
+  incidentId String
+  childId String
+  actor String
+  requestId String @unique
+  revisionBefore Int
+  revisionAfter Int
+  resolvedBefore Boolean
+  resolvedAfter Boolean
+  createdAt String
+  @@index([childId, incidentId])
+}
+model ParentReviewRequest {
+  requestId String @id
+  childId String
+  incidentId String
+  fingerprint String
+  response String
+  @@index([childId])
 }

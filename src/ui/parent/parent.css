@@ -1,0 +1,14 @@
+.parent-app { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; color: #203e38; font-family: system-ui, sans-serif; line-height: 1.7; overflow-wrap: anywhere; }
+.parent-app * { box-sizing: border-box; }
+.parent-app h1 { font-size: 2rem; margin-bottom: 0; }
+.parent-app h2 { font-size: 1.4rem; }
+.parent-app h3 { font-size: 1.15rem; }
+.parent-card { background: #f5f9f6; border: 1px solid #c8d8cc; border-radius: 12px; padding: 18px; margin: 18px 0; }
+.parent-app button, .parent-app select, .parent-app input { font: inherit; max-width: 100%; min-height: 44px; border: 1px solid #688779; border-radius: 6px; padding: 8px 12px; color: inherit; background: white; }
+.parent-app button { cursor: pointer; }
+.parent-app button:disabled { opacity: .6; cursor: wait; }
+.parent-app :focus-visible { outline: 3px solid #9f5319; outline-offset: 3px; }
+.parent-app form label, .parent-app form input { display: block; width: 100%; margin: 10px 0; }
+.parent-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 14px 0; }
+.parent-counts, .parent-chars { display: flex; gap: 10px 22px; flex-wrap: wrap; padding-left: 22px; }
+.parent-app section { margin-top: 28px; }

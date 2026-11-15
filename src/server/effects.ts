@@ -17,8 +17,8 @@ import type { RuntimeDeps } from "./deps";
 import { measuredClient, persistTurns, type PendingTurn } from "./model";
 import { SessionNotFoundError } from "./session";
 
-export async function incident(deps: RuntimeDeps, type: Incident["type"], note: string): Promise<void> {
-  await insertIncident({ id: `incident_${randomUUID()}`, type, turnId: null, note, resolved: false, createdAt: deps.now().toISOString() });
+export async function incident(deps: RuntimeDeps, type: Incident["type"], note: string, sessionId: string): Promise<void> {
+  await insertIncident({ id: `incident_${randomUUID()}`, type, turnId: null, note, resolved: false, createdAt: deps.now().toISOString() }, sessionId);
 }
 export function unavailable(sessionId: string, state: SessionPacket["state"], reason: "missing_content" | "photo_not_available" = "missing_content"): SessionPacket {
   return { sessionId, state, effects: [], unavailable: { reason, say: reason === "missing_content" ? "这张字卡还没准备好，今天先到这吧。" : "这张照片暂时看不到了，今天先到这吧。" } };
@@ -34,9 +34,9 @@ export async function coachOutput(deps: RuntimeDeps, sessionId: string, input: C
   await persistTurns(sessionId, turns, result.guard.verdict, deps.now);
   if (result.guard.verdict === "blocked") {
     const type: Incident["type"] = result.guard.reason === "unsafe" ? "safety" : result.guard.reason === "ghostwriting" ? "ghostwriting" : result.guard.reason === "no_card_reference" ? "knowledge" : "bad_question";
-    await incident(deps, type, `讲字内容已拦下：${result.guard.reason}`);
+    await incident(deps, type, `讲字内容已拦下：${result.guard.reason}`, sessionId);
   }
-  if (result.output.next === "escalate") await incident(deps, "bad_question", "讲字活动需要帮助。");
+  if (result.output.next === "escalate") await incident(deps, "bad_question", "讲字活动需要帮助。", sessionId);
   return result.output;
 }
 export interface EffectResult { packet: SessionPacket; coach?: CoachRuntime; essay?: EssayRuntime }
@@ -61,7 +61,7 @@ export async function executeEffects(deps: RuntimeDeps, sessionId: string, effec
     const card = await deps.getCharCard(char);
     const child = await deps.getChild(ctx.childId);
     if (!card || !child) {
-      await incident(deps, "knowledge", "当前字卡尚未准备好。");
+      await incident(deps, "knowledge", "当前字卡尚未准备好。", sessionId);
       return { packet: unavailable(sessionId, runtime.state) };
     }
     const input: CharCoachInput = { child, card, step: "explain", history: [] };
@@ -83,7 +83,7 @@ export async function executeEffects(deps: RuntimeDeps, sessionId: string, effec
   }
   if (effects.some(effect => effect.type === "play_audio")) {
     const cards = await deps.getCharCards(ctx.writeQueue);
-    if (cards.length !== ctx.writeQueue.length) { await incident(deps, "knowledge", "报词所需字卡尚未准备好。"); return { packet: unavailable(sessionId, runtime.state) }; }
+    if (cards.length !== ctx.writeQueue.length) { await incident(deps, "knowledge", "报词所需字卡尚未准备好。", sessionId); return { packet: unavailable(sessionId, runtime.state) }; }
   }
   return { packet: await snapshot(deps, sessionId, photo, effects.length === 0, photoCommand) };
 }
