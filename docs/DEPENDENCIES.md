@@ -9,7 +9,7 @@
 | prisma / @prisma/client | 6.19.3，两者对齐 | [官方6.x补丁](https://github.com/prisma/orm/releases/tag/6.19.3)把effect更新为3.21.0，修复[并发上下文漏洞](https://github.com/advisories/GHSA-38f7-945m-qr2g)，无需迁移Prisma7。 |
 | @prisma/config中的deepmerge-ts | 仅`@prisma/config@6.19.3`下覆盖8.0.0 | 原精确依赖7.1.5命中[递归对象图栈耗尽漏洞](https://github.com/advisories/GHSA-ggr8-5vv4-36mx)。不是全树强换。 |
 | vitest | 4.1.12 | 本次[mocker redirect](https://github.com/advisories/GHSA-82fw-gwwq-j7x9)及[manual mock注入](https://github.com/advisories/GHSA-qxg6-89mg-rqv8)要求受维护的4.1.12线；3.2.6仅修较早UI问题，不是完整修复。 |
-| vite | 版本裁决待最终在线审计 | 初始冻结6.4.4后发现[新query绕过告警](https://github.com/advisories/GHSA-8g5g-mxqh-grgj)，最低修6.4.5，6.4.6也声明兼容Node22.1。等待负责人精确版本裁决，不能为凑绿忽略。 |
+| vite | 6.4.6 | 初始6.4.4安装后在线审计发现[query绕过告警](https://github.com/advisories/GHSA-8g5g-mxqh-grgj)，root核实后正式更新为6.4.6；最低修复6.4.5，6.4.6声明兼容Node22.1。 |
 | zod | 保持已锁3.25.76 | [已知高危](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)仅公布4.6.6及以后修复；当前3.x没有已发布安全补丁，单独设计迁移。 |
 
 Vitest4[官方迁移说明](https://v4.vitest.dev/guide/migration)要求Node>=20/Vite>=6，并移除Tinypool。选择明确6.x Vite避免npm解析到要求Node22.12的7/8；没有启用Vitest UI、browser mode或新开发服务。原Playwright浏览器套件继续保留。
@@ -24,7 +24,7 @@ Prisma config6.19.3的官方依赖仍精确为deepmerge-ts7.1.5。8.0.0覆盖属
 
 ## 审计规则与剩余欠账
 
-在线audit使用官方registry，保留完整severity，不能用离线缓存返回0或降低筛选代替。初次目标安装后audit为2项（Vite moderate、Zod high），后续修补结果以C13报告最终记录为准；不得称全部漏洞已清。
+在线audit使用官方registry，保留完整severity，不能用离线缓存返回0或降低筛选代替。初次6.4.4目标安装后audit为2项（Vite moderate、Zod high）；经负责人裁决改6.4.6后，有效官方在线audit剩1项Zod high，critical/moderate为0。不是全部漏洞已清；最终组合安装后的记录见C13报告。
 
 Zod3即使有`.max()`仍可能继续解析每项，见[上游v3问题6653](https://github.com/colinhacks/zod/issues/6653)。只升级包为Zod4再改用`zod/v3`会保留受影响实现，不能作为修复。Zod4真正迁移涉及schema行为和类型，需负责人另冻结契约兼容目标；本包不动正在开发的C12契约。输入字节/结构前置限制是否足以缓解每条可达路径尚未完整评估，不把它当上游已修。
 
