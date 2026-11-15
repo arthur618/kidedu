@@ -45,7 +45,7 @@ export default function ParentApp() {
       if (response.status === 401 && path !== "login" && version === epoch.current) {
         invalidate(); setChildren([]); setChildId(""); setStatus(s => s ? { ...s, authenticated: false } : s); setMessage("登录已失效，请重新登录。");
       }
-      if (!response.ok) throw new Error(response.status === 401 ? path === "login" ? "口令不正确，请重试。" : "登录已失效，请重新登录。" : response.status === 409 ? "记录已更新，请刷新记录后重试。" : response.status === 429 ? "尝试次数较多，请稍后再试。" : response.status === 403 ? "家长入口暂未开启或操作无法确认。" : "暂时无法完成，请稍后重试。");
+      if (!response.ok) throw new Error(response.status === 401 ? path === "login" ? "口令不正确，请重试。" : "登录已失效，请重新登录。" : response.status === 409 ? "记录已更新，请刷新记录后重试。" : response.status === 429 ? "尝试次数较多，请稍后再试。" : response.status === 403 ? "家长入口暂未开启或操作暂不可用。" : "暂时无法完成，请稍后重试。");
       return data;
     } finally { controllers.current.delete(controller); }
   }
