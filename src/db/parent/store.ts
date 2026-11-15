@@ -116,6 +116,7 @@ export async function deletionPreview(config: ParentConfig, childId: string, now
     const incidentIds = (await db.$queryRaw<{ id: string }[]>(Prisma.sql`SELECT i.id ${incidentSource(childId)}`)).map(row => row.id);
     const counts = {
       Child: await db.child.count({ where: { id: childId } }), ChildChar: await db.childChar.count({ where: { childId } }), Session: ids.length, Turn: turns.length,
+      SessionOrigin: Number((await db.$queryRaw<{ count: bigint }[]>(Prisma.sql`SELECT COUNT(*) AS count FROM SessionOrigin o JOIN Session s ON s.id=o.sessionId JOIN SessionRuntime r ON r.sessionId=s.id WHERE s.childId=${childId} AND o.childId=s.childId AND json_valid(r.context) AND json_extract(r.context, '$.childId')=s.childId AND json_extract(r.context, '$.sessionId')=s.id`))[0]!.count),
       SessionRuntime: await db.sessionRuntime.count({ where: { sessionId: { in: ids } } }), CoachRuntime: await db.coachRuntime.count({ where: { sessionId: { in: ids } } }), ReadingRuntime: await db.readingRuntime.count({ where: { sessionId: { in: ids } } }), EssayRuntime: await db.essayRuntime.count({ where: { sessionId: { in: ids } } }),
       SessionCommand: await db.sessionCommand.count({ where: { OR: [{ sessionId: { in: ids }, scope: { in: [`child:${childId}`, ...ids.map(id => `session:${id}`)] } }, { sessionId: null, scope: `child:${childId}` }] } }),
       LearningOutcome: await db.learningOutcome.count({ where: { childId, sessionId: { in: ids } } }), SessionLearningCoverage: await db.sessionLearningCoverage.count({ where: { sessionId: { in: ids } } }),

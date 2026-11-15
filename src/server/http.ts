@@ -4,7 +4,7 @@ import { getReadingRuntime } from "../db/readingRuntime";
 import { getPassage } from "../db/passage";
 import { z } from "zod";
 import { SessionEventSchema } from "../contracts/orchestrator";
-import { SESSION_REQUEST_ID_HEADER, SessionRequestIdSchema, SessionPacketSchema } from "../contracts/session";
+import { SESSION_REQUEST_ID_HEADER, SessionRequestIdSchema, SessionPacketSchema, SessionRecoveryRequestSchema, SessionRecoveryResponseSchema } from "../contracts/session";
 import type { RuntimeDeps } from "./deps";
 import { ChildNotFoundError, LessonNotFoundError, SessionNotFoundError } from "./session";
 import { createSessionService, CoachConflict, RequestConflict, type CommandKind } from "./runtime";
@@ -38,6 +38,13 @@ export function createHttpHandlers(deps: RuntimeDeps) {
       const photo = "imageDataUrl" in body ? body.imageDataUrl : "imageUrl" in body ? body.imageUrl : undefined;
       if (typeof photo === "string" && !validPhoto(photo)) return json({ error: "请选一张不超过2MB的 JPG 或 PNG 图片。" }, 400);
       try { return json(SessionPacketSchema.parse(await service.post(kind, kind === "start" ? (body as z.infer<typeof startSchema>).childId : sessionId!, key.data, body))); }
+      catch (error) { return errorResponse(error); }
+    },
+    async resume(sessionId: string, request: Request): Promise<Response> {
+      let raw: unknown; try { raw = await request.json(); } catch { return json({ error: "请求内容格式不对，请再试一次。" }, 400); }
+      const body = SessionRecoveryRequestSchema.safeParse(raw);
+      if (!body.success) return json({ error: "请求内容格式不对，请再试一次。" }, 400);
+      try { return json(SessionRecoveryResponseSchema.parse(await service.recover(sessionId, body.data))); }
       catch (error) { return errorResponse(error); }
     },
     async card(sessionId: string, request: Request): Promise<Response> {

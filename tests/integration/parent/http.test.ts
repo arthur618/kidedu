@@ -128,7 +128,7 @@ it("验收4/5：人工复核不改学习/内容；删除预览计数完整只读
   await signIn(); const snapshots = async () => JSON.stringify({ chars: await getPrisma().childChar.findMany(), sessions: await getPrisma().session.findMany(), cards: await getPrisma().charCard.findMany() }); const before = await snapshots();
   await request(resource("incidents/incident-parent-a/resolve"), { resolved: true, expectedRevision: 0 }, { key: "preview-review-request" }); expect(await snapshots()).toBe(before);
   const tables = async () => JSON.stringify(await Promise.all([getPrisma().incident.findMany(), getPrisma().incidentContext.findMany(), getPrisma().parentReviewAudit.findMany(), getPrisma().parentReviewRequest.findMany(), getPrisma().nightlyJob.findMany()])); const records = await tables();
-  const response = await request(resource("deletion-preview")); const preview = await response.json(); expect(preview).toMatchObject({ childId: "parent-a", executable: false, counts: { Child: 1, ChildChar: 105, Session: 2, Incident: 1, IncidentContext: 1, ParentReviewAudit: 1, ParentReviewRequest: 1, NightlyJob: 1, NightlyStep: 0, NightlyPublication: 1 } }); expect(preview.fingerprint).toMatch(/^[a-f0-9]{64}$/); expect(Object.keys(preview.counts)).toHaveLength(18);
+  const response = await request(resource("deletion-preview")); const preview = await response.json(); expect(preview).toMatchObject({ childId: "parent-a", executable: false, counts: { Child: 1, ChildChar: 105, Session: 2, Incident: 1, IncidentContext: 1, ParentReviewAudit: 1, ParentReviewRequest: 1, NightlyJob: 1, NightlyStep: 0, NightlyPublication: 1 } }); expect(preview.fingerprint).toMatch(/^[a-f0-9]{64}$/); expect(Object.keys(preview.counts)).toHaveLength(19);
   expect(await tables()).toBe(records); expect(await snapshots()).toBe(before); expect((await request(resource("delete"), {})).status).toBe(404);
 });
 it("验收7：异常JSON/超长数据只返回安全中文，配置归一化不依赖请求配置", async () => {
@@ -165,7 +165,7 @@ it("验收2：家庭资料表不可用时，关闭/未登录/越权child仍先�
     await signIn(); expect((await request(resource("reports", "other-child"))).status).toBe(404); expect((await request(resource("deletion-preview", "missing-child"))).status).toBe(404);
   } finally { await getPrisma().$executeRaw`ALTER TABLE ParentTestUnavailableChild RENAME TO Child`; }
 });
-it("验收5：18类完整私有/学习引用计数、预览无任何业务写入，私有快照不投影", async () => {
+it("验收5：19类完整私有/学习引用计数、预览无任何业务写入，私有快照不投影", async () => {
   const db = getPrisma(); const sessionId = "s-parent-a";
   await db.sessionRuntime.create({ data: { sessionId, state: "ended", context: "PRIVATE-CONTEXT" } }); await db.coachRuntime.create({ data: { sessionId, data: "PRIVATE-COACH" } }); await db.readingRuntime.create({ data: { sessionId, data: "PRIVATE-READING" } }); await db.essayRuntime.create({ data: { sessionId, data: "PRIVATE-ESSAY", commands: "PRIVATE-COMMANDS" } });
   await db.sessionCommand.create({ data: { scope: "child:parent-a", key: "preview-scope", fingerprint: "abc", kind: "start", sessionId: null, phase: "pending", pending: "PRIVATE-PENDING" } });
@@ -174,7 +174,7 @@ it("验收5：18类完整私有/学习引用计数、预览无任何业务写入
   await signIn(); await request(resource("incidents/incident-parent-a/resolve"), { resolved: true, expectedRevision: 0 }, { key: "preview-complete-request" });
   const tables = ["child", "childChar", "session", "turn", "incident", "incidentContext", "sessionRuntime", "coachRuntime", "readingRuntime", "essayRuntime", "sessionCommand", "learningOutcome", "sessionLearningCoverage", "nightlyJob", "nightlyStep", "nightlyPublication", "parentReviewRequest", "parentReviewAudit", "parentAccessSession", "parentLoginLimit"] as const;
   const snapshot = async () => JSON.stringify(await Promise.all(tables.map(table => (db[table] as { findMany(): Promise<unknown> }).findMany()))); const before = await snapshot();
-  const response = await request(resource("deletion-preview")); const raw = await response.text(); expect(response.status).toBe(200); expect(raw).not.toContain("PRIVATE"); expect(JSON.parse(raw).counts).toEqual({ Child: 1, ChildChar: 105, Session: 2, Turn: 0, Incident: 1, IncidentContext: 1, SessionRuntime: 1, CoachRuntime: 1, ReadingRuntime: 1, EssayRuntime: 1, SessionCommand: 1, LearningOutcome: 1, SessionLearningCoverage: 1, NightlyJob: 1, NightlyStep: 1, NightlyPublication: 1, ParentReviewRequest: 1, ParentReviewAudit: 1 }); expect(await snapshot()).toBe(before);
+  const response = await request(resource("deletion-preview")); const raw = await response.text(); expect(response.status).toBe(200); expect(raw).not.toContain("PRIVATE"); expect(JSON.parse(raw).counts).toEqual({ Child: 1, ChildChar: 105, Session: 2, SessionOrigin: 0, Turn: 0, Incident: 1, IncidentContext: 1, SessionRuntime: 1, CoachRuntime: 1, ReadingRuntime: 1, EssayRuntime: 1, SessionCommand: 1, LearningOutcome: 1, SessionLearningCoverage: 1, NightlyJob: 1, NightlyStep: 1, NightlyPublication: 1, ParentReviewRequest: 1, ParentReviewAudit: 1 }); expect(await snapshot()).toBe(before);
 });
 function delayedLogin(password: string) {
   let finish!: () => void;
@@ -212,4 +212,12 @@ it("验收2/5：预览只计可信真实归属，矛盾/孤儿事件与跨孩子
   await db.parentReviewAudit.create({ data: { id: "foreign-audit", incidentId: "incident-other-child", childId: "parent-a", actor: "parent", requestId: "foreign-audit-request", revisionBefore: 0, revisionAfter: 1, resolvedBefore: false, resolvedAfter: true, createdAt: NOW } });
   await db.parentReviewRequest.create({ data: { requestId: "foreign-result", childId: "parent-a", incidentId: "incident-other-child", fingerprint: "abc", response: "PRIVATE" } });
   await signIn(); const response = await request(resource("deletion-preview")); expect(response.status).toBe(200); const value = await response.json(); expect(value.counts).toMatchObject({ Incident: 1, IncidentContext: 1, LearningOutcome: 0, ParentReviewAudit: 0, ParentReviewRequest: 0, SessionCommand: 0 });
+});
+it('C12：SessionOrigin仅真实start同属孩子计数，矛盾/孤儿/跨孩子context不纳入19类只读预览',async()=>{
+  await signIn();expect((await(await request(resource('deletion-preview'))).json()).counts.SessionOrigin).toBe(0);
+  const { harness }=await import('../helpers');const h=harness();await getPrisma().lesson.create({data:{id:'origin-lesson',grade:3,term:'upper',lessonNo:1,title:'编造归属课',recognizeChars:'[]',writeChars:'[]',words:'[]',status:'approved'}});
+  const start=async(childId:string)=>h.post('start',{childId,lessonId:'origin-lesson',hasEssayToday:false},undefined,h.key());const first=(await start('parent-a')).sessionId!;const second=(await start('parent-b')).sessionId!;
+  const before=JSON.stringify(await getPrisma().sessionOrigin.findMany());expect((await(await request(resource('deletion-preview'))).json()).counts.SessionOrigin).toBe(1);expect((await(await request(resource('deletion-preview','parent-b'))).json()).counts.SessionOrigin).toBe(1);expect(JSON.stringify(await getPrisma().sessionOrigin.findMany())).toBe(before);
+  await getPrisma().sessionOrigin.create({data:{sessionId:'orphan-origin',childId:'parent-a',lessonId:'origin-lesson'}});await getPrisma().sessionOrigin.update({where:{sessionId:second},data:{childId:'parent-a'}});expect((await(await request(resource('deletion-preview'))).json()).counts.SessionOrigin).toBe(1);expect((await(await request(resource('deletion-preview','parent-b'))).json()).counts.SessionOrigin).toBe(0);
+  const runtime=(await h.deps.getSessionRuntime(first))!;await h.deps.saveSessionRuntime({...runtime,context:{...runtime.context,childId:'parent-b'}});expect((await(await request(resource('deletion-preview'))).json()).counts.SessionOrigin).toBe(0);
 });
