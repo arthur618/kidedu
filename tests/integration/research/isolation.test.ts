@@ -1,0 +1,35 @@
+import { afterEach, expect, it, vi } from "vitest";
+import { mkdtemp, mkdir, readFile, rm, writeFile, realpath } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { Pipeline } from "../../../scripts/content/pipeline";
+import { writeReference } from "../../../scripts/content/research/cli";
+import { CharCard, Lesson, Passage } from "../../../src/contracts/schemas";
+
+vi.mock("../../../src/db/charCard", () => ({ upsertCharCard: vi.fn() }));
+vi.mock("../../../src/db/lesson", () => ({ upsertLesson: vi.fn() }));
+vi.mock("../../../src/db/passage", () => ({ upsertPassage: vi.fn() }));
+import { importContent } from "../../../src/db/import";
+import { upsertCharCard } from "../../../src/db/charCard";
+import { upsertLesson } from "../../../src/db/lesson";
+import { upsertPassage } from "../../../src/db/passage";
+let root: string;
+afterEach(async () => { if (root) await rm(root, { recursive: true, force: true }); vi.clearAllMocks(); });
+it("research不进入check/review/sheet/approve或DB导入；原审批及Child/Session/Turn哨兵未改", async () => {
+  root = await realpath(await mkdtemp(path.join(tmpdir(), "research-isolation-"))); await mkdir(path.join(root, "content"));
+  const sentinel = { Child: [{ id: "invented-child" }], Session: [], Turn: [], approved: ["unchanged"] };
+  await writeFile(path.join(root, "sentinel.json"), JSON.stringify(sentinel));
+  const artifact = { schemaVersion: 1, kind: "public_reference", status: "reference_only", provider: "deepseek", query: "编造公开词", count: 1, fetchedAt: "2026-06-01T00:00:00.000Z", sourceHash: "0".repeat(64), results: [] };
+  await writeReference(root, "isolated", artifact);
+  const content = path.join(root, "content"); const file = path.join(content, "research/isolated.json"); const original = await readFile(file, "utf8");
+  const review = { call: vi.fn() }; const pipeline = new Pipeline({ root: content, providers: { draft: "openai", review: "deepseek" }, review });
+  expect(await pipeline.check()).toEqual([]); expect(await pipeline.review()).toEqual([]); expect(review.call).not.toHaveBeenCalled();
+  const sheet = await pipeline.sheet("2026-06-01"); expect(await readFile(sheet, "utf8")).not.toContain("isolated");
+  await expect(pipeline.approve([file])).rejects.toThrow();
+  expect(await importContent(content)).toEqual({ lessons: 0, cards: 0, passages: 0, skipped: 0 });
+  expect(upsertCharCard).not.toHaveBeenCalled(); expect(upsertLesson).not.toHaveBeenCalled(); expect(upsertPassage).not.toHaveBeenCalled();
+  for (const schema of [CharCard, Lesson, Passage]) expect(schema.safeParse(artifact).success).toBe(false);
+  await mkdir(path.join(content, "cards")); await writeFile(path.join(content, "cards/research.json"), original);
+  await expect(importContent(content)).rejects.toThrow("不符合契约");
+  expect(await readFile(file, "utf8")).toBe(original); expect(JSON.parse(await readFile(path.join(root, "sentinel.json"), "utf8"))).toEqual(sentinel);
+});
