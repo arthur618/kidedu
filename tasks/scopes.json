@@ -203,5 +203,10 @@
     "vitest.config.ts",
     "tests/integration/dependencies/",
     "docs/DEPENDENCIES.md"
+  ],
+  "C14": [
+    "src/db/codec.ts",
+    "tests/integration/zod/",
+    "docs/DEPENDENCIES.md"
   ]
 }

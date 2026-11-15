@@ -129,8 +129,9 @@ export const Turn = z.object({
   sessionId: Id,
   agent: AgentName,
   model: z.string(),
-  input: z.unknown(),
-  output: z.unknown(),
+  // 契约2.11：显式保留Zod3原有的缺键语义，兼容修补版Zod4。
+  input: z.unknown().optional(),
+  output: z.unknown().optional(),
   inputTokens: z.number().int(),
   cachedInputTokens: z.number().int(),
   outputTokens: z.number().int(),

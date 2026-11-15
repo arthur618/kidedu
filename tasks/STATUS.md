@@ -4,7 +4,7 @@
 
 | 任务 | 内容 | 交给 | 批次 | 前提 | 状态 | 验收记录 |
 | --- | --- | --- | --- | --- | --- | --- |
-| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.10（增加标识恢复/可信会话课次绑定） |
+| T0 | 契约：`src/contracts/` | 总设计师 | 0 | 无 | 已合并 | 当前版本 2.11（保留既有语义的Zod4兼容准备） |
 | C1 | 编排器状态机与间隔复习 | Codex | 1 | T0 | 已合并 | `reviews/C1.md` |
 | D2 | 模型调用层 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D2.md` |
 | D1 | 数据库与后端骨架 | DeepSeek harness | 1 | T0 | 已合并 | `reviews/D1.md`：226341a 第二次验收通过；合并提交24ca021，main 439个测试与生产构建通过 |
@@ -34,7 +34,9 @@
 
 | C12 | 刷新续接、稳定开始ID与跨孩子生命周期隔离 | Codex / Sol high | 10 | C11B、契约2.10 | 已合并 | reviews/C12.md：0f0630b通过，合并25a51c2；独立/main1023测试/构建、53浏览器、恢复/事务探针通过 |
 
-| C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 待合并 | reviews/C13.md：64ce6cb独立1027测试/构建、在线仅Zod high1、恢复/事务/生产探针通过 |
+| C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 已合并 | reviews/C13.md：64ce6cb通过，合并7c96bce；独立/main1027测试/构建，在线仅Zod high1，事务/生产探针通过 |
+
+| C14 | 修补版Zod4迁移与既有契约兼容 | Codex / Sol medium | 12 | C13、契约2.11 | 进行中 | tasks/codex/C14-zod-runtime.md；精确4.6.7，root独立验收 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -179,3 +181,7 @@ root核实官方advisory/release/registry后冻结C13，Sol medium独立准备Vi
 ## C12最终合并（2026-11-15晚）
 
 C12@0f0630b独立新clone61文件1023测试/真实构建、27范围/契约差异0、53浏览器和实际client→handler→SQLite丢响应/检查点/无写入/Origin回滚探针通过，合并25a51c2。实际main重装1023测试/构建通过。仅标识存储与可信Origin/恢复、真实StrictMode/复用隔离、未发草稿不保存边界已验收。C13将合此实现后完成新依赖最终组合，候选audit目前仅Zod high1，不代表main告警已修；Zod迁移尚未冻。
+
+## C13合并与C14派发（2026-11-15晚）
+
+C13@64ce6cb独立62文件1027测试/实际构建、5范围、收集集合完整、官方在线audit仅Zod high1、实际恢复/事务/14JS默认关闭生产探针通过，合并7c96bce；实际main干净重装1027测试/构建通过。依赖修复已进主线，剩余Zod3漏洞明确留给C14。root冻结契约2.11：parent双参字符串record，Turn input/output显式optional保留旧缺键语义；旧Zod3先类型与契约/DB回归。单Sol medium复用原C13作者，精确升级4.6.7与codec公开类型，生产业务/协议不扩展，旧测试不放松。真实接口、密钥、口令仍空。

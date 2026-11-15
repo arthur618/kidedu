@@ -33,5 +33,5 @@ export const ParentReviewAuditSchema = z.object({
 });
 export const ParentDeletionPreviewSchema = z.object({
   childId: Id, generatedAt: IsoDateTime, fingerprint: z.string().regex(/^[a-f0-9]{64}$/),
-  counts: z.record(z.number().int().min(0)), executable: z.literal(false),
+  counts: z.record(z.string(), z.number().int().min(0)), executable: z.literal(false),
 }).strict();
