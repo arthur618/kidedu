@@ -167,5 +167,11 @@
     "content/research/",
     "tests/integration/research/",
     ".env.example"
+  ],
+  "C11C": [
+    "src/nightly/source.ts",
+    "src/nightly/run.ts",
+    "src/nightly/README.md",
+    "tests/integration/nightly/score-eligibility.test.ts"
   ]
 }
