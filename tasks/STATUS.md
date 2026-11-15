@@ -26,7 +26,7 @@
 
 | C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 已合并 | reviews/C8B.md：ab15183通过，合并aad4e27；独立/main887测试/构建、33浏览器；live待key |
 
-| C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 需修改 | reviews/C11B.md阶段检查：770cad9登录限速慢body跨窗口重置F1；原作者修复后最终验收 |
+| C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 待合并 | reviews/C11B.md：0d2f340独立976测试/构建、41浏览器、F1/事务/生产关闭探针通过 |
 
 | C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；live待key |
 
