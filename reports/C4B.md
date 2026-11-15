@@ -1,8 +1,18 @@
 # 任务报告：C4B DeepSeek离线公开资料检索
 
 - 实现者：Codex / Sol medium
-- 分支：task/C4B，已合main@715bead
-- 自查结果：focused 108测试通过（61新增及47既有C4回归），typecheck通过；完整verify与真实构建待独占窗口。
+- 分支：task/C4B，已合main@c4f4e00（实现验证基线715bead；新增主干仅C11B审查与状态文档）
+- 自查结果：`env -u RUST_LOG XDG_CACHE_HOME=… npm_config_cache=/private/tmp/yuwen-review-npm-cache bash scripts/verify.sh C4B` 通过。56测试文件、948测试全部通过；包含src/server/build.test.ts中真实执行`npm run build`，构建测试10.325秒。focused 108测试通过（61新增及47既有C4回归）。
+
+```text
+Test Files  56 passed (56)
+Tests  948 passed (948)
+== 3/4 范围检查 ==
+范围检查通过：10 个文件都在 C4B 的范围内。
+== 4/4 报告文件 ==
+reports/C4B.md 存在
+全部通过。
+```
 
 ## 做了什么
 
@@ -16,7 +26,7 @@
 | 官方字段映射/带时区日期、空成功、坏/超长/缺字段、超结果、危险链接、供应商错误正文、HTTP400/401/429/5xx、慢body/过大/取消/非合作迟到/重定向全部有界，最多一次请求，用量元数据真实。 | client.test.ts：官方投影、空结果/hash、坏结果整体失败、缺少官方字段、UTF8/无body、HTTP各状态、坏JSON/超大响应、整体8秒、调用方取消、非合作fetch/reader迟到、过预算回调尚未执行、供应商抛错/重定向。 | focused通过 |
 | 合成canary证明key/原错误不进console/产物；外部HTML/指令不执行、不拉结果链接，正文和图标不保存。原Child/Session/Turn/审批数据不变。 | client.test.ts固定请求次数与精确投影；cli.test.ts：合成HTTP经真实CLI进程写入、失败不写产物/原错误和key不进console；tests/integration/research/isolation.test.ts：审批及导入隔离。集成使用合成文件哨兵及mock DB upsert，不连接真实孩子数据库；生产代码只导入契约，无运行时DB/Agent模块。 | focused通过（合成隔离证明，非真实DB联调） |
 | CLI真实执行help及合成结果写入，路径穿越/软链/已有文件/并发同id/中断不损坏；失败不产物。research结构不能作为approved内容入库，既有C4自查/审校/批准回归不过度放宽。 | cli.test.ts：真实help、合成HTTP真实进程、拒绝覆盖/目标软链/目录、拒绝research与祖先软链、并发同id/中断、真实SIGTERM慢body取消；isolation.test.ts验证check/review/sheet不扫描、approve拒绝、DB导入忽略research且误放cards拒绝。既有pipeline.test.ts 25测试及checks.test.ts 22测试通过。 | focused通过 |
-| 集中focused后预约独占窗口跑一次verify C4B（包含实际构建），提交后scope/契约差异0/report准确。root新clone复跑、读生产代码/补充探针，问题交原作者返工；真实DeepSeek请求仍留C4B-live，不能把假HTTP写成供应商验证通过。 | main合并后typecheck及focused108通过；node scripts/check-scope.mjs C4B通过（10文件）；git diff main...HEAD -- src/contracts为空。verify及实际build待窗口；root独立验收待交付。 | 最终验证待窗口 |
+| 集中focused后预约独占窗口跑一次verify C4B（包含实际构建），提交后scope/契约差异0/report准确。root新clone复跑、读生产代码/补充探针，问题交原作者返工；真实DeepSeek请求仍留C4B-live，不能把假HTTP写成供应商验证通过。 | main合并后typecheck及focused108通过；独占窗口完整verify C4B通过（56文件/948测试），其中src/server/build.test.ts真实执行npm run build；node scripts/check-scope.mjs C4B通过（10文件）；git diff main...HEAD -- src/contracts为空。root新clone独立验收待交付后执行。 | 作者自查通过；root独立验收待完成 |
 
 ## 改动的文件
 
