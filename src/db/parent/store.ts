@@ -52,17 +52,21 @@ export async function report(config: ParentConfig, childId: string, id: string) 
   const row = rows[0]; if (!row) throw notFound();
   const result = await checkedReport(childId, row.date, row.timezone); if (!result || result.id !== id) throw notFound(); return result;
 }
-// 查询不选择Turn正文、事件自由note或私有活动；旧无可信归属记录自然隐藏。
-async function incidentRows(childId: string, id?: string, after?: string, take = 21) {
-  return getPrisma().$queryRaw<{ id: string; childId: string; sessionId: string; type: string; resolved: boolean | number; revision: number; createdAt: string; agent: string | null; model: string | null; turnCreatedAt: string | null }[]>(Prisma.sql`
-    SELECT i.id, s.childId, s.id AS sessionId, i.type, i.resolved, i.revision, i.createdAt,
-      t.agent, t.model, t.createdAt AS turnCreatedAt FROM Incident i
+// 列表、详情与预览共用相同可信归属；矛盾/孤儿不参与任何家庭投影。
+function incidentSource(childId: string) {
+  return Prisma.sql`FROM Incident i
     LEFT JOIN IncidentContext c ON c.incidentId=i.id
     LEFT JOIN Turn t ON t.id=i.turnId
     JOIN Session s ON s.id=COALESCE(c.sessionId,t.sessionId)
     WHERE s.childId=${childId} AND (c.incidentId IS NOT NULL OR t.id IS NOT NULL)
     AND (c.incidentId IS NULL OR c.childId=s.childId)
-    AND (i.turnId IS NULL OR (t.id IS NOT NULL AND t.sessionId=s.id))
+    AND (i.turnId IS NULL OR (t.id IS NOT NULL AND t.sessionId=s.id))`;
+}
+// 查询不选择Turn正文、事件自由note或私有活动；旧无可信归属记录自然隐藏。
+async function incidentRows(childId: string, id?: string, after?: string, take = 21) {
+  return getPrisma().$queryRaw<{ id: string; childId: string; sessionId: string; type: string; resolved: boolean | number; revision: number; createdAt: string; agent: string | null; model: string | null; turnCreatedAt: string | null }[]>(Prisma.sql`
+    SELECT i.id, s.childId, s.id AS sessionId, i.type, i.resolved, i.revision, i.createdAt,
+      t.agent, t.model, t.createdAt AS turnCreatedAt ${incidentSource(childId)}
     ${id ? Prisma.sql`AND i.id=${id}` : Prisma.empty}
     ${after ? Prisma.sql`AND i.id > ${after}` : Prisma.empty}
     ORDER BY i.id ASC LIMIT ${take}`);
@@ -109,14 +113,14 @@ export async function deletionPreview(config: ParentConfig, childId: string, now
     const ids = (await db.session.findMany({ where: { childId }, select: { id: true } })).map(row => row.id);
     const turns = (await db.turn.findMany({ where: { sessionId: { in: ids } }, select: { id: true } })).map(row => row.id);
     const jobs = (await db.nightlyJob.findMany({ where: { childId }, select: { id: true } })).map(row => row.id);
-    const incidentIds = (await db.incident.findMany({ where: { OR: [{ turnId: { in: turns } }, { id: { in: (await db.incidentContext.findMany({ where: { OR: [{ childId }, { sessionId: { in: ids } }] }, select: { incidentId: true } })).map(row => row.incidentId) } }] }, select: { id: true } })).map(row => row.id);
+    const incidentIds = (await db.$queryRaw<{ id: string }[]>(Prisma.sql`SELECT i.id ${incidentSource(childId)}`)).map(row => row.id);
     const counts = {
       Child: await db.child.count({ where: { id: childId } }), ChildChar: await db.childChar.count({ where: { childId } }), Session: ids.length, Turn: turns.length,
       SessionRuntime: await db.sessionRuntime.count({ where: { sessionId: { in: ids } } }), CoachRuntime: await db.coachRuntime.count({ where: { sessionId: { in: ids } } }), ReadingRuntime: await db.readingRuntime.count({ where: { sessionId: { in: ids } } }), EssayRuntime: await db.essayRuntime.count({ where: { sessionId: { in: ids } } }),
-      SessionCommand: await db.sessionCommand.count({ where: { OR: [{ sessionId: { in: ids } }, { scope: { in: [`child:${childId}`, ...ids.map(id => `session:${id}`)] } }] } }),
-      LearningOutcome: await db.learningOutcome.count({ where: { OR: [{ childId }, { sessionId: { in: ids } }] } }), SessionLearningCoverage: await db.sessionLearningCoverage.count({ where: { sessionId: { in: ids } } }),
-      Incident: incidentIds.length, IncidentContext: await db.incidentContext.count({ where: { OR: [{ childId }, { incidentId: { in: incidentIds } }] } }),
-      ParentReviewAudit: await db.parentReviewAudit.count({ where: { OR: [{ childId }, { incidentId: { in: incidentIds } }] } }), ParentReviewRequest: await db.parentReviewRequest.count({ where: { OR: [{ childId }, { incidentId: { in: incidentIds } }] } }),
+      SessionCommand: await db.sessionCommand.count({ where: { OR: [{ sessionId: { in: ids }, scope: { in: [`child:${childId}`, ...ids.map(id => `session:${id}`)] } }, { sessionId: null, scope: `child:${childId}` }] } }),
+      LearningOutcome: await db.learningOutcome.count({ where: { childId, sessionId: { in: ids } } }), SessionLearningCoverage: await db.sessionLearningCoverage.count({ where: { sessionId: { in: ids } } }),
+      Incident: incidentIds.length, IncidentContext: await db.incidentContext.count({ where: { childId, sessionId: { in: ids }, incidentId: { in: incidentIds } } }),
+      ParentReviewAudit: await db.parentReviewAudit.count({ where: { childId, incidentId: { in: incidentIds } } }), ParentReviewRequest: await db.parentReviewRequest.count({ where: { childId, incidentId: { in: incidentIds } } }),
       NightlyJob: jobs.length, NightlyStep: await db.nightlyStep.count({ where: { jobId: { in: jobs } } }), NightlyPublication: await db.nightlyPublication.count({ where: { childId } }),
     };
     const generatedAt = now.toISOString();

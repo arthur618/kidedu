@@ -204,3 +204,12 @@ it("F1：慢body登录的24小时绝对期从实际签发算起，配置变化�
   expect((await getPrisma().parentAccessSession.findFirst())?.expiresAt).toBe("2026-11-16T00:30:00.000Z"); now = new Date("2026-11-16T00:30:00.000Z"); expect((await request("children")).status).toBe(401);
   const changed = delayedLogin(PASSWORD); env.PARENT_ACCESS_PASSWORD = PASSWORD + "changed"; changed.finish(); expect((await changed.response).status).toBe(403); expect(await getPrisma().parentAccessSession.count()).toBe(1);
 });
+it("验收2/5：预览只计可信真实归属，矛盾/孤儿事件与跨孩子流水/审计/命令不扩大范围", async () => {
+  const db = getPrisma();
+  for (const [id, sessionId] of [["preview-contradictory", "s-other-child"], ["preview-orphan", "missing-session"]]) { await db.incident.create({ data: { id: id!, type: "safety", note: "PRIVATE", resolved: false, createdAt: NOW } }); await db.incidentContext.create({ data: { incidentId: id!, childId: "parent-a", sessionId: sessionId! } }); }
+  await db.learningOutcome.create({ data: { id: "foreign-preview-outcome", sessionId: "s-other-child", childId: "parent-a", commandScope: "foreign", commandKey: "foreign", effectIndex: 0, char: "山", kind: "write", stageBefore: "recognize", stageAfter: "understand", result: "wrong", occurredAt: NOW } });
+  await db.sessionCommand.create({ data: { scope: "child:parent-a", key: "foreign-preview-command", fingerprint: "abc", kind: "start", sessionId: "s-other-child", phase: "pending", pending: "PRIVATE" } });
+  await db.parentReviewAudit.create({ data: { id: "foreign-audit", incidentId: "incident-other-child", childId: "parent-a", actor: "parent", requestId: "foreign-audit-request", revisionBefore: 0, revisionAfter: 1, resolvedBefore: false, resolvedAfter: true, createdAt: NOW } });
+  await db.parentReviewRequest.create({ data: { requestId: "foreign-result", childId: "parent-a", incidentId: "incident-other-child", fingerprint: "abc", response: "PRIVATE" } });
+  await signIn(); const response = await request(resource("deletion-preview")); expect(response.status).toBe(200); const value = await response.json(); expect(value.counts).toMatchObject({ Incident: 1, IncidentContext: 1, LearningOutcome: 0, ParentReviewAudit: 0, ParentReviewRequest: 0, SessionCommand: 0 });
+});
