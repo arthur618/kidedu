@@ -28,7 +28,7 @@
 
 | C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 需修改 | reviews/C11B.md阶段检查：770cad9登录限速慢body跨窗口重置F1；原作者修复后最终验收 |
 
-| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 待合并 | reviews/C4B.md：727a292独立948测试/构建、Unicode/来源/原子文件探针通过；live待key |
+| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；live待key |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -145,3 +145,7 @@ C8B@ab15183独立53文件887测试/实际构建、16文件范围、33浏览器�
 ## C11B阶段检查F1（2026-11-15）
 
 独立clone@770cad9/真实handler/迁移SQLite探针复现慢登录body在新窗口耗尽后倒拨持久限速桶，持续绕过429。reviews/C11B.md列明确F1，原Sol high作者修改，root不代实现、不合并。昨晚C11B/C4B额度中断草稿已备份；今天只读额度允许后仅原agent恢复一次，未消费reset。C4B已保存79da65e并合715bead，待串行最终verify。
+
+## C4B代码合并（2026-11-15）
+
+C4B@727a292独立新clone948测试/实际构建、10文件范围、契约差异0及自编Unicode/来源投影/hash/原子文件探针通过，合并5bf3bbe；实际main重装948测试/构建通过。公开检索固定单请求与reference_only隔离，默认关闭，未配key，未做真实供应商联调。C11B F1仍由原作者修，未把阶段自查当最终验收。
