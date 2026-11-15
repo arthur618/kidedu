@@ -28,7 +28,7 @@
 
 | C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 需修改 | reviews/C11B.md阶段检查：770cad9登录限速慢body跨窗口重置F1；原作者修复后最终验收 |
 
-| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 进行中 | tasks/codex/C4B-research.md；真实key联调延后 |
+| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 待合并 | reviews/C4B.md：727a292独立948测试/构建、Unicode/来源/原子文件探针通过；live待key |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
