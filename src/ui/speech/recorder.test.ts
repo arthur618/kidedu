@@ -46,7 +46,7 @@ it('[7] 30秒自动停止、空片段/无格式/设备拒绝/录制异常/过大
 it('[3/7/8] 客户端12秒取消请求及body读取；能力失败禁用，ASR/TTS坏结果退路', async () => {
   vi.useFakeTimers(); const signals: AbortSignal[] = [];
   const fetcher = vi.fn((_input: unknown, options?: RequestInit) => { signals.push(options!.signal as AbortSignal); return new Promise<Response>(() => {}); }) as unknown as typeof fetch;
-  const client = createSpeechClient(fetcher);
+  const client = createSpeechClient(fetcher, 12000, async blob => ({ blob: new Blob([await blob.arrayBuffer()], { type: 'audio/wav' }), durationMs: 1 }));
   const pending = client.transcribe(new Blob(['fictional'], { type: 'audio/webm' }), 1); await vi.advanceTimersByTimeAsync(12000); expect(await pending).toBeNull(); expect(signals[0]?.aborted).toBe(true); expect(vi.getTimerCount()).toBe(0);
   const caps = client.capabilities(); await vi.advanceTimersByTimeAsync(12000); expect(await caps).toEqual({ asr: false, tts: false });
   const tts = client.synthesize('休'); await vi.advanceTimersByTimeAsync(12000); expect(await tts).toBeNull(); expect(signals.every(s => s.aborted)).toBe(true);

@@ -4,55 +4,87 @@
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 2048
+    }
   },
   "vision_dictation": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 4096
+    }
   },
   "char_coach": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 512
+    }
   },
   "reader": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 512
+    }
   },
   "essay": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 1024
+    }
   },
   "guard": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 256
+    }
   },
   "score": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 256
+    }
   },
   "report": {
     "provider": "deepseek",
     "model": "deepseek-flash",
     "baseUrl": "https://api.deepseek.com",
     "apiKeyEnv": "DEEPSEEK_API_KEY",
-    "timeoutMs": 8000
+    "timeoutMs": 8000,
+    "deepseek": {
+      "thinking": "disabled",
+      "maxTokens": 1024
+    }
   }
 }

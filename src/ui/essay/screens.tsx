@@ -1,13 +1,15 @@
 "use client";
 import React, { useState } from "react";
+import { useSpeechInput } from "../speech/input";
 import type { z } from "zod";
 import type { EssayActionSchema } from "../../contracts/essay";
 type EssayAction = z.infer<typeof EssayActionSchema>;
 import type { ScreenData } from "../model";
 export function EssayInterview({ data, answer, done }: { data: ScreenData["essay_interview"]; answer: (text: string) => void; done: () => void }) {
   const [text, setText] = useState("");
+  const speech = useSpeechInput(setText);
   if (data.mode !== "ready") return <p>小问号还在准备。</p>;
-  return <><h2 style={{ overflowWrap: "anywhere" }}>{data.topic}</h2><p>{data.say}</p>{data.ask && <p className="ask">{data.ask}</p>}<form onSubmit={event => { event.preventDefault(); if (text.trim()) answer(text.trim()); }}><label htmlFor="essay-answer">我的想法</label><textarea id="essay-answer" maxLength={2000} value={text} onChange={event => setText(event.target.value)}/><button className="primary" disabled={!text.trim()}>把这个想法留下</button></form><button onClick={done}>这些够了</button></>;
+  return <><h2 style={{ overflowWrap: "anywhere" }}>{data.topic}</h2><p>{data.say}</p>{data.ask && <p className="ask">{data.ask}</p>}<form onSubmit={event => { event.preventDefault(); if (text.trim()) { speech.cancel(); answer(text.trim()); } }}><label htmlFor="essay-answer">我的想法</label><textarea id="essay-answer" maxLength={2000} value={text} onChange={event => { speech.cancel(); setText(event.target.value); }}/>{speech.control}<button className="primary" disabled={!text.trim()}>把这个想法留下</button></form><button onClick={() => { speech.cancel(); done(); }}>这些够了</button></>;
 }
 export function EssayCards({ data, action, draft }: { draft?: { text: string; onChange: (text: string) => void }; data: ScreenData["essay_cards"]; action: (value: EssayAction) => void }) {
   const [localText, setLocalText] = useState(""); const [empty, setEmpty] = useState(false);

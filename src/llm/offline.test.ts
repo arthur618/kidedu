@@ -11,7 +11,7 @@ function response(content: string): Response {
     ok: true,
     status: 200,
     json: async () => ({
-      choices: [{ message: { content } }],
+      choices: [{ finish_reason: "stop", message: { content } }],
       usage: { prompt_tokens: 1, completion_tokens: 1 },
     }),
   } as unknown as Response;

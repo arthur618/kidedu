@@ -161,5 +161,11 @@
     "tests/integration/parent/",
     ".env.example",
     "src/server/runtime.ts"
+  ],
+  "C4B": [
+    "scripts/content/research/",
+    "content/research/",
+    "tests/integration/research/",
+    ".env.example"
   ]
 }
