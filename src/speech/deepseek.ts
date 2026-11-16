@@ -2,7 +2,7 @@ import { readSpeechBody } from './http';
 import type { SpeechServiceDeps } from '../contracts/speech';
 import { SPEECH_MAX_AUDIO_BYTES, SPEECH_MAX_RECORDING_MS, SpeechTranscriptSchema } from '../contracts/speech';
 import { speechBudget, speechTimers, type SpeechTimers } from './service';
-import { inspectPcmWav } from './wav';
+import { inspectPcmWav, normalizeCompletedTtsWav } from './wav';
 export const DEEPSEEK_ASR_URL = 'https://api.deepseek.com/v1/tools/asr';
 export const DEEPSEEK_TTS_URL = 'https://api.deepseek.com/v1/tools/tts';
 export const SPEECH_MAX_CONCURRENT = 2;
@@ -44,7 +44,8 @@ export function createDeepSeekSpeech(options: { getEnv?: (name: string) => strin
         if (!response) return null;
         if (response.headers.get('content-type')?.split(';')[0]?.trim() !== 'audio/wav') { void response.body?.cancel().catch(() => {}); return null; }
         const bytes = await readSpeechBody(response, SPEECH_MAX_AUDIO_BYTES, signal);
-        return bytes && inspectPcmWav(bytes) ? { bytes, mimeType: 'audio/wav' as const } : null;
+        const wav = bytes ? normalizeCompletedTtsWav(bytes) : null;
+        return wav ? { bytes: wav, mimeType: 'audio/wav' as const } : null;
       }, opts?.signal);
     } },
   };

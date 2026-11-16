@@ -11,6 +11,19 @@ export function inspectPcmWav(bytes: Uint8Array, asr = false): { sampleRate: num
   const frames = size / 2; const durationMs = frames * 1000 / sampleRate;
   return durationMs > 0 && durationMs <= SPEECH_MAX_RECORDING_MS ? { sampleRate, frames, durationMs } : null;
 }
+/** 仅供TTS正常EOF且有界完整读取后调用；未知长度只兼容成对sentinel，其余仍走严格检查。 */
+export function normalizeCompletedTtsWav(bytes: Uint8Array): Uint8Array | null {
+  if (bytes.length < 46 || bytes.length > SPEECH_MAX_AUDIO_BYTES) return null;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let candidate = bytes;
+  if (view.getUint32(4, true) === 0xffffffff && view.getUint32(40, true) === 0xffffffff) {
+    candidate = bytes.slice();
+    const normalized = new DataView(candidate.buffer, candidate.byteOffset, candidate.byteLength);
+    normalized.setUint32(4, candidate.length - 8, true);
+    normalized.setUint32(40, candidate.length - 44, true);
+  }
+  return inspectPcmWav(candidate) ? candidate : null;
+}
 /** 先对多声道取均值，再用时间窗积分重采样；不改变原始录音的MIME。 */
 export function encodeAsrWav(channels: readonly Float32Array[], sampleRate: number): Uint8Array | null {
   const length = channels[0]?.length ?? 0;
