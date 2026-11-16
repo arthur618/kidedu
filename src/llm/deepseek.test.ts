@@ -34,7 +34,7 @@ describe("DeepSeek预算与审核", () => {
     expect(await h.client.call(req)).toMatchObject({ ok: true, inputTokens: 26, cachedInputTokens: 10, outputTokens: 14 });
     expect(h.bodies).toHaveLength(2);
     for (const body of h.bodies) {
-      expect(body).toMatchObject({ stream: false, thinking: { type: options?.thinking ?? "disabled" }, max_tokens: options?.maxTokens ?? 1024, safety_check: { level: "high" }, response_format: { type: "json_object" } });
+      expect(body).toMatchObject({ stream: false, thinking: { type: options?.thinking ?? "disabled" }, max_tokens: options?.maxTokens ?? 1024, safety_check: { level: "high" }, response_format: { type: "text" } });
       expect(body).not.toHaveProperty("tools"); expect(body).not.toHaveProperty("tool_choice");
     }
     const first = h.bodies[0]!.messages as unknown[];
@@ -152,5 +152,47 @@ describe("HTTP失败和取消", () => {
     const client = createLlmClient({ config: config(), fetch: fetchImpl, getEnv: () => key, now: () => 0 });
     expect(await client.call(req)).toMatchObject({ ok: false, error: "provider_error" });
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
+
+// 按已观察到的供应商约束模拟协议端点；只接受text与high组合，不访问网络。
+function protocolServer(contents: string[]) {
+  const bodies: Array<Record<string, unknown>> = [];
+  let accepted = 0;
+  const fetchImpl = vi.fn(async (_url: unknown, init?: RequestInit) => {
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    bodies.push(body);
+    if (JSON.stringify(body.response_format) !== JSON.stringify({ type: "text" }) ||
+        JSON.stringify(body.safety_check) !== JSON.stringify({ level: "high" })) {
+      return new Response(JSON.stringify({ error: { type: "invalid_request_error" } }), { status: 400 });
+    }
+    const content = contents[Math.min(accepted++, contents.length - 1)]!;
+    return new Response(JSON.stringify(completion("stop", { content })));
+  });
+  const client = createLlmClient({ config: config(), fetch: fetchImpl, getEnv: () => "fictional-token", now: () => 0 });
+  return { client, fetchImpl, bodies };
+}
+
+describe("D2C text与high协议端点回归", () => {
+  it("假服务器拒绝旧json_object/high，真实客户端出站text/high合法JSON成功", async () => {
+    const h = protocolServer(['{"answer":"ok"}']);
+    const old = await h.fetchImpl("https://synthetic.invalid/chat/completions", { body: JSON.stringify({ response_format: { type: "json_object" }, safety_check: { level: "high" } }) });
+    expect(old.status).toBe(400);
+    expect(await h.client.call(req)).toMatchObject({ ok: true, data: { answer: "ok" } });
+    expect(h.bodies).toHaveLength(2);
+    expect(h.bodies[1]).toMatchObject({ response_format: { type: "text" }, safety_check: { level: "high" }, stream: false, thinking: { type: "disabled" }, max_tokens: 512 });
+    expect(h.bodies[1]).not.toHaveProperty("tools");
+  });
+  it.each(["不是JSON", " \n", '{"answer":12}'])("text候选%j经原校验纠正后成功，首次与纠正均兼容端点", async content => {
+    const h = protocolServer([content, '{"answer":"ok"}']);
+    expect(await h.client.call(req)).toMatchObject({ ok: true, data: { answer: "ok" }, inputTokens: 26, outputTokens: 14 });
+    expect(h.bodies).toHaveLength(2);
+    for (const body of h.bodies) expect(body).toMatchObject({ response_format: { type: "text" }, safety_check: { level: "high" }, stream: false, thinking: { type: "disabled" }, max_tokens: 512 });
+    expect((h.bodies[1]!.messages as unknown[])[3]).toEqual({ role: "assistant", content });
+  });
+  it.each(["不是JSON", " \n", '{"answer":12}'])("text候选%j持续非法最多两次，不能绕过JSON或schema", async content => {
+    const h = protocolServer([content]);
+    expect(await h.client.call(req)).toMatchObject({ ok: false, error: "invalid_output" });
+    expect(h.fetchImpl).toHaveBeenCalledTimes(2);
   });
 });
