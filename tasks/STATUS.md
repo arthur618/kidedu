@@ -38,7 +38,9 @@
 
 | C14 | 修补版Zod4迁移与既有契约兼容 | Codex / Sol medium | 12 | C13、契约2.11 | 已合并 | reviews/C14.md：724dde9通过，合并b151f60；独立/main1045测试/构建，53浏览器、官方audit0与真实探针通过 |
 
-| D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 待合并 | reviews/D2C.md：04c530f独立1052测试/构建、6范围/契约0及真实HTTP回测通过 |
+| D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 已合并 | reviews/D2C.md：04c530f通过；独立/main1052测试/构建、6范围/契约0、真实HTTP回测通过 |
+
+| C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 进行中 | tasks/codex/C3B-word-hints.md；不改评测规则 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -197,3 +199,9 @@ C14@724dde9独立65文件1045测试/实际构建、8范围/契约0、完整收�
 ## C6首次真实小样本与D2C（2026-11-16）
 
 负责人授权5元并指定钥匙串deepseek-api-key，root仅进程内读取。5个合成Agent样本真实HTTP均400；追加1个诊断确定json_object与safety_check high不兼容。无usage返回，不能据此称免费；保守预留合计0.526448元，尚无模型质量结论/不跑全量。原D2B任务参数组合设计错误，保留high、改text运输而仍严格JSON/Zod校验，单Sol medium修D2C，root独立回测。不改阈值或模型提示词，证据evals/results与reviews/C6-live.md。
+
+## D2C通过，转入教学问题与规则复核（2026-11-16）
+
+D2C@04c530f独立试合最新main后65文件1052测试/实际构建、6范围/契约0通过，已合并；实际main干净重装1052测试/构建通过。独立首次仅parent初始化hook10秒超时，原超时单独29项与完整复跑都过，日志保留，未放宽。真实5+179公开样本均HTTP200，179原标准结果为22/30、19/20、11/20、100/100、9/9；94真实模型请求，未读私有听写。保守总计量0.670862元（含6拒绝无usage保留预留），上限5元。
+
+18失败人工复核在reviews/C6-live.md：存在来源规则误报，但char_coach-20确实提前给组词答案。C3B单Sol medium做确定性候选投影修复，不动eval/阈值；评测来源规则修订已按README要求征求负责人裁决，尚未收到答复，不先改分数。真实教材与孩子试用仍待课后生字页/人工终审。

@@ -215,5 +215,8 @@
     "src/llm/client.test.ts",
     "src/llm/offline.test.ts",
     "src/llm/README.md"
+  ],
+  "C3B": [
+    "src/agents/char_coach/"
   ]
 }
