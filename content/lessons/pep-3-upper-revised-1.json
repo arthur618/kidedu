@@ -1,0 +1,78 @@
+{
+  "id": "pep-3-upper-revised-1",
+  "grade": 3,
+  "term": "upper",
+  "lessonNo": 1,
+  "title": "大青树下的小学",
+  "recognizeChars": [
+    "绒",
+    "昂",
+    "扬",
+    "凤",
+    "墙",
+    "晃"
+  ],
+  "writeChars": [
+    "坡",
+    "球",
+    "招",
+    "呼",
+    "飘",
+    "扬",
+    "读",
+    "热",
+    "闹",
+    "粗",
+    "壮",
+    "洁"
+  ],
+  "words": [
+    "山坡",
+    "学校",
+    "飘扬",
+    "课文",
+    "声音",
+    "招引",
+    "热闹",
+    "古老",
+    "粗壮",
+    "枝干",
+    "洁白"
+  ],
+  "status": "reviewed",
+  "_curriculum": {
+    "publisher": "人民教育出版社",
+    "standard": "根据2022年版课程标准修订的候选本",
+    "editionStatus": "pending_owner_confirmation",
+    "match": "与负责人目录截图第8课《总也倒不了的老屋》一致；待核纸本版权页及字表",
+    "polyphonicChars": [],
+    "sources": [
+      {
+        "url": "https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本",
+        "pages": [
+          4,
+          109,
+          112,
+          114
+        ],
+        "role": "公开教材转载，已核本课与卷末两处字表；非出版社站点，上传标题年份不作版次依据"
+      },
+      {
+        "url": "https://zy.21cnjy.com/26446944",
+        "role": "配套教学资料，交叉核对；不采纳其中字源故事和不一致的书写说明"
+      }
+    ],
+    "accessedOn": "2026-11-16"
+  },
+  "_check": {
+    "hash": "e9fd0363fbeeafe8e5a0563f4d790eddd0ccd6a41354cf24eb34b9d0f372e45c",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "e9fd0363fbeeafe8e5a0563f4d790eddd0ccd6a41354cf24eb34b9d0f372e45c",
+    "provider": "deepseek",
+    "origin": "manual_lesson"
+  }
+}

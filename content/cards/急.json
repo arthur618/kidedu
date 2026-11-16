@@ -1,0 +1,39 @@
+{
+  "id": "card-急",
+  "char": "急",
+  "pinyin": "jí",
+  "radical": "心",
+  "explain": "急是上下结构，下边是心。急有着急、匆忙的意思，急忙表示行动很赶。",
+  "words": [
+    "急忙",
+    "着急",
+    "急切"
+  ],
+  "confusable": [],
+  "dictationContext": "急，急忙的急",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第2课（课后第6页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《急》：https://zdic.net/hans/%E6%80%A5；教学词例交叉核对：https://jx.panqjy.cn/doc-17257692.html；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "f6765079cdce463e3a2607a0519d5fc726d1205c36d65463bdbeb08cc3d5a87b",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [
+      "“急”的部首标为“心”可接受，但explain说“下边是心”不准确：现代规范字形下部是“心”作偏旁时的变体（心字底/⺗），不是独立“心”字，与部首表述不一致。",
+      "explain称“急是上下结构，下边是心”易误导学生，应说明下部为心字底变体，而非完整“心”字。",
+      "confusable为空，对“急”未列形近字；若卡片设计预期需列形近字则缺项，但字段允许为空，不算编造。",
+      "dictationContext“急，急忙的急”仅重复词语，未形成完整短文；若要求短文完整原创，则不符合。",
+      "来源标注“核对日2026-11-16”为未来日期，疑似笔误；“纸本版次与适龄性待负责人终审”表明来源与适龄性尚未终审，却status为draft且passed=true，流程不一致。",
+      "_check.passed=true且issues为空，但dictationContext完整性、来源日期及explain表述问题尚未处理，自检结论与内容不符。"
+    ],
+    "hash": "f6765079cdce463e3a2607a0519d5fc726d1205c36d65463bdbeb08cc3d5a87b",
+    "provider": "deepseek"
+  }
+}

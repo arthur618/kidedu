@@ -1,0 +1,32 @@
+{
+  "id": "card-凤",
+  "char": "凤",
+  "pinyin": "fèng",
+  "radical": "几",
+  "explain": "凤是半包围结构，里面是又。凤指传说中的一种鸟，凤凰并不是真实存在的鸟。",
+  "words": [
+    "凤尾竹",
+    "凤凰",
+    "凤冠"
+  ],
+  "confusable": [],
+  "dictationContext": "凤，凤尾竹的凤",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第1课（课后第4页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《凤》：https://zdic.net/hans/%E5%87%A4；教学词例交叉核对：https://zy.21cnjy.com/26446944；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "ae8470d548cffa4f177155f642cc2bb25d5b061468d7269b6ddf4cd32129ba17",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "ae8470d548cffa4f177155f642cc2bb25d5b061468d7269b6ddf4cd32129ba17",
+    "provider": "deepseek"
+  }
+}

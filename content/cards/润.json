@@ -1,0 +1,32 @@
+{
+  "id": "card-润",
+  "char": "润",
+  "pinyin": "rùn",
+  "radical": "氵",
+  "explain": "润是左右结构，左边是三点水，右边是闰。润有不干枯的意思，湿润是含有一些水分的样子。",
+  "words": [
+    "湿润",
+    "滋润",
+    "润泽"
+  ],
+  "confusable": [],
+  "dictationContext": "润，湿润的润",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第2课（课后第6页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《润》：https://zdic.net/hans/%E6%B6%A6；教学词例交叉核对：https://jx.panqjy.cn/doc-17257692.html；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "f0c797c5ff53618a3de221e8f85cce8881dbbe5ac18d07cfc590e5f2aaeb4e27",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "f0c797c5ff53618a3de221e8f85cce8881dbbe5ac18d07cfc590e5f2aaeb4e27",
+    "provider": "deepseek"
+  }
+}

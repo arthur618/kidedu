@@ -1,0 +1,32 @@
+{
+  "id": "card-闹",
+  "char": "闹",
+  "pinyin": "nào",
+  "radical": "门",
+  "explain": "闹是半包围结构，门里面是市。闹可以表示不安静，热闹是人多、声音多的样子。",
+  "words": [
+    "热闹",
+    "闹钟",
+    "吵闹"
+  ],
+  "confusable": [],
+  "dictationContext": "闹，热闹的闹",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第1课（课后第4页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《闹》：https://zdic.net/hans/%E9%97%B9；教学词例交叉核对：https://zy.21cnjy.com/26446944；词语另核汉典《闹钟》https://zdic.net/hans/%E9%97%B9%E9%92%9F；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "bf05ac45a7c3b010e49a0de1727dda5c4eeed54c2012ac6713cb97703500b406",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "bf05ac45a7c3b010e49a0de1727dda5c4eeed54c2012ac6713cb97703500b406",
+    "provider": "deepseek"
+  }
+}

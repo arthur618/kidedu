@@ -1,0 +1,32 @@
+{
+  "id": "card-昂",
+  "char": "昂",
+  "pinyin": "áng",
+  "radical": "日",
+  "explain": "昂是上下结构，上边是日。昂首的昂表示抬起，昂首就是抬起头。",
+  "words": [
+    "昂首",
+    "昂扬",
+    "昂贵"
+  ],
+  "confusable": [],
+  "dictationContext": "昂，昂首的昂",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第1课（课后第4页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《昂》：https://zdic.net/hans/%E6%98%82；教学词例交叉核对：https://zy.21cnjy.com/26446944；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "e688946c3bb6af72432b548efae8aadd9651754c3639175aa7c4b402a8834932",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "e688946c3bb6af72432b548efae8aadd9651754c3639175aa7c4b402a8834932",
+    "provider": "deepseek"
+  }
+}

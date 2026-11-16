@@ -1,0 +1,32 @@
+{
+  "id": "card-臂",
+  "char": "臂",
+  "pinyin": "bì",
+  "radical": "月",
+  "explain": "臂是上下结构，下边是月。臂指从肩到手腕的部分，这课的臂读bì。",
+  "words": [
+    "双臂",
+    "手臂",
+    "臂力"
+  ],
+  "confusable": [],
+  "dictationContext": "臂，双臂的臂",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第2课（课后第6页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《臂》：https://zdic.net/hans/%E8%87%82；教学词例交叉核对：https://jx.panqjy.cn/doc-17257692.html；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "7c67c2457725a5cba01b915ea41d214616030362454cfc6df8d5cae24856a153",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "7c67c2457725a5cba01b915ea41d214616030362454cfc6df8d5cae24856a153",
+    "provider": "deepseek"
+  }
+}

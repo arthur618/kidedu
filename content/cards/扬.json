@@ -1,0 +1,32 @@
+{
+  "id": "card-扬",
+  "char": "扬",
+  "pinyin": "yáng",
+  "radical": "扌",
+  "explain": "扬是左右结构，左边是提手旁。扬有举起的意思，扬手就是举起手。",
+  "words": [
+    "飘扬",
+    "表扬",
+    "扬手"
+  ],
+  "confusable": [],
+  "dictationContext": "扬，飘扬的扬",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第1课（课后第4页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《扬》：https://zdic.net/hans/%E6%89%AC；教学词例交叉核对：https://zy.21cnjy.com/26446944；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "6b099b6e0c373e0a63b49b8ac490ec4a5e39cf3d22152f5d73c7f16fd2c3f02d",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "6b099b6e0c373e0a63b49b8ac490ec4a5e39cf3d22152f5d73c7f16fd2c3f02d",
+    "provider": "deepseek"
+  }
+}

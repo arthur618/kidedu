@@ -1,0 +1,359 @@
+{
+  "preparedOn": "2026-11-16",
+  "status": "reference_only",
+  "candidateEdition": "与用户目录匹配的统编新课标修订版；未确认纸本印次/ISBN",
+  "officialEntry": {
+    "url": "https://basic.smartedu.cn/tchMaterial/detail?contentType=assets_document&contentId=837f368e-fd4e-404a-ae3f-342d75bc0227&catalogType=tchMaterial&subCatalog=tchMaterial",
+    "contentRead": false,
+    "note": "已找到官方入口，本次工具未能读取原书，不将转载称作官方验真"
+  },
+  "catalog": "https://www.dzkbw.org/book/4845.html",
+  "textbookReprint": "https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本",
+  "teacherCrossChecks": [
+    "https://zy.21cnjy.com/26446944",
+    "https://jx.panqjy.cn/doc-17257692.html"
+  ],
+  "verifiedLocations": {
+    "lesson1": [
+      4,
+      109,
+      112,
+      114
+    ],
+    "lesson2": [
+      6,
+      109,
+      112,
+      114
+    ]
+  },
+  "excludedVersions": [
+    {
+      "url": "https://kinnerfisch.cn/files/ChinaTextbook/小学/语文/统编版/义务教育教科书·语文三年级上册.pdf",
+      "sha256": "02915a7db6517258434d370430bbf464a1dac6e17df97b90d707dc4ecf5cfedf",
+      "reason": "实际目录第8课《卖火柴的小女孩》，与用户截图不符；第1课写字表含孔、雀，不据此决定本批课次字表"
+    },
+    {
+      "url": "https://www.renrendoc.com/paper/537484479.html",
+      "reason": "虽标题2026，列表混合旧字表，且假字读音与词例混配；不采用"
+    }
+  ],
+  "verificationLimits": [
+    "未从出版社原站直接读到该候选本，需用户核纸本字表后才确认版本",
+    "第2课假为多音字学习项，识字新字数量与表中项数分开；本批保留表中7项",
+    "教学课件仅用于交叉核表，不采纳其中错误的部首/字形、笔顺、字源故事",
+    "31张卡仅覆盖两课字表并集；不把课文全部注音字扩充成新任务"
+  ],
+  "dictionaryEntries": [
+    {
+      "char": "绒",
+      "pinyin": "róng",
+      "radical": "纟",
+      "url": "https://zdic.net/hans/%E7%BB%92",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "ef8aadcbb4363444750ff079096a885fcedd877d12a05cf274ed7ff8ed4d8582",
+      "dictionaryReadings": "róng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "昂",
+      "pinyin": "áng",
+      "radical": "日",
+      "url": "https://zdic.net/hans/%E6%98%82",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "45f77dc599248825bd36dca66526319d68368f10852078fbbddda68473d0145c",
+      "dictionaryReadings": "áng",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "扬",
+      "pinyin": "yáng",
+      "radical": "扌",
+      "url": "https://zdic.net/hans/%E6%89%AC",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "5dd5c8f68ad8eb036c5c9010c5d7691cbdadd9cda3a490664fec30e381466aba",
+      "dictionaryReadings": "yáng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "凤",
+      "pinyin": "fèng",
+      "radical": "几",
+      "url": "https://zdic.net/hans/%E5%87%A4",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "ce799b657f538601a642ece439a946747da20489119a5125ccd3297d83610195",
+      "dictionaryReadings": "fèng",
+      "dictionaryStructure": "半包围结构；先外后内；中间是“又”"
+    },
+    {
+      "char": "墙",
+      "pinyin": "qiáng",
+      "radical": "土",
+      "url": "https://zdic.net/hans/%E5%A2%99",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "83ebac589ea1a9a4cffd942fc05d4b4bba959b8ac8b776574a7679a86dc26b46",
+      "dictionaryReadings": "qiáng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "晃",
+      "pinyin": "huàng",
+      "radical": "日",
+      "url": "https://zdic.net/hans/%E6%99%83",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "d380890805d692de470ef5428dd85916270f80a44b1197a9eb6fad009c62caa1",
+      "dictionaryReadings": "huǎng huàng",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "坡",
+      "pinyin": "pō",
+      "radical": "土",
+      "url": "https://zdic.net/hans/%E5%9D%A1",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "99c8908a2695bf53ed509c033abc49f356b4645bd531745c53313c02f40a276b",
+      "dictionaryReadings": "pō",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "球",
+      "pinyin": "qiú",
+      "radical": "王",
+      "url": "https://zdic.net/hans/%E7%90%83",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "df706f2fef639632f0b013161542617bfb8ca3c0bb852e86d7a50e6233d5f32f",
+      "dictionaryReadings": "qiú",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "招",
+      "pinyin": "zhāo",
+      "radical": "扌",
+      "url": "https://zdic.net/hans/%E6%8B%9B",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "ed38fb465812983cc856c29cd081ea7ca3831eb52c8ff3bfd1885b5a962a59d8",
+      "dictionaryReadings": "zhāo",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "呼",
+      "pinyin": "hū",
+      "radical": "口",
+      "url": "https://zdic.net/hans/%E5%91%BC",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "30a09927e885db469e91a3496fafd1982dbfc2c5a4cfd15a4a5bc9050bff419d",
+      "dictionaryReadings": "hū",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "飘",
+      "pinyin": "piāo",
+      "radical": "风",
+      "url": "https://zdic.net/hans/%E9%A3%98",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "82eedf1e3a3c58c8cc9d60cd21fcd2e9f4e962b9429e9c8cad24da0d66c45321",
+      "dictionaryReadings": "piāo",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "读",
+      "pinyin": "dú",
+      "radical": "讠",
+      "url": "https://zdic.net/hans/%E8%AF%BB",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "cf12f55225ea7e1d48707b451e650e50f24a0b72e990f175b54a1b451b9b44f2",
+      "dictionaryReadings": "dú dòu",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "热",
+      "pinyin": "rè",
+      "radical": "灬",
+      "url": "https://zdic.net/hans/%E7%83%AD",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "710905656961db9742311e79ae531eb328b60bd5df92b91c93149d13c07abe3b",
+      "dictionaryReadings": "rè",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "闹",
+      "pinyin": "nào",
+      "radical": "门",
+      "url": "https://zdic.net/hans/%E9%97%B9",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "654dd2f22b780f1fb34e330a30fc7c3a26b37616dcaff1f0463305170a44698c",
+      "dictionaryReadings": "nào",
+      "dictionaryStructure": "半包围结构"
+    },
+    {
+      "char": "粗",
+      "pinyin": "cū",
+      "radical": "米",
+      "url": "https://zdic.net/hans/%E7%B2%97",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "f46d8ea813894ef6fc00167df0a77def359e2376019d47fa5fac9b6d140c360e",
+      "dictionaryReadings": "cū",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "壮",
+      "pinyin": "zhuàng",
+      "radical": "士",
+      "url": "https://zdic.net/hans/%E5%A3%AE",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "480bac92bd3829540a2425c89454cf43af3f1ab62803ada8e0431491d01c63a6",
+      "dictionaryReadings": "zhuàng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "洁",
+      "pinyin": "jié",
+      "radical": "氵",
+      "url": "https://zdic.net/hans/%E6%B4%81",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "7a5948a639c5671a4ac85356c7ac5e94c6d0f41017f2ad1eb15906671d5cdf75",
+      "dictionaryReadings": "jié",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "轰",
+      "pinyin": "hōng",
+      "radical": "车",
+      "url": "https://zdic.net/hans/%E8%BD%B0",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "96ba345fde78bdcad9a93fa820afda00a3abac0f42dd1d601c821e10aa32e690",
+      "dictionaryReadings": "hōng",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "湿",
+      "pinyin": "shī",
+      "radical": "氵",
+      "url": "https://zdic.net/hans/%E6%B9%BF",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "2e17fd5976a5a15bf156d490253d2c778f3236874c446c227ea6036f8e9e60cd",
+      "dictionaryReadings": "shī",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "荒",
+      "pinyin": "huāng",
+      "radical": "艹",
+      "url": "https://zdic.net/hans/%E8%8D%92",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "f251184b4948c6b5b5adfd09ab08d382a53ed622582054e20d9eaa03e747cf04",
+      "dictionaryReadings": "huāng",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "笛",
+      "pinyin": "dí",
+      "radical": "竹",
+      "url": "https://zdic.net/hans/%E7%AC%9B",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "c3db195c093eac243c61eb80125978f4acb2e2c29ccf6dd2f45672b5cf0fb93c",
+      "dictionaryReadings": "dí",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "罚",
+      "pinyin": "fá",
+      "radical": "罒",
+      "url": "https://zdic.net/hans/%E7%BD%9A",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "1d4836801a1334b0ab482cef1e418fe69cf535ab068c110feda78280aaf68377",
+      "dictionaryReadings": "fá",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "假",
+      "pinyin": "jià",
+      "radical": "亻",
+      "url": "https://zdic.net/hans/%E5%81%87",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "9e496690af1818b1001104ed5d8a39d400c2ad8f51cec577c16b1dd642f82b60",
+      "dictionaryReadings": "jiǎ jià",
+      "dictionaryStructure": "左中右结构"
+    },
+    {
+      "char": "臂",
+      "pinyin": "bì",
+      "radical": "月",
+      "url": "https://zdic.net/hans/%E8%87%82",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "df705e87d48a3485f98a9ce654e06d2f9958b234b72f155c17e648757bfb5633",
+      "dictionaryReadings": "bì bei",
+      "dictionaryStructure": "上下结构"
+    },
+    {
+      "char": "润",
+      "pinyin": "rùn",
+      "radical": "氵",
+      "url": "https://zdic.net/hans/%E6%B6%A6",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "5b7c803c085b2ea70f7fda23e6839aa78316ded23ee4124dadef7607176b4525",
+      "dictionaryReadings": "rùn",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "狂",
+      "pinyin": "kuáng",
+      "radical": "犭",
+      "url": "https://zdic.net/hans/%E7%8B%82",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "207ac2969e16d4bfd40a51bb908330a3f627e53ad46f9ecd89bee5fbac8a605b",
+      "dictionaryReadings": "kuáng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "功",
+      "pinyin": "gōng",
+      "radical": "力",
+      "url": "https://zdic.net/hans/%E5%8A%9F",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "4335e42ce83875ca9465c69ff7dcc562ce689b7f0d89b31eb1a8e8a0500f4ea2",
+      "dictionaryReadings": "gōng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "互",
+      "pinyin": "hù",
+      "radical": "二",
+      "url": "https://zdic.net/hans/%E4%BA%92",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "d00239df4440423cd0a7234117bb857a04cd5d81f8ca544f9d76a1baaa25c0e3",
+      "dictionaryReadings": "hù",
+      "dictionaryStructure": "单一结构"
+    },
+    {
+      "char": "碰",
+      "pinyin": "pèng",
+      "radical": "石",
+      "url": "https://zdic.net/hans/%E7%A2%B0",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "e0e10ce056f471b3e1530976afaa72f2a499c81859d83e6c3bbf082d252f0d14",
+      "dictionaryReadings": "pèng",
+      "dictionaryStructure": "左右结构"
+    },
+    {
+      "char": "黄",
+      "pinyin": "huáng",
+      "radical": "黄",
+      "url": "https://zdic.net/hans/%E9%BB%84",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "70f3ea13579959fc24323fb7d5eceff55b5beecbc474c532a030d07c1bb13dc1",
+      "dictionaryReadings": "huáng",
+      "dictionaryStructure": "上中下结构"
+    },
+    {
+      "char": "急",
+      "pinyin": "jí",
+      "radical": "心",
+      "url": "https://zdic.net/hans/%E6%80%A5",
+      "retrievedOn": "2026-11-16",
+      "htmlSha256": "1befc623bfc3106981ce012cecac7b782ab1a70de16e16073f1e091a87eb5db1",
+      "dictionaryReadings": "jí",
+      "dictionaryStructure": "上下结构"
+    }
+  ]
+}

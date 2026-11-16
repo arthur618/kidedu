@@ -1,0 +1,32 @@
+{
+  "id": "card-狂",
+  "char": "狂",
+  "pinyin": "kuáng",
+  "radical": "犭",
+  "explain": "狂是左右结构，左边是反犬旁，右边是王。狂风的狂表示猛烈，狂风就是很大的风。",
+  "words": [
+    "狂风",
+    "狂欢",
+    "狂奔"
+  ],
+  "confusable": [],
+  "dictationContext": "狂，狂风的狂",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第2课（课后第6页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《狂》：https://zdic.net/hans/%E7%8B%82；教学词例交叉核对：https://jx.panqjy.cn/doc-17257692.html；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "c187318e5d26fa5f62a36aecd0e4060da883e381599492baf6a32f690287e784",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "c187318e5d26fa5f62a36aecd0e4060da883e381599492baf6a32f690287e784",
+    "provider": "deepseek"
+  }
+}

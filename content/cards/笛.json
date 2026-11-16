@@ -1,0 +1,32 @@
+{
+  "id": "card-笛",
+  "char": "笛",
+  "pinyin": "dí",
+  "radical": "竹",
+  "explain": "笛是上下结构，上边是竹字头，下边是由。笛子是一种吹奏的乐器。",
+  "words": [
+    "风笛",
+    "笛子",
+    "汽笛"
+  ],
+  "confusable": [],
+  "dictationContext": "笛，风笛的笛",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第2课（课后第6页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《笛》：https://zdic.net/hans/%E7%AC%9B；教学词例交叉核对：https://jx.panqjy.cn/doc-17257692.html；词语另核汉典《风笛》https://zdic.net/hans/%E9%A3%8E%E7%AC%9B；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "24767f219fc0c9e1b1d20a7d5c775ff93fdd6a20c88a87e4a3bbbfbc27b71867",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "24767f219fc0c9e1b1d20a7d5c775ff93fdd6a20c88a87e4a3bbbfbc27b71867",
+    "provider": "deepseek"
+  }
+}

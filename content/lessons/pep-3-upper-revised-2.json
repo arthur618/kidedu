@@ -1,0 +1,79 @@
+{
+  "id": "pep-3-upper-revised-2",
+  "grade": 3,
+  "term": "upper",
+  "lessonNo": 2,
+  "title": "花的学校",
+  "recognizeChars": [
+    "轰",
+    "湿",
+    "荒",
+    "笛",
+    "罚",
+    "假",
+    "臂"
+  ],
+  "writeChars": [
+    "轰",
+    "湿",
+    "润",
+    "笛",
+    "狂",
+    "功",
+    "罚",
+    "互",
+    "碰",
+    "黄",
+    "急"
+  ],
+  "words": [
+    "轰响",
+    "阵雨",
+    "湿润",
+    "风笛",
+    "狂欢",
+    "觉得",
+    "功课",
+    "放学",
+    "老师",
+    "急急忙忙"
+  ],
+  "status": "reviewed",
+  "_curriculum": {
+    "publisher": "人民教育出版社",
+    "standard": "根据2022年版课程标准修订的候选本",
+    "editionStatus": "pending_owner_confirmation",
+    "match": "与负责人目录截图第8课《总也倒不了的老屋》一致；待核纸本版权页及字表",
+    "polyphonicChars": [
+      "假"
+    ],
+    "sources": [
+      {
+        "url": "https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本",
+        "pages": [
+          6,
+          109,
+          112,
+          114
+        ],
+        "role": "公开教材转载，已核本课与卷末两处字表；非出版社站点，上传标题年份不作版次依据"
+      },
+      {
+        "url": "https://jx.panqjy.cn/doc-17257692.html",
+        "role": "配套教学资料，交叉核对；不采纳其中字源故事和不一致的书写说明"
+      }
+    ],
+    "accessedOn": "2026-11-16"
+  },
+  "_check": {
+    "hash": "7d81762a96b78f540c930244759ba7a6c800b3a4ddc686862945cf0960e24562",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "7d81762a96b78f540c930244759ba7a6c800b3a4ddc686862945cf0960e24562",
+    "provider": "deepseek",
+    "origin": "manual_lesson"
+  }
+}

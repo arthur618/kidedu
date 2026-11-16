@@ -1,0 +1,32 @@
+{
+  "id": "card-读",
+  "char": "读",
+  "pinyin": "dú",
+  "radical": "讠",
+  "explain": "读是左右结构，左边是言字旁，右边是卖。这课的“读”读dú，表示看着文字念出来。",
+  "words": [
+    "读书",
+    "朗读",
+    "阅读"
+  ],
+  "confusable": [],
+  "dictationContext": "读，读书的读",
+  "audioUrl": null,
+  "source": "候选修订版《语文》三年级上册第1课（课后第4页及识字表109、写字表112页），公开转载：https://www.scribd.com/document/1067004050/人教版-三年级上册-2025秋版-语文电子课本；拼音、部首、词义核对汉典《读》：https://zdic.net/hans/%E8%AF%BB；教学词例交叉核对：https://zy.21cnjy.com/26446944；核对日2026-11-16。字形说明按现代规范字形整理，不讲字源；纸本版次与适龄性待负责人终审。",
+  "status": "reviewed",
+  "_draft": {
+    "provider": "openai",
+    "method": "codex_source_assisted",
+    "note": "由OpenAI Codex在当前对话依据公开来源整理；未调用离线起草API，不冒充人工原创或已审词典。"
+  },
+  "_check": {
+    "hash": "c6653d30676bb282e8e91f5137e74d71662931c63b8c6e1e12c49bf89f8d9b7a",
+    "passed": true,
+    "issues": []
+  },
+  "_review": {
+    "issues": [],
+    "hash": "c6653d30676bb282e8e91f5137e74d71662931c63b8c6e1e12c49bf89f8d9b7a",
+    "provider": "deepseek"
+  }
+}
