@@ -7,7 +7,9 @@ export function fallback(input: unknown): CharCoachOutput {
   const parsed = CharCoachInput.safeParse(input);
   const step = parsed.success ? parsed.data.step : "explain";
   if (step === "make_word") return {
-    say: `想想以“${card.data.card.words[0]?.slice(0, 1) ?? ""}”开头的词。`,
+    say: (card.data.card.words[0]?.length ?? 0) >= 2
+      ? `想想以“${card.data.card.words[0]!.slice(0, 1)}”开头的词。`
+      : "再想一个书上的词。",
     ask: "你能用这个字组一个书上的词吗？", next: "wait_child", usedCardFields: ["words"],
   };
   if (step === "make_sentence") return {
