@@ -224,5 +224,12 @@
     "evals/checks.test.ts",
     "evals/provenance.test.ts",
     "evals/README.md"
+  ],
+  "C8C": [
+    "src/speech/wav.ts",
+    "src/speech/deepseek.ts",
+    "src/speech/wav.test.ts",
+    "tests/integration/deepseek-speech/stream-wav.test.ts",
+    "src/server/README.md"
   ]
 }
