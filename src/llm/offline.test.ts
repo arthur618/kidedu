@@ -81,6 +81,7 @@ describe("createOfflineClient", () => {
     expect(calls[0]!.url).toBe("https://api.openai.com/v1/chat/completions");
     expect(calls[0]!.url.endsWith("/v1/chat/completions")).toBe(true);
     expect(calls[0]!.body.model).toBe(offlineConfigJson.draft.model);
+    expect(calls[0]!.body.response_format).toEqual({ type: "json_object" });
   });
 
   it("review 角色请求 DeepSeek 的地址和 review 模型", async () => {
@@ -98,6 +99,8 @@ describe("createOfflineClient", () => {
     expect(calls).toHaveLength(1);
     expect(calls[0]!.url).toBe("https://api.deepseek.com/chat/completions");
     expect(calls[0]!.body.model).toBe(offlineConfigJson.review.model);
+    expect(calls[0]!.body.response_format).toEqual({ type: "text" });
+    expect(calls[0]!.body.safety_check).toEqual({ level: "high" });
   });
 
   it("离线客户端不因 draft 的 provider 是 openai 而拒绝调用", async () => {

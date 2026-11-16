@@ -129,6 +129,10 @@ const reviewLlm = createOfflineClient({
 
 `config/models.offline.json` 里的模型名是占位值，负责人要按自己账号可用的型号填写。离线客户端绝不能在 `app/` 或 `src/agents/` 里引用。
 
+## 请求协议
+
+DeepSeek 使用 `response_format: { type: "text" }` 并保留 `safety_check: { level: "high" }`，首次与纠正请求一致。真实接口拒绝 JSON 模式与 high 审核的组合；text 传输不保证内容是合法 JSON，因此仍保留原 JSON 输出后缀、JSON.parse、Zod 校验和最多一次纠正。非流式、思考选项、生成上限不变。OpenAI 离线请求仍使用 `json_object`，不带 DeepSeek 专有参数。
+
 ## 超时、重试和统计
 
 - 每次请求用 `AbortController` 限时；超时返回 `timeout`，不重试。

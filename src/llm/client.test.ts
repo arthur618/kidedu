@@ -103,7 +103,7 @@ describe("请求构造", () => {
 
     const body = requestBody(calls[0]!);
     expect(body.model).toBe("deepseek-flash");
-    expect(body.response_format).toEqual({ type: "json_object" });
+    expect(body.response_format).toEqual({ type: "text" });
     expect(body.messages).toEqual([
       { role: "system", content: `你是语文老师。\n${OUTPUT_ONLY_JSON_SUFFIX}` },
       { role: "system", content: "今天学“休”字。" },

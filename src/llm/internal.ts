@@ -41,7 +41,7 @@ export type ChatMessage = { role: ChatRole; content: string | ChatContentPart[] 
 interface ChatRequestBody {
   model: string;
   messages: ChatMessage[];
-  response_format: { type: "json_object" };
+  response_format: { type: "text" | "json_object" };
   stream?: false;
   thinking?: { type: "disabled" | "enabled" };
   max_tokens?: number;
@@ -169,7 +169,7 @@ export function buildRequestBody(
   return {
     model: route.model,
     messages,
-    response_format: { type: "json_object" },
+    response_format: { type: route.provider === "deepseek" ? "text" : "json_object" },
     ...(route.provider === "deepseek" ? {
       stream: false as const,
       thinking: { type: options.thinking ?? "disabled" },
