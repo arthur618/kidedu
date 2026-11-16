@@ -218,5 +218,11 @@
   ],
   "C3B": [
     "src/agents/char_coach/"
+  ],
+  "C6B": [
+    "evals/checks.ts",
+    "evals/checks.test.ts",
+    "evals/provenance.test.ts",
+    "evals/README.md"
   ]
 }
