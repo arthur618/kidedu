@@ -42,7 +42,9 @@
 
 | C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 已合并 | reviews/C3B.md：8ae2715通过，合并c0a0b6a；独立/main1076测试/构建、4范围/契约0及真实定向回测 |
 
-| C6B | 负责人批准的评测来源判定与穿透反例 | Codex / Sol medium | 15 | C6-live、C3B | 进行中 | tasks/codex/C6B-provenance-checks.md；不改阈值/样例/原报告 |
+| C6B | 负责人批准的评测来源判定与穿透反例 | Codex / Sol medium | 15 | C6-live、C3B | 需修改 | reviews/C6B.md：独立F1跨句引号漏检、F2未知引用跨出口来源洗白，交原agent返工 |
+
+| C8C | 真实TTS流式WAV未知长度头兼容 | Codex / Sol medium | 15 | C8B、真实工具联调 | 待合并 | reviews/C8C.md：b892b7b独立1084测试/构建、实际TTS→ASR和浏览器复核通过；主线本批组合复验 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -215,3 +217,7 @@ C3B@8ae2715独立66文件1076测试/实际构建、4范围/契约0、完整收�
 ## 来源规则修订获批（2026-11-16）
 
 负责人已明确同意来源判定修订并补反例。C6B冻结精确scope，单Sol medium复用原实现agent，原100%/12字阈值与样例/结果不改；离线复评只产带来源hash的派生报告。root同时核对用户提供的完整DeepSeek API快照与已有C4B/C8B，不重复接入已有功能。
+
+## 搜索/语音真实小样本（2026-11-16）
+
+root在原5元累计预算内预留0.1元，仅公开搜索1次/TTS短合成1次，密钥和音频均未落盘，未改生产开关。搜索200经真实适配产reference_only；TTS200正常EOF但双FFFFFFFF流式WAV长度头，被当前规范检查拒绝，ASR未发。C8C冻结成对sentinel、完整有界EOF后复制规范化的小修，原严格ASR/大小/时长/取消不改。C6B仍独立做来源规则修订，重型串行。总保守预算账上限0.776406元，非实际账单。

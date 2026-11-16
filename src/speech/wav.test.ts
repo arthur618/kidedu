@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { encodeAsrWav, inspectPcmWav } from './wav';
+import { encodeAsrWav, inspectPcmWav, normalizeCompletedTtsWav } from './wav';
 import { SPEECH_MAX_AUDIO_BYTES } from '../contracts/speech';
 it('PCM16手算头/平均声道/48k→16k时间窗/饱和采样/真实时长', () => {
   const wav = encodeAsrWav([new Float32Array([-2,-2,-2,0,0,0,2,2,2]),new Float32Array([-2,-2,-2,1,1,1,2,2,2])],48000)!;
@@ -14,4 +14,12 @@ it('首版规范WAV严格拒绝坏magic/长度/扩展fmt/立体声/位深/帧/�
  expect(encodeAsrWav([new Float32Array(480001)],16000)).toBeNull();expect(encodeAsrWav([new Float32Array([NaN])],16000)).toBeNull();expect(encodeAsrWav([],16000)).toBeNull();
  expect(inspectPcmWav(encodeAsrWav([new Float32Array(480000)],16000)!,true)?.durationMs).toBe(30000);
  const long=new Uint8Array(960046);long.set(wav.subarray(0,44));const view=new DataView(long.buffer);view.setUint32(4,long.length-8,true);view.setUint32(40,long.length-44,true);expect(inspectPcmWav(long,true)).toBeNull();
+});
+
+it('完成的TTS双sentinel复制规范化，默认inspect仍严格且不修改输入视图', () => {
+ const canonical=encodeAsrWav([new Float32Array([0.1,-0.2])],16000)!;
+ const backing=new Uint8Array(canonical.length+8);backing.set(canonical,4);const stream=backing.subarray(4,-4);
+ const view=new DataView(stream.buffer,stream.byteOffset,stream.byteLength);view.setUint32(4,0xffffffff,true);view.setUint32(40,0xffffffff,true);
+ const original=backing.slice();expect(inspectPcmWav(stream)).toBeNull();expect(inspectPcmWav(stream,true)).toBeNull();
+ expect(normalizeCompletedTtsWav(stream)).toEqual(canonical);expect(backing).toEqual(original);expect(normalizeCompletedTtsWav(canonical)).toEqual(canonical);
 });
