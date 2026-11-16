@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "createdAt": "2026-11-16T05:40:21.863Z",
+  "models": {
+    "char_coach": "deepseek-flash",
+    "reader": "deepseek-flash",
+    "essay": "deepseek-flash",
+    "guard": "deepseek-flash",
+    "vision_homework": "deepseek-flash",
+    "vision_dictation": "deepseek-flash"
+  },
+  "completeSuite": false,
+  "summaries": [
+    {
+      "agent": "reader",
+      "count": 1,
+      "passed": 0,
+      "passRate": 0,
+      "averageLatencyMs": 316,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "checks": {
+        "schema": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "no_answer_leak": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "max_two_sentences": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "call_success需要100%"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "reader-01",
+      "agent": "reader",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "no_answer_leak": {
+          "pass": true,
+          "detail": "不得复述要点中连续6字及以上的片段"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共1句，上限2句"
+        },
+        "call_success": {
+          "pass": false,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "读完想一想。",
+        "ask": "小猫为什么拿来石子？",
+        "next": "wait_child"
+      },
+      "modelOutputs": [],
+      "callErrors": [
+        "provider_error"
+      ],
+      "turns": [
+        {
+          "agent": "reader",
+          "model": "deepseek-flash",
+          "inputTokens": 0,
+          "cachedInputTokens": 0,
+          "outputTokens": 0,
+          "latencyMs": 316,
+          "ok": false,
+          "error": "provider_error"
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    }
+  ],
+  "skipped": [],
+  "exitCode": 1
+}

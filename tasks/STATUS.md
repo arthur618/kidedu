@@ -38,6 +38,8 @@
 
 | C14 | 修补版Zod4迁移与既有契约兼容 | Codex / Sol medium | 12 | C13、契约2.11 | 已合并 | reviews/C14.md：724dde9通过，合并b151f60；独立/main1045测试/构建，53浏览器、官方audit0与真实探针通过 |
 
+| D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 进行中 | tasks/codex/D2C-live-protocol.md；保留high，text传输+本地JSON严格校验 |
+
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
 | 任务 | 内容 | 里程碑 |
@@ -191,3 +193,7 @@ C13@64ce6cb独立62文件1027测试/实际构建、5范围、收集集合完整�
 C14@724dde9独立65文件1045测试/实际构建、8范围/契约0、完整收集、53浏览器、真实DB/恢复/事务/默认关闭探针和官方在线audit0通过，合并b151f60；main离线ci因缓存缺包失败，改官方正常ci含Prisma generate后，实际main1045测试/构建通过。原已知11依赖节点告警关闭，不声称绝对安全。
 
 负责人已授权合成材料真实DeepSeek评测，待本机密钥配置完成确认和费用上限。仓库保持公开。首批教材人教版三年级上册，暂选《大青树下的小学》《花的学校》，具体该版课后生字表待核对。tasks/VALIDATION.md记录真实评测、内容审校入库、家长陪同试用顺序；暂停新功能扩展。
+
+## C6首次真实小样本与D2C（2026-11-16）
+
+负责人授权5元并指定钥匙串deepseek-api-key，root仅进程内读取。5个合成Agent样本真实HTTP均400；追加1个诊断确定json_object与safety_check high不兼容。无usage返回，不能据此称免费；保守预留合计0.526448元，尚无模型质量结论/不跑全量。原D2B任务参数组合设计错误，保留high、改text运输而仍严格JSON/Zod校验，单Sol medium修D2C，root独立回测。不改阈值或模型提示词，证据evals/results与reviews/C6-live.md。

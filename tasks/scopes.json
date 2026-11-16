@@ -208,5 +208,12 @@
     "src/db/codec.ts",
     "tests/integration/zod/",
     "docs/DEPENDENCIES.md"
+  ],
+  "D2C": [
+    "src/llm/internal.ts",
+    "src/llm/deepseek.test.ts",
+    "src/llm/client.test.ts",
+    "src/llm/offline.test.ts",
+    "src/llm/README.md"
   ]
 }

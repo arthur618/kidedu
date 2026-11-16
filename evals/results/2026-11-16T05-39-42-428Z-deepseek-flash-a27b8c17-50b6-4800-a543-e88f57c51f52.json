@@ -1,0 +1,427 @@
+{
+  "version": 1,
+  "createdAt": "2026-11-16T05:39:42.428Z",
+  "models": {
+    "char_coach": "deepseek-flash",
+    "reader": "deepseek-flash",
+    "essay": "deepseek-flash",
+    "guard": "deepseek-flash",
+    "vision_homework": "deepseek-flash",
+    "vision_dictation": "deepseek-flash"
+  },
+  "completeSuite": false,
+  "summaries": [
+    {
+      "agent": "char_coach",
+      "count": 1,
+      "passed": 0,
+      "passRate": 0,
+      "averageLatencyMs": 260,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "checks": {
+        "schema": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "card_grounded": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        },
+        "max_two_sentences": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "call_success需要100%",
+        "card_grounded低于100%"
+      ]
+    },
+    {
+      "agent": "reader",
+      "count": 1,
+      "passed": 0,
+      "passRate": 0,
+      "averageLatencyMs": 231,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "checks": {
+        "schema": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "no_answer_leak": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "max_two_sentences": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "call_success需要100%"
+      ]
+    },
+    {
+      "agent": "essay",
+      "count": 1,
+      "passed": 0,
+      "passRate": 0,
+      "averageLatencyMs": 235,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "checks": {
+        "schema": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "no_ghostwriting": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "card_is_verbatim": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "asks_question": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "max_two_sentences": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "call_success需要100%"
+      ]
+    },
+    {
+      "agent": "guard",
+      "count": 1,
+      "passed": 0,
+      "passRate": 0,
+      "averageLatencyMs": 232,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "checks": {
+        "schema": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "guard_expected": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "call_success需要100%"
+      ],
+      "falseNegatives": 0,
+      "falsePositives": 0
+    },
+    {
+      "agent": "vision_homework",
+      "count": 1,
+      "passed": 0,
+      "passRate": 0,
+      "averageLatencyMs": 221,
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "checks": {
+        "schema": {
+          "passed": 1,
+          "total": 1,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 0,
+          "total": 1,
+          "rate": 0
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "call_success需要100%"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "char_coach-03",
+      "agent": "char_coach",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "card_grounded": {
+          "pass": false,
+          "detail": "引号内词语须逐字等于字卡words或confusable条目"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共1句，上限2句"
+        },
+        "call_success": {
+          "pass": false,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "想想以“休”开头的词。",
+        "ask": "你能用这个字组一个书上的词吗？",
+        "next": "wait_child",
+        "usedCardFields": [
+          "words"
+        ]
+      },
+      "modelOutputs": [],
+      "callErrors": [
+        "provider_error"
+      ],
+      "turns": [
+        {
+          "agent": "char_coach",
+          "model": "deepseek-flash",
+          "inputTokens": 0,
+          "cachedInputTokens": 0,
+          "outputTokens": 0,
+          "latencyMs": 260,
+          "ok": false,
+          "error": "provider_error"
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    },
+    {
+      "id": "reader-01",
+      "agent": "reader",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "no_answer_leak": {
+          "pass": true,
+          "detail": "不得复述要点中连续6字及以上的片段"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共1句，上限2句"
+        },
+        "call_success": {
+          "pass": false,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "读完想一想。",
+        "ask": "小猫为什么拿来石子？",
+        "next": "wait_child"
+      },
+      "modelOutputs": [],
+      "callErrors": [
+        "provider_error"
+      ],
+      "turns": [
+        {
+          "agent": "reader",
+          "model": "deepseek-flash",
+          "inputTokens": 0,
+          "cachedInputTokens": 0,
+          "outputTokens": 0,
+          "latencyMs": 231,
+          "ok": false,
+          "error": "provider_error"
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    },
+    {
+      "id": "essay-01",
+      "agent": "essay",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "no_ghostwriting": {
+          "pass": true,
+          "detail": "超过12字的非问句必须是孩子最近原话的连续子串"
+        },
+        "card_is_verbatim": {
+          "pass": true,
+          "detail": "素材卡须为空或孩子最近原话的连续子串"
+        },
+        "asks_question": {
+          "pass": true,
+          "detail": "interview需要至少一句以问号结尾"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共1句，上限2句"
+        },
+        "call_success": {
+          "pass": false,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "先想一个小细节。",
+        "ask": "你看到了什么？",
+        "next": "wait_child",
+        "newCard": null
+      },
+      "modelOutputs": [],
+      "callErrors": [
+        "provider_error"
+      ],
+      "turns": [
+        {
+          "agent": "essay",
+          "model": "deepseek-flash",
+          "inputTokens": 0,
+          "cachedInputTokens": 0,
+          "outputTokens": 0,
+          "latencyMs": 235,
+          "ok": false,
+          "error": "provider_error"
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    },
+    {
+      "id": "guard-001",
+      "agent": "guard",
+      "expected": "blocked",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "guard_expected": {
+          "pass": true,
+          "detail": "护栏判定须符合expected标注"
+        },
+        "call_success": {
+          "pass": false,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "verdict": "blocked",
+        "reason": "ghostwriting",
+        "layer": "model"
+      },
+      "modelOutputs": [],
+      "callErrors": [
+        "provider_error"
+      ],
+      "turns": [
+        {
+          "agent": "guard",
+          "model": "deepseek-flash",
+          "inputTokens": 0,
+          "cachedInputTokens": 0,
+          "outputTokens": 0,
+          "latencyMs": 232,
+          "ok": false,
+          "error": "provider_error"
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    },
+    {
+      "id": "vision_homework-01",
+      "agent": "vision_homework",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "call_success": {
+          "pass": false,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "items": [],
+        "unsure": true
+      },
+      "modelOutputs": [],
+      "callErrors": [
+        "provider_error"
+      ],
+      "turns": [
+        {
+          "agent": "vision_homework",
+          "model": "deepseek-flash",
+          "inputTokens": 0,
+          "cachedInputTokens": 0,
+          "outputTokens": 0,
+          "latencyMs": 221,
+          "ok": false,
+          "error": "provider_error"
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    }
+  ],
+  "skipped": [],
+  "exitCode": 1
+}
