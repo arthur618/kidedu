@@ -15,7 +15,7 @@ export function decodeJson<T>(
   recordId: string,
   field: string,
   raw: string,
-  schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+  schema: z.ZodType<T, unknown>,
 ): T {
   let value: unknown;
   try {
@@ -34,7 +34,7 @@ export function decodeJson<T>(
 export function parseRecord<T>(
   table: string,
   recordId: string,
-  schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+  schema: z.ZodType<T, unknown>,
   value: unknown,
 ): T {
   const parsed = schema.safeParse(value);

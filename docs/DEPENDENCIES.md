@@ -1,6 +1,6 @@
 # 依赖维护与已知风险
 
-本次C13保留Node22.1.0、Prisma6与现有SQLite契约，Zod仍为3.x。没有修改全局Node/npm、运行时Agent或生产协议。依赖版本符合engine声明不代表旧Node本身已完成安全维护审查。
+C13保留Node22.1.0、Prisma6与现有SQLite契约；C14在负责人冻结契约2.11后将实际Zod运行时迁移到4.6.7。没有修改全局Node/npm、运行时Agent或生产协议。依赖版本符合engine声明不代表旧Node本身已完成安全维护审查。
 
 ## 固定维护线
 
@@ -10,7 +10,7 @@
 | @prisma/config中的deepmerge-ts | 仅`@prisma/config@6.19.3`下覆盖8.0.0 | 原精确依赖7.1.5命中[递归对象图栈耗尽漏洞](https://github.com/advisories/GHSA-ggr8-5vv4-36mx)。不是全树强换。 |
 | vitest | 4.1.12 | 本次[mocker redirect](https://github.com/advisories/GHSA-82fw-gwwq-j7x9)及[manual mock注入](https://github.com/advisories/GHSA-qxg6-89mg-rqv8)要求受维护的4.1.12线；3.2.6仅修较早UI问题，不是完整修复。 |
 | vite | 6.4.6 | 初始6.4.4安装后在线审计发现[query绕过告警](https://github.com/advisories/GHSA-8g5g-mxqh-grgj)，root核实后正式更新为6.4.6；最低修复6.4.5，6.4.6声明兼容Node22.1。 |
-| zod | 保持已锁3.25.76 | [已知高危](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)仅公布4.6.6及以后修复；当前3.x没有已发布安全补丁，单独设计迁移。 |
+| zod | 4.6.7 | [集合资源耗尽漏洞](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)修于4.6.6及以后；使用真正修补运行时，不走v3兼容入口。 |
 
 Vitest4[官方迁移说明](https://v4.vitest.dev/guide/migration)要求Node>=20/Vite>=6，并移除Tinypool。选择明确6.x Vite避免npm解析到要求Node22.12的7/8；没有启用Vitest UI、browser mode或新开发服务。原Playwright浏览器套件继续保留。
 
@@ -22,10 +22,16 @@ Prisma config6.19.3的官方依赖仍精确为deepmerge-ts7.1.5。8.0.0覆盖属
 
 当Prisma6官方config依赖采用修复版、或后续经设计迁移到其他受支持维护线后，应重新验证并撤除此限定override，不要把它复制到新Prisma版本。更新依赖时检查npm ls真实树，不能只改package字段。
 
-## 审计规则与剩余欠账
+## Zod4兼容边界与审计
 
-在线audit使用官方registry，保留完整severity，不能用离线缓存返回0或降低筛选代替。初次6.4.4目标安装后audit为2项（Vite moderate、Zod high）；经负责人裁决改6.4.6后，有效官方在线audit剩1项Zod high，critical/moderate为0。不是全部漏洞已清；最终组合安装后的记录见C13报告。
+C13初始6.4.4目标安装后audit为2项（Vite moderate、Zod high）；经正式裁决Vite6.4.6后仅剩Zod high。C14固定Zod4.6.7并实际运行修补实现后，官方registry完整在线audit为0项，npm ls --all退出0，锁中仅一份Zod4.6.7。这里只描述该日期、该锁文件的审计结果，不代表未来没有新漏洞。不能用离线缓存0或降低severity替代有效在线审计。
 
-Zod3即使有`.max()`仍可能继续解析每项，见[上游v3问题6653](https://github.com/colinhacks/zod/issues/6653)。只升级包为Zod4再改用`zod/v3`会保留受影响实现，不能作为修复。Zod4真正迁移涉及schema行为和类型，需负责人另冻结契约兼容目标；本包不动正在开发的C12契约。输入字节/结构前置限制是否足以缓解每条可达路径尚未完整评估，不把它当上游已修。
+真正使用Zod4，而非包升级后继续走`zod/v3`；[上游v3问题6653](https://github.com/colinhacks/zod/issues/6653)说明仅.max()而继续逐项解析不能消除该漏洞。[4.6.7发布](https://github.com/colinhacks/zod/releases/tag/v4.6.7)及[迁移指南](https://zod.dev/v4/changelog)提供版本与行为依据。业务/契约仍从`zod`顶层导入，代码扫描无兼容入口或旧ZodTypeDef。
 
-所有依赖回归使用编造数据/临时SQLite，未读取真实.env、private、密钥或真实孩子数据库。最终安装、在线审计、实际依赖树、完整收集与构建结果见reports/C13.md；真实模型质量与旧Node维护状态不在本次验证内。
+负责人先冻结契约2.11：parent counts显式字符串key双参record，Turn.input/output显式optional以保持原缺键语义。C14不改契约，只把codec两处公开泛型改为`z.ZodType<T, unknown>`；safeParse与错误表名/主键/编码保持。Turn缺键在schema解析时仍缺键，显式undefined仍保留键；持久化沿用encodeJson(undefined)为字符串"null"，从SQLite读回null。这不是新数据迁移或协议变化。
+
+新增`tests/integration/zod/`验证全部现用默认常量、strict拒绝未知键、默认strip投影、内容审校元数据保留路径、nullable与真实0、ContractDataError、真实临时SQLite Turn往返。针对数组/Set/Map只用3个合成元素和max(2)，通过element/key/value spy证明超限时先拒绝、没有逐元素校验，并用合法输入证明spy确实工作；不制造巨量数组或OOM。
+
+已知验证边界：Zod4的number拒绝Infinity/-Infinity/NaN，int拒绝不安全整数。当前DictationMark.box各值必须有限；Turn.inputTokens接受MAX_SAFE_INTEGER但拒绝其+1。正常有限0保持，真实0评分与unavailable/null继续不同。IsoDateTime仍需带秒的UTC格式，接受合法闰日，拒绝非法闰日、无秒或offset字符串；参考资料publishedAt显式offset:true仍接受+00:00及null。未通过修改schema放宽这些不正常数据。
+
+上游集合修补不替代所有请求字节、深度或递归输入限制；本包没有完整评估所有入站边界，也没有改变原护栏、预算、会话或媒体协议。所有回归使用编造数据/临时SQLite，未读取真实.env、private、密钥或真实孩子数据库。最终安装/在线审计/收集与构建记录见reports/C14.md；C13的限定deepmerge跨major风险和撤除条件仍适用。旧Node安全维护及真实模型质量仍不在本次验证内。
