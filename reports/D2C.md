@@ -3,7 +3,7 @@
 - 实现者：Codex / Sol medium，单实现，无子agent
 - 分支：task/D2C；基线main@2879305
 - 日期：2026-11-16（客户端日期）
-- 自查结果：focused src/llm 5文件104测试通过；完整verify待负责人预约授权窗口。
+- 自查结果：focused src/llm 5文件104测试通过；root授权独占完整verify D2C退出0：65文件1052测试通过（89.67秒），含实际Next.js构建；scope6路径通过，contracts零差异。
 
 ## 做了什么
 
@@ -13,9 +13,9 @@
 
 | 验收标准 | 对应测试/证据 | 状态 |
 | --- | --- | --- |
-| 真实buildRequestBody按provider选择text/high或json_object；首次与纠正一致，仍非流式/非思考/原maxTokens/无tools；真实客户端出站body与假服务器拒旧组合/接新组合。 | deepseek.test.ts「D2C text与high协议端点回归」7例，内存假端点按body拒旧组合400，真实createLlmClient新组合成功；原「缺省和显式选项」首次与纠正断言保留，等价改text；offline.test.ts检查两provider实际出站格式与审核字段。 | focused通过 |
-| text下合法JSON成功；坏JSON/空白/坏schema仍最多两次，拒答/截断不得成功；原usage/取消/并发/失败0未知语义保持。 | 新增3种非法候选分别纠正成功/持续失败共6例；原模型调用层97例保留，focused总104例，完成原因/拒答/HTTP/取消/统计等通过。旧测试仅两处DeepSeek格式断言等价修订及offline格式断言补充，无删除/skip/超时调整。 | focused通过 |
-| focused→预约独占完整verify D2C含实际build，scope/contracts0/report准确，干净提交；root独立验收及真实小样本回测。 | focused通过，完整verify待授权；生产仅internal.ts，契约零修改。root独验与真实回测尚待负责人完成。 | 待完整自查与root独验 |
+| 真实buildRequestBody按provider选择text/high或json_object；首次与纠正一致，仍非流式/非思考/原maxTokens/无tools；真实客户端出站body与假服务器拒旧组合/接新组合。 | deepseek.test.ts「D2C text与high协议端点回归」7例，内存假端点按body拒旧组合400，真实createLlmClient新组合成功；原「缺省和显式选项」首次与纠正断言保留，等价改text；offline.test.ts检查两provider实际出站格式与审核字段。 | focused及完整verify通过 |
+| text下合法JSON成功；坏JSON/空白/坏schema仍最多两次，拒答/截断不得成功；原usage/取消/并发/失败0未知语义保持。 | 新增3种非法候选分别纠正成功/持续失败共6例；原模型调用层97例保留，focused总104例，完成原因/拒答/HTTP/取消/统计等通过。旧测试仅两处DeepSeek格式断言等价修订及offline格式断言补充，无删除/skip/超时调整。 | focused及完整verify通过 |
+| focused→预约独占完整verify D2C含实际build，scope/contracts0/report准确，干净提交；root独立验收及真实小样本回测。 | root授权后执行env -u RUST_LOG XDG_CACHE_HOME=<已批准runtime-cache> bash scripts/verify.sh D2C退出0；typecheck通过，65文件1052测试通过（原1045+新增7，89.67秒），src/server/build.test.ts真实npm run build通过，scope6路径通过、contracts零差异。自查实现提交2bfc791，后续仅报告补证。root独验与真实回测尚待负责人完成。 | 作者自查通过；root独验待完成 |
 
 ## 改动的文件
 
