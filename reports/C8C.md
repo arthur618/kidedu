@@ -2,7 +2,7 @@
 
 - 实现者：Codex（Sol，medium；单agent）
 - 分支：task/C8C
-- 自查结果：focused/typecheck已执行，完整verify待串行窗口及C6B主线合入后填写。
+- 自查结果：已合入最新主线73affad（C6B代码尚未合入）。`bash scripts/verify.sh C8C` 最终exit0：67文件/1084测试通过；范围检查6文件；reports/C8C.md存在；全部通过。
 
 ## 做了什么
 
@@ -16,7 +16,7 @@
 | 坏头、混合sentinel、其他未知值、奇帧、空、超时长、超大小拒绝 | stream-wav.test.ts：双sentinel不豁免坏头等；保留所有原wav严格负例 | focused通过 |
 | stream.error、取消、8秒超时、Content-Length差异拒绝 | stream-wav.test.ts：流错误和Content-Length不符；双sentinel已收到但未EOF时abort/timeout | focused通过 |
 | ASR/默认inspect继续拒绝sentinel，默认未配置零网络 | stream-wav.test.ts：ASR双sentinel上传仍拒绝；wav.test.ts严格检查；原provider测试 | focused通过 |
-| 全套verify含真实build、scope与contracts 0 | 待预约串行窗口 | 待运行 |
+| 全套verify含真实build、scope与contracts 0 | verify最终exit0；实际npm run build exit0；scope通过6文件；contracts0 | 通过 |
 
 ## 改动的文件
 
@@ -34,6 +34,10 @@
 ## 契约问题
 
 无，contracts修改0。
+
+## 验证记录
+
+所有命令使用env -u RUST_LOG与指定runtime-cache。第一次verify类型检查及67文件1084测试全过，但scope在本clone main仍旧基线时运行，将合入的reviews/C6B.md和tasks/STATUS.md误算为越界，因此该次exit1；将本clone main快进到73affad后scope通过6文件。实际npm run build成功exit0。第二次verify在root停止额外重跑消息到达前已启动，继续完成，四项全部通过exit0（67文件1084测试，67.15秒）；之后未再运行重型命令。构建自动生成的tsconfig改动已另存临时diff并仅恢复本次生成物，未纳入提交。无UI变更，作者未重复浏览器测试。
 
 ## 没做的和已知问题
 
