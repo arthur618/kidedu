@@ -48,3 +48,9 @@ approved内容稳定选文，公共正文只投影id/title/body/targetChars，ke
 浏览器仅在sessionStorage按child+lesson保存严格SessionRecoveryHint（序列化UTF16长度最多8192），网络前写稳定标识，合法响应后清pending；不保存Packet、ctx、正文、草稿、录音、图片、base64或BlobURL，不使用localStorage/IndexedDB。开始响应丢失后沿用原startRequestId及原IDs/hasEssayToday。存储禁用/损坏/容量不足退为本次内存流程；无法写入时不能承诺下一次刷新恢复。未知操作清pending并说明重新填写，404提供明确重新开始入口；ended不自动建新会话，只有孩子点击重新开始才新建start ID。
 
 切孩子/课次更换controller/service与媒体子树，旧网络abort/迟到结果隔离。StrictMode同步清理重挂复用同一启动操作；真正卸载取消请求。busy期间quit仍由controller排队。**未发送文字、长作文草稿及未确认录音仅在内存，整页刷新会丢失，不属于恢复范围。**SessionOrigin纳入家长19类可信只读预览，仍executable=false，无删除。
+
+## C8C TTS流式WAV兼容
+
+仅DeepSeek TTS响应经原有有界读取到正常EOF后，兼容固定44字节PCM16单声道头中RIFF/data长度同时为`0xFFFFFFFF`的已观察变体：复制字节，按实际长度填写两字段，再用原严格WAV检查核验格式、帧、采样率、大小及30秒时长。规范长度WAV继续支持；混合sentinel、扩展chunk、错误头、声明Content-Length不符、流错误/取消/超时仍拒绝。ASR上传与默认`inspectPcmWav`仍拒绝未知长度头；2MiB、8秒服务预算、并发2及12秒客户端预算均未改变。
+
+正常EOF且没有声明总长度，无法凭此检测恰好整帧提前结束的语义截断；规范化不证明整段朗读语义完整。作者测试只使用内存合成PCM与假fetch，不代表真实供应商回测或音质验收。
