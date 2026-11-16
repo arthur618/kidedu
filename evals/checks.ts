@@ -67,6 +67,7 @@ export const card_grounded: Check = ({ sample }, output) => {
       `你能用${open}${input.data.card.char}${close}组一个词吗？`,
       `能从${open}${input.data.card.char}${close}想起一个词吗？`,
       `你能从${open}${input.data.card.char}${close}想起一个词吗？`,
+      `你能从${open}${input.data.card.char}${close}想起一个书上的词吗？`,
     ]),
   ];
   const neutralExit = (value: string) => value.trim() === "" || neutralQuestions.includes(value.trim());

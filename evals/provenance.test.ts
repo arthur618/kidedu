@@ -145,3 +145,20 @@ describe("C6B独立验收F1/F2返工回归", () => {
     }
   });
 });
+
+describe("C3B真实木头输出完整组合", () => {
+  // 固定复制2026-11-16T06-03-32公开合成回测output；不是仅截取say的正例。
+  const actual = { say: "“木头”这个词我没在字卡里看到。", ask: "你能从“休”想起一个书上的词吗？", next: "wait_child", usedCardFields: ["explain", "words"] };
+  it("完整say/ask允许，交换出口仍只承认未知回述而非字卡知识", () => {
+    expect(checks.card_grounded!(coach, actual).pass).toBe(true);
+    expect(checks.card_grounded!(coach, { ...actual, say: actual.ask, ask: actual.say }).pass).toBe(true);
+  });
+  it.each([
+    "你能从“休”想起一个书上的词吗？这个词已经收录在字卡中。",
+    "这个词表示树干，你能从“休”想起一个书上的词吗？",
+    "你能从“体”想起一个书上的词吗？",
+  ])("完整回述不能与改变/夹带的提问%s组合", ask => {
+    expect(checks.card_grounded!(coach, { ...actual, ask }).pass).toBe(false);
+    expect(checks.card_grounded!(coach, { ...actual, say: ask, ask: actual.say }).pass).toBe(false);
+  });
+});
