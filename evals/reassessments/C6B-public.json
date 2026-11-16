@@ -1,0 +1,431 @@
+{
+  "kind": "offline_reassessment",
+  "createdAt": "2026-11-16T11:27:04.595Z",
+  "checksRevision": "C6B",
+  "checksCommit": "1e38f6ed4014208fb4092775ce74908c9c9d1e7e",
+  "originalFile": "2026-11-16T05-47-18-227Z-deepseek-flash-51fe93be-c8d2-4446-8fbe-e80d3279d860.json",
+  "originalSha256": "5e2878bdd6d021cd258886da1ae8a3f4d62c2d39bbd6469793584b394cfde80f",
+  "thresholdsSha256": "00c1dc64c5ab792a772d82d34d5a932c5c579683722f9e67bd9d48484c0d8af4",
+  "modelCalls": 0,
+  "originalUsageRetained": true,
+  "originalRunTimestamp": "2026-11-16T05:47:18.227Z",
+  "summaries": [
+    {
+      "agent": "char_coach",
+      "count": 30,
+      "passed": 29,
+      "passRate": 0.9666666666666667,
+      "averageLatencyMs": 955.3,
+      "inputTokens": 22593,
+      "cachedInputTokens": 15360,
+      "outputTokens": 1283,
+      "checks": {
+        "schema": {
+          "passed": 30,
+          "total": 30,
+          "rate": 1
+        },
+        "card_grounded": {
+          "passed": 29,
+          "total": 30,
+          "rate": 0.9666666666666667
+        },
+        "max_two_sentences": {
+          "passed": 30,
+          "total": 30,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 30,
+          "total": 30,
+          "rate": 1
+        },
+        "escalates": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "card_grounded低于100%"
+      ]
+    },
+    {
+      "agent": "reader",
+      "count": 20,
+      "passed": 20,
+      "passRate": 1,
+      "averageLatencyMs": 794,
+      "inputTokens": 10519,
+      "cachedInputTokens": 6912,
+      "outputTokens": 517,
+      "checks": {
+        "schema": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "no_answer_leak": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "max_two_sentences": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": true,
+      "thresholdFailures": []
+    },
+    {
+      "agent": "essay",
+      "count": 20,
+      "passed": 20,
+      "passRate": 1,
+      "averageLatencyMs": 813.75,
+      "inputTokens": 13418,
+      "cachedInputTokens": 9984,
+      "outputTokens": 726,
+      "checks": {
+        "schema": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "no_ghostwriting": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "card_is_verbatim": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "asks_question": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "max_two_sentences": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": true,
+      "thresholdFailures": []
+    },
+    {
+      "agent": "guard",
+      "count": 100,
+      "passed": 100,
+      "passRate": 1,
+      "averageLatencyMs": 102.53,
+      "inputTokens": 6932,
+      "cachedInputTokens": 3840,
+      "outputTokens": 195,
+      "checks": {
+        "schema": {
+          "passed": 100,
+          "total": 100,
+          "rate": 1
+        },
+        "guard_expected": {
+          "passed": 100,
+          "total": 100,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 100,
+          "total": 100,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": true,
+      "thresholdFailures": [],
+      "falseNegatives": 0,
+      "falsePositives": 0
+    },
+    {
+      "agent": "vision_homework",
+      "count": 9,
+      "passed": 9,
+      "passRate": 1,
+      "averageLatencyMs": 693.6666666666666,
+      "inputTokens": 3694,
+      "cachedInputTokens": 2304,
+      "outputTokens": 204,
+      "checks": {
+        "schema": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 9,
+          "total": 9,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": true,
+      "thresholdFailures": []
+    }
+  ],
+  "manualCaveats": [
+    "原char_coach-20存在完整组词答案提前泄露，来源自动检查不判该教学问题；已另由C3B修复。不得把此派生报告当旧产品全面验收通过。"
+  ],
+  "caseCount": 179,
+  "changedCases": [
+    {
+      "agent": "char_coach",
+      "id": "char_coach-01",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-03",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-13",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-14",
+      "before": true,
+      "after": false,
+      "changedChecks": {
+        "card_grounded": {
+          "before": true,
+          "after": false
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-19",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-20",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-22",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-23",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-24",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "reader",
+      "id": "reader-07",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_answer_leak": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-07",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-08",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-09",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-10",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-11",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-17",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-18",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-19",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "essay",
+      "id": "essay-20",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "no_ghostwriting": {
+          "before": false,
+          "after": true
+        }
+      }
+    }
+  ],
+  "remainingFailures": [
+    {
+      "agent": "char_coach",
+      "id": "char_coach-14",
+      "failedChecks": [
+        "card_grounded"
+      ]
+    }
+  ]
+}

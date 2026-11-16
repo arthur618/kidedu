@@ -1,0 +1,79 @@
+{
+  "kind": "offline_reassessment",
+  "createdAt": "2026-11-16T11:27:04.606Z",
+  "checksRevision": "C6B",
+  "checksCommit": "1e38f6ed4014208fb4092775ce74908c9c9d1e7e",
+  "originalFile": "2026-11-16T06-03-32-292Z-deepseek-flash-cd255759-6b6e-43a7-8e04-2fb5932d495c.json",
+  "originalSha256": "377a05de36bee79a87ff6479068ab9869df23774f3c1829b129ade65de33b30e",
+  "thresholdsSha256": "00c1dc64c5ab792a772d82d34d5a932c5c579683722f9e67bd9d48484c0d8af4",
+  "modelCalls": 0,
+  "originalUsageRetained": true,
+  "originalRunTimestamp": "2026-11-16T06:03:32.292Z",
+  "summaries": [
+    {
+      "agent": "char_coach",
+      "count": 3,
+      "passed": 3,
+      "passRate": 1,
+      "averageLatencyMs": 1007.6666666666666,
+      "inputTokens": 2248,
+      "cachedInputTokens": 1536,
+      "outputTokens": 131,
+      "checks": {
+        "schema": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        },
+        "card_grounded": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        },
+        "max_two_sentences": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": true,
+      "thresholdFailures": []
+    }
+  ],
+  "manualCaveats": [
+    "只有3个定向样本，不代表全量质量验证。"
+  ],
+  "caseCount": 3,
+  "changedCases": [
+    {
+      "agent": "char_coach",
+      "id": "char_coach-03",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    },
+    {
+      "agent": "char_coach",
+      "id": "char_coach-20",
+      "before": false,
+      "after": true,
+      "changedChecks": {
+        "card_grounded": {
+          "before": false,
+          "after": true
+        }
+      }
+    }
+  ],
+  "remainingFailures": []
+}

@@ -38,3 +38,7 @@ D2B协议/预算为范围明确的小包，选Sol medium；C8B涉及浏览器音
 D2C已修复真实HTTP400：DeepSeek使用text传输并保留high审核，仍要求JSON输出、由本地解析/Zod严格校验和有限纠正；OpenAI离线路由仍json_object。思考显式disabled与有限maxTokens保持，参考[思考模式](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/)和[Chat Completions](https://api-docs.deepseek.com/zh-cn/api/create-chat-completion/)。组合限制以真实服务错误确认为依据，不把它说成thinking冲突。
 
 179条公开合成样本94次真实HTTP全部成功，不包括私有听写/真实照片；原质量阈值前三Agent未过，部分规则误报另待负责人裁决。C3B另修完整组词答案提前给出问题，独立/main1076测试与真实定向回测通过。完整证据及费用估算见reviews/C6-live.md；ASR/TTS、公开检索真实联调与孩子试用仍未发生，key未入仓库。
+
+## 全册附件核对与工具实际验证
+
+用户提供的81篇快照按相关API章节核对，摘要与附件hash见[API核对记录](DEEPSEEK-API-AUDIT.md)。C4B搜索真实200、reference_only；C8C修正未知长度流式WAV后，真实TTS→内存重采样→ASR200并识别回合成文本。音频/key未落盘，默认生产开关未修改；本轮没有孩子录音、OCR/Fetch调用或硬件质量验收。详细证据[工具实测](../reviews/TOOLS-live.md)。

@@ -1,0 +1,112 @@
+{
+  "initial": {
+    "date": "2026-11-16T06:25:37.643Z",
+    "syntheticOnly": true,
+    "audioOnDisk": false,
+    "provider": "deepseek",
+    "reservedCny": 0.1,
+    "priorBudgetCny": 0.676406,
+    "totalBudgetUpperCny": 0.776406,
+    "requests": [
+      {
+        "tool": "search",
+        "status": 200,
+        "contentType": "application/json"
+      },
+      {
+        "tool": "tts",
+        "status": 200,
+        "contentType": "audio/wav",
+        "bytes": 99884,
+        "wavHeader": {
+          "riff": "RIFF",
+          "declaredRiffBytes": 4294967295,
+          "wave": "WAVE",
+          "fmtBytes": 16,
+          "format": 1,
+          "channels": 1,
+          "sampleRate": 24000,
+          "bits": 16,
+          "tag36": "data",
+          "declaredDataBytes": 4294967295
+        }
+      }
+    ],
+    "search": {
+      "ok": true,
+      "status": "reference_only",
+      "resultCount": 1,
+      "results": [
+        {
+          "title": "教材研究",
+          "url": "https://www.pep.com.cn/bks/xxyw/jzjd/202510/W020251016516675066625.pdf#1#1#1"
+        }
+      ]
+    },
+    "tts": {
+      "ok": false,
+      "mimeType": null,
+      "bytes": null,
+      "inspected": null
+    },
+    "asr": {
+      "attempted": false,
+      "reason": "tts_adapter_unavailable"
+    }
+  },
+  "afterC8C": {
+    "date": "2026-11-16T06:43:32.001Z",
+    "syntheticOnly": true,
+    "audioOnDisk": false,
+    "provider": "deepseek",
+    "reservedCny": 0.1,
+    "priorBudgetCny": 0.776406,
+    "totalBudgetUpperCny": 0.876406,
+    "requests": [
+      {
+        "tool": "tts",
+        "status": 200,
+        "contentType": "audio/wav",
+        "bytes": 130604,
+        "wavHeader": {
+          "riff": "RIFF",
+          "declaredRiffBytes": 4294967295,
+          "wave": "WAVE",
+          "fmtBytes": 16,
+          "format": 1,
+          "channels": 1,
+          "sampleRate": 24000,
+          "bits": 16,
+          "tag36": "data",
+          "declaredDataBytes": 4294967295
+        }
+      },
+      {
+        "tool": "asr",
+        "status": 200,
+        "contentType": "application/json"
+      }
+    ],
+    "search": {
+      "ok": false,
+      "error": "not_repeated"
+    },
+    "tts": {
+      "ok": true,
+      "mimeType": "audio/wav",
+      "bytes": 130604,
+      "inspected": {
+        "sampleRate": 24000,
+        "frames": 65280,
+        "durationMs": 2720
+      }
+    },
+    "asr": {
+      "attempted": true,
+      "ok": true,
+      "text": "你好，这是语音测试。",
+      "pinyin": [],
+      "durationMs": 2720
+    }
+  }
+}

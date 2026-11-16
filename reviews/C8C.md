@@ -10,4 +10,4 @@
 
 作者首轮scope基线竞态后已修本clone main基线，第二次完整verify0；曾额外构建，报告如实记录，root不据重复次数提高结论。root构建/截图生成差异已另存patch后只还原确认路径。
 
-必须修改：无。正常EOF、未知总长不能证明整段语义完整（整帧干净提前结束无法仅凭头检测），限制已记录。主线将与同批C6B共用一次最终干净组合复验，节省重复构建。证据root work/review-C8C-{verify,probe,browser,parent-browser-recheck}.log及DeepSeek-tools-post-C8C.json，无音频原文。
+必须修改：无。正常EOF、未知总长不能证明整段语义完整（整帧干净提前结束无法仅凭头检测），限制已记录。主线已与同批C6B共用一次最终干净组合复验：typecheck、68文件1157测试及实际构建通过91.78秒（文件workers=4），原超时/断言保持。证据root work/review-C8C-{verify,probe,browser,parent-browser-recheck}.log及DeepSeek-tools-post-C8C.json，无音频原文。
