@@ -44,7 +44,7 @@
 
 | C6B | 负责人批准的评测来源判定与穿透反例 | Codex / Sol medium | 15 | C6-live、C3B | 需修改 | reviews/C6B.md：独立F1跨句引号漏检、F2未知引用跨出口来源洗白，交原agent返工 |
 
-| C8C | 真实TTS流式WAV未知长度头兼容 | Codex / Sol medium | 15 | C8B、真实工具联调 | 进行中 | tasks/codex/C8C-stream-wav.md；限定完整EOF后规范化，ASR仍严格 |
+| C8C | 真实TTS流式WAV未知长度头兼容 | Codex / Sol medium | 15 | C8B、真实工具联调 | 待合并 | reviews/C8C.md：b892b7b独立1084测试/构建、实际TTS→ASR和浏览器复核通过；主线本批组合复验 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
