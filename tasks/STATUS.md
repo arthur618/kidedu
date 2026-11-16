@@ -36,7 +36,7 @@
 
 | C13 | 测试链/Prisma安全补丁与限定兼容验证 | Codex / Sol medium | 11 | C12合入后最终组合验证 | 已合并 | reviews/C13.md：64ce6cb通过，合并7c96bce；独立/main1027测试/构建，在线仅Zod high1，事务/生产探针通过 |
 
-| C14 | 修补版Zod4迁移与既有契约兼容 | Codex / Sol medium | 12 | C13、契约2.11 | 进行中 | tasks/codex/C14-zod-runtime.md；精确4.6.7，root独立验收 |
+| C14 | 修补版Zod4迁移与既有契约兼容 | Codex / Sol medium | 12 | C13、契约2.11 | 待合并 | reviews/C14.md：724dde9独立1045测试/实际构建、53浏览器、在线audit0、真实DB/恢复/事务探针通过 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
