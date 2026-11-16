@@ -42,7 +42,7 @@
 
 | C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 已合并 | reviews/C3B.md：8ae2715通过，合并c0a0b6a；独立/main1076测试/构建、4范围/契约0及真实定向回测 |
 
-| C6B | 负责人批准的评测来源判定与穿透反例 | Codex / Sol medium | 15 | C6-live、C3B | 需修改 | reviews/C6B.md：独立F1跨句引号漏检、F2未知引用跨出口来源洗白，交原agent返工 |
+| C6B | 负责人批准的评测来源判定与穿透反例 | Codex / Sol medium | 15 | C6-live、C3B | 待合并 | reviews/C6B.md：1e38f6e返工通过F1/F2与来源探针，独立1155+两个DB初始化定向50过，最终main限文件并发组合验证 |
 
 | C8C | 真实TTS流式WAV未知长度头兼容 | Codex / Sol medium | 15 | C8B、真实工具联调 | 待合并 | reviews/C8C.md：b892b7b独立1084测试/构建、实际TTS→ASR和浏览器复核通过；主线本批组合复验 |
 
