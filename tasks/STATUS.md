@@ -38,7 +38,7 @@
 
 | C14 | 修补版Zod4迁移与既有契约兼容 | Codex / Sol medium | 12 | C13、契约2.11 | 已合并 | reviews/C14.md：724dde9通过，合并b151f60；独立/main1045测试/构建，53浏览器、官方audit0与真实探针通过 |
 
-| D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 进行中 | tasks/codex/D2C-live-protocol.md；保留high，text传输+本地JSON严格校验 |
+| D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 待合并 | reviews/D2C.md：04c530f独立1052测试/构建、6范围/契约0及真实HTTP回测通过 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
