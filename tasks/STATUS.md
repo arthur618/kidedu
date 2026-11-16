@@ -40,7 +40,7 @@
 
 | D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 已合并 | reviews/D2C.md：04c530f通过；独立/main1052测试/构建、6范围/契约0、真实HTTP回测通过 |
 
-| C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 进行中 | tasks/codex/C3B-word-hints.md；不改评测规则 |
+| C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 待合并 | reviews/C3B.md：8ae2715独立1076测试/构建、4范围/契约0、实际coach/DB和3例真实定向通过安全边界 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 

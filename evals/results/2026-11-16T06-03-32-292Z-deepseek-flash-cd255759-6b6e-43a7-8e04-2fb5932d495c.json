@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "createdAt": "2026-11-16T06:03:32.292Z",
+  "models": {
+    "char_coach": "deepseek-flash",
+    "reader": "deepseek-flash",
+    "essay": "deepseek-flash",
+    "guard": "deepseek-flash",
+    "vision_homework": "deepseek-flash",
+    "vision_dictation": "deepseek-flash"
+  },
+  "completeSuite": false,
+  "summaries": [
+    {
+      "agent": "char_coach",
+      "count": 3,
+      "passed": 1,
+      "passRate": 0.3333333333333333,
+      "averageLatencyMs": 1007.6666666666666,
+      "inputTokens": 2248,
+      "cachedInputTokens": 1536,
+      "outputTokens": 131,
+      "checks": {
+        "schema": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        },
+        "card_grounded": {
+          "passed": 1,
+          "total": 3,
+          "rate": 0.3333333333333333
+        },
+        "max_two_sentences": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        },
+        "call_success": {
+          "passed": 3,
+          "total": 3,
+          "rate": 1
+        }
+      },
+      "thresholdPassed": false,
+      "thresholdFailures": [
+        "card_grounded低于100%"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "char_coach-03",
+      "agent": "char_coach",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "card_grounded": {
+          "pass": false,
+          "detail": "引号内词语须逐字等于字卡words或confusable条目"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共2句，上限2句"
+        },
+        "call_success": {
+          "pass": true,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "我是 AI 小问号。你能用‘休’组一个词吗？",
+        "ask": "你能用‘休’组一个词吗？",
+        "next": "wait_child",
+        "usedCardFields": [
+          "words"
+        ]
+      },
+      "modelOutputs": [
+        {
+          "say": "我是 AI 小问号。你能用‘休’组一个词吗？",
+          "ask": "你能用‘休’组一个词吗？",
+          "next": "wait_child",
+          "usedCardFields": [
+            "words"
+          ]
+        }
+      ],
+      "callErrors": [],
+      "turns": [
+        {
+          "agent": "char_coach",
+          "model": "deepseek-flash",
+          "inputTokens": 743,
+          "cachedInputTokens": 512,
+          "outputTokens": 47,
+          "latencyMs": 1128,
+          "ok": true
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    },
+    {
+      "id": "char_coach-20",
+      "agent": "char_coach",
+      "pass": false,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "card_grounded": {
+          "pass": false,
+          "detail": "引号内词语须逐字等于字卡words或confusable条目"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共1句，上限2句"
+        },
+        "call_success": {
+          "pass": true,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "“木头”这个词我没在字卡里看到。",
+        "ask": "你能从“休”想起一个书上的词吗？",
+        "next": "wait_child",
+        "usedCardFields": [
+          "explain",
+          "words"
+        ]
+      },
+      "modelOutputs": [
+        {
+          "say": "“木头”这个词我没在字卡里看到。",
+          "ask": "你能从“休”想起一个书上的词吗？",
+          "next": "wait_child",
+          "usedCardFields": [
+            "explain",
+            "words"
+          ]
+        }
+      ],
+      "callErrors": [],
+      "turns": [
+        {
+          "agent": "char_coach",
+          "model": "deepseek-flash",
+          "inputTokens": 752,
+          "cachedInputTokens": 512,
+          "outputTokens": 46,
+          "latencyMs": 1127,
+          "ok": true
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    },
+    {
+      "id": "char_coach-24",
+      "agent": "char_coach",
+      "pass": true,
+      "checks": {
+        "schema": {
+          "pass": true,
+          "detail": "输出符合契约"
+        },
+        "card_grounded": {
+          "pass": true,
+          "detail": "引号内词语须逐字等于字卡words或confusable条目"
+        },
+        "max_two_sentences": {
+          "pass": true,
+          "detail": "say共1句，上限2句"
+        },
+        "call_success": {
+          "pass": true,
+          "detail": "模型调用和逐case计量必须成功"
+        }
+      },
+      "output": {
+        "say": "先等等，那我们开始组词。",
+        "ask": "你能用“休”组一个词吗？",
+        "next": "wait_child",
+        "usedCardFields": [
+          "words"
+        ]
+      },
+      "modelOutputs": [
+        {
+          "say": "先等等，那我们开始组词。",
+          "ask": "你能用“休”组一个词吗？",
+          "next": "wait_child",
+          "usedCardFields": [
+            "words"
+          ]
+        }
+      ],
+      "callErrors": [],
+      "turns": [
+        {
+          "agent": "char_coach",
+          "model": "deepseek-flash",
+          "inputTokens": 753,
+          "cachedInputTokens": 512,
+          "outputTokens": 38,
+          "latencyMs": 768,
+          "ok": true
+        }
+      ],
+      "wrongTotal": 0,
+      "missedWrong": 0
+    }
+  ],
+  "skipped": [],
+  "exitCode": 1
+}
