@@ -19,3 +19,7 @@
 3. focused后预约一次verify C3B含实际build，scope/contracts0/准确报告/干净提交。root新clone读生产实现/复跑完整检查与实际服务链必要探针；预算内针对性真实回测由root完成，作者不碰钥匙串。无UI不重复全浏览器。
 
 本任务不宣称解决所有C6失分，也不修改原成绩。实现范围是已确认的组词泄答，不为了使card_grounded变绿而去掉引号或改写评测。
+
+## 补充裁决
+
+最近原话指最后role=child，不因更早原话或最近agent文本放行。合法escalate保持，若候选带未提供答案同时escalate，改为原固定unknown/escalate话术，不能利用next标志跳过内容检查。此补充已在实现前通知作者并以测试/独立探针验证。

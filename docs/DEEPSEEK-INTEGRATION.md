@@ -32,3 +32,9 @@ D2B协议/预算为范围明确的小包，选Sol medium；C8B涉及浏览器音
 - C4B已合并5bf3bbe：[正式验收](../reviews/C4B.md)，独立公开搜索、单请求/8秒/1MiB、reference_only文件及原有审批隔离。
 
 上文“当前差距”是接入前背景。最新main948测试/构建通过，语音原生浏览器33项已独立验证；无真实DeepSeek请求、硬件或费用证据。DEEPSEEK_API_KEY、DEEPSEEK_SPEECH_ENABLED、DEEPSEEK_RESEARCH_ENABLED示例全空，语音/检索默认关闭。后续安全配置服务端key后，先合成材料核对模型可用性/拒答/usage、ASR时长与准确性、TTS实际WAV头/完整性、取消/延迟/收费，再考虑试点；不收集key到聊天或编码对话。
+
+## 首次真实接口验证（2026-11-16）
+
+D2C已修复真实HTTP400：DeepSeek使用text传输并保留high审核，仍要求JSON输出、由本地解析/Zod严格校验和有限纠正；OpenAI离线路由仍json_object。思考显式disabled与有限maxTokens保持，参考[思考模式](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/)和[Chat Completions](https://api-docs.deepseek.com/zh-cn/api/create-chat-completion/)。组合限制以真实服务错误确认为依据，不把它说成thinking冲突。
+
+179条公开合成样本94次真实HTTP全部成功，不包括私有听写/真实照片；原质量阈值前三Agent未过，部分规则误报另待负责人裁决。C3B另修完整组词答案提前给出问题，独立/main1076测试与真实定向回测通过。完整证据及费用估算见reviews/C6-live.md；ASR/TTS、公开检索真实联调与孩子试用仍未发生，key未入仓库。

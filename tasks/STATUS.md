@@ -11,7 +11,7 @@
 | C3 | 各 Agent 的提示词与函数 | Codex | 2 | D2 | 已合并 | `reviews/C3.md`：37f04cf 通过；合并fe42e9f，main 519个测试与构建通过 |
 | C5 | 护栏（原 D3） | Codex | 2 | D2 | 已合并 | `reviews/C5.md`：b9052c6 第二次验收通过；合并提交 d83a064，main 405个测试通过 |
 | C2 | 孩子端界面（认字回路） | Codex | 2 | C1、D1 | 已合并 | f92b99d / main 9a30e66; 635 tests + 9 browser tests; reviews/C2.md |
-| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; scripts accepted; live eval deferred; reviews/C6.md |
+| C6 | 评测脚本（原 D4） | Codex | 3 | C3、C5 | 已合并 | 04baa5d / main 58d136b; 脚本通过；公开179真实已跑未过原质量线，见reviews/C6-live.md |
 | C4 | 内容生产流水线 | Codex | 3 | D2 | 已合并 | 1b3a60e / main 9a749c3; reviews/C4.md |
 | C7 | 集成：接口、编排器、Agent、护栏接通（原 I1） | Codex | 4 | C1、D1、D2、C3、C5 | 已合并 | reviews/C7.md：1baf3be通过，合并d149377；main666测试/构建、独立浏览器10项 |
 | C8A | 语音接口、内存录音及文字退路 | Codex / Sol medium | 5 | C7、契约2.3 | 已合并 | reviews/C8A.md：c15bda6通过，合并6452b91；main679测试/构建，独立浏览器21项 |
@@ -24,11 +24,11 @@
 
 | D2B | DeepSeek现行协议、生成预算及拒答处理 | Codex / Sol medium | 8 | D2、契约2.7 | 已合并 | reviews/D2B.md：2602d69通过，合并c913f8d；独立/main867测试/构建、27浏览器及补充探针通过 |
 
-| C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 已合并 | reviews/C8B.md：ab15183通过，合并aad4e27；独立/main887测试/构建、33浏览器；live待key |
+| C8B | DeepSeek ASR/TTS可关闭适配与录音真实转码（代码阶段） | Codex / Sol high | 8 | C8A、C9、C10 | 已合并 | reviews/C8B.md：ab15183通过，合并aad4e27；独立/main887测试/构建、33浏览器；语音live尚未验证 |
 
 | C11B | 家长日报/进度、默认关闭鉴权、人工复核 | Codex / Sol high | 9 | C11A、契约2.8 | 已合并 | reviews/C11B.md：0d2f340通过，合并7d8addc；独立/main976测试/构建、41浏览器及F1/事务/关闭探针通过 |
 
-| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；live待key |
+| C4B | DeepSeek离线公开资料检索 | Codex / Sol medium | 9 | C4、契约2.9 | 已合并 | reviews/C4B.md：727a292通过，合并5bf3bbe；独立/main948测试/构建，补充探针通过；检索live尚未验证 |
 
 | C11C | 实际首问与评分参考一致性 | Codex / Sol medium | 10 | C11A | 已合并 | reviews/C11C.md：3eff287通过，合并71ff1db；独立/main992测试/构建，实际nightly探针通过 |
 
@@ -40,7 +40,7 @@
 
 | D2C | 真实HTTP400：安全审核与响应格式兼容 | Codex / Sol medium | 13 | D2B、C6-live | 已合并 | reviews/D2C.md：04c530f通过；独立/main1052测试/构建、6范围/契约0、真实HTTP回测通过 |
 
-| C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 待合并 | reviews/C3B.md：8ae2715独立1076测试/构建、4范围/契约0、实际coach/DB和3例真实定向通过安全边界 |
+| C3B | 组词提示不直接给出完整词答案 | Codex / Sol medium | 14 | C6-live、D2C | 已合并 | reviews/C3B.md：8ae2715通过，合并c0a0b6a；独立/main1076测试/构建、4范围/契约0及真实定向回测 |
 
 ## 之后的任务（全部交给 Codex；任务文件已建立，派发前冻结对应契约与scope）
 
@@ -205,3 +205,7 @@ C14@724dde9独立65文件1045测试/实际构建、8范围/契约0、完整收�
 D2C@04c530f独立试合最新main后65文件1052测试/实际构建、6范围/契约0通过，已合并；实际main干净重装1052测试/构建通过。独立首次仅parent初始化hook10秒超时，原超时单独29项与完整复跑都过，日志保留，未放宽。真实5+179公开样本均HTTP200，179原标准结果为22/30、19/20、11/20、100/100、9/9；94真实模型请求，未读私有听写。保守总计量0.670862元（含6拒绝无usage保留预留），上限5元。
 
 18失败人工复核在reviews/C6-live.md：存在来源规则误报，但char_coach-20确实提前给组词答案。C3B单Sol medium做确定性候选投影修复，不动eval/阈值；评测来源规则修订已按README要求征求负责人裁决，尚未收到答复，不先改分数。真实教材与孩子试用仍待课后生字页/人工终审。
+
+## C3B合并（2026-11-16）
+
+C3B@8ae2715独立66文件1076测试/实际构建、4范围/契约0、完整收集、实际coachOutput/临时SQLite合成用量与不推进学习阶段探针通过，合并c0a0b6a；实际main干净重装1076测试/构建通过。3例真实定向HTTP成功且未给完整词，原来源规则仍2例未过，未改分。新增高峰价估0.005544元，总保守计量0.676406元。后续依赖负责人对来源规则修订的裁决与该版前两课课后生字表；不再自行扩功能/付费重复全量。
