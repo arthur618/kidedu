@@ -1,6 +1,6 @@
 # 项目接续说明
 
-更新时间：2026-11-15晚。远端：https://github.com/arthur618/kidedu 。本文件与tasks/STATUS.md描述当前状态；docs/HANDOFF.md保留最初交接背景，历史过程见Git与reviews，不要按旧进度重做已合并任务。
+更新时间：2026-11-16。远端：https://github.com/arthur618/kidedu 。本文件与tasks/STATUS.md描述当前状态；docs/HANDOFF.md保留最初交接背景，历史过程见Git与reviews，不要按旧进度重做已合并任务。
 
 ## 已完成与正在进行
 
@@ -9,7 +9,7 @@
 - C12@0f0630b合并25a51c2：刷新续接已提交会话/操作，仅标识sessionStorage、可信SessionOrigin、真实StrictMode和跨孩子/课次隔离。独立1023测试/实际构建与53浏览器通过。未发送草稿不跨刷新保存。
 - C13@64ce6cb合并7c96bce：Prisma/client6.19.3、限定deepmerge8、Vitest4.1.12、Vite6.4.6。独立与实际main干净安装后62文件1027测试/生产构建通过；收集集合完整，恢复/审计事务及默认关闭生产canary通过。有效官方在线审计仅剩Zod high1，不用离线ci的0替代。
 - 契约2.11已冻结：parent counts双参字符串record、Turn input/output显式optional，保留旧Zod3缺键/nullable语义。root已在旧依赖通过typecheck、DB8例和直接兼容探针。
-- **C14正在实施**：tasks/codex/C14-zod-runtime.md，单Sol medium复用/root/implement_c4b_sol；工作树/Users/lihao/.codex/worktrees/yuwen-c6-evals/yuwen-banxue，task/C14，从main@b55f0f1起。精确Zod4.6.7、codec公开泛型与兼容验证。实现者不改契约，旧测试路径初始未授权；重型预约root串行，作者无UI不重复浏览器，root最终另clone验收并跑53浏览器。不要启动第二份实现覆盖原工作树。
+- C14@724dde9已独立验收并合并b151f60：65文件1045测试/实际构建、53浏览器、实际DB/恢复/事务和生产canary、官方在线audit0通过；实际main重装复验1045测试/构建通过。旧测试未修改，原已知依赖告警关闭。
 
 ## 当前产品与未验证边界
 
@@ -17,7 +17,7 @@
 
 DeepSeek聊天协议/有限预算/拒答处理、固定ASR/TTS、真实内存PCM16 WAV转码、approved报词及短回答可编辑录入已在代码阶段验收。离线公开资料检索仅产reference_only文件，仍需人工审批，不给孩子开放自主联网工具。详情见docs/DEEPSEEK-INTEGRATION.md。
 
-负责人要求真实接口测试延后，DEEPSEEK_API_KEY、语音/搜索开关、家长口令示例均留空。C6真实模型质量、供应商实际语音头/识别质量/取消延迟/收费、实体麦克风与Safari等仍未验收。假HTTP/合成数据/Chromium通过不等于真实供应商通过；不读取已存在.env/private/真实孩子数据库，也不让用户把key贴聊天。单Node队列、外部at-least-once/可能再次计费等边界见各review，不承诺模型exactly-once。
+负责人2026-11-16已授权合成材料真实评测，待本机密钥配置完成确认和费用上限；仓库保持公开，DEEPSEEK_API_KEY、语音/搜索开关、家长口令示例均留空。C6真实模型质量、供应商实际语音头/识别质量/取消延迟/收费、实体麦克风与Safari等仍未验收。假HTTP/合成数据/Chromium通过不等于真实供应商通过；不读取已存在.env/private/真实孩子数据库，也不让用户把key贴聊天。单Node队列、外部at-least-once/可能再次计费等边界见各review，不承诺模型exactly-once。
 
 ## 换电脑继续
 
@@ -31,4 +31,4 @@ Node22、npm ci；临时测试清除RUST_LOG，Prisma缓存使用可写XDG_CACHE
 
 总设计师维护contracts、任务/scope/status和review；另clone重装复跑、读生产代码后裁决，问题交原作者改，不代写任务实现。负责人已授权总设计师直接合并验收通过分支并同步GitHub，无需负责人执行终端命令。实现者不派agent、不合并推送、不改契约/看板/review。
 
-模型按任务复杂度选；C13/C14范围明确复用Sol medium，复杂生命周期/媒体/鉴权任务用Sol high，不为机械操作另开agent。完整规则见tasks/MODEL-ROUTING.md。C14完成后先关闭已知依赖欠账，再如实列出需要安全配置或真实环境才能验证的事项，不无限添加新功能。
+模型按任务复杂度选；C13/C14范围明确复用Sol medium，复杂生命周期/媒体/鉴权任务用Sol high，不为机械操作另开agent。完整规则见tasks/MODEL-ROUTING.md。按tasks/VALIDATION.md继续真实评测、人教三年级上册前两课内容审校和一次家长陪同试用。具体该版课后生字表待核对，暂停新功能扩展。
