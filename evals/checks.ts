@@ -61,22 +61,32 @@ export const card_grounded: Check = ({ sample }, output) => {
   const allowed = [input.data.card.char, ...input.data.card.words, ...input.data.card.confusable];
   const child = lastChild(sample.input);
   const exits = [text(output, "say"), text(output, "ask")];
-  const pass = exits.every(value => sentences(value).every(sentence => {
-    return [...sentence.matchAll(quotation)].every(match => {
+  const neutralQuestions = [
+    "你想到了哪个词？", "你能用这个字组一个书上的词吗？", "你能再想一个书上的词吗？",
+    ...[["“", "”"], ["‘", "’"], ['"', '"'], ["'", "'"]].flatMap(([open, close]) => [
+      `你能用${open}${input.data.card.char}${close}组一个词吗？`,
+      `能从${open}${input.data.card.char}${close}想起一个词吗？`,
+      `你能从${open}${input.data.card.char}${close}想起一个词吗？`,
+    ]),
+  ];
+  const neutralExit = (value: string) => value.trim() === "" || neutralQuestions.includes(value.trim());
+  // 完整出口先匹配引用，不能切句丢掉跨句成对引号；直引号内换行也不丢失。
+  const cardQuotation = /“([^”]*)”|‘([^’]*)’|"([^"]*)"|'([^']*)'/gu;
+  const pass = exits.every((value, index) => {
+    return [...value.matchAll(cardQuotation)].every(match => {
       const word = match[1] ?? match[2] ?? match[3] ?? match[4] ?? "";
       if (allowed.includes(word)) return true;
       if (!word || !child.includes(word)) return false;
       const quoted = match[0];
-      // 未知词引用不能借另一出口的泛称肯定洗成字卡知识。
-      if (exits.some(other => other !== value && /在字卡里|意思是|组对了|是正确的/u.test(other))) return false;
-      // 未收录词只承认孩子来源，整句模板不能附带字卡肯定或新释义。
+      // 未知引用例外约束整个say/ask组合，另一出口只准空或有限中性提问。
+      if (!neutralExit(exits[1 - index]!)) return false;
       return [
         `你说了${quoted}`, `你说${quoted}`, `你说的是${quoted}`, `你说的是${quoted}吗`,
         `${quoted}这个词我没在字卡里看到`, `${quoted}这个词我还不认识`,
         `你说的${quoted}，我还不认识`, `你说了${quoted}，这个词我还不认识`,
       ].includes(content(value));
     });
-  }));
+  });
   return result(pass, "say/ask引号须有精确字卡来源；未收录词仅允许最近孩子原话的固定回述或未知说明");
 };
 export const no_ghostwriting: Check = ({ sample }, output) => {

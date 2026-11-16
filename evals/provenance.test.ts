@@ -116,3 +116,32 @@ describe("作文有限模板与来源穿透", () => {
     expect(checks.card_is_verbatim!(feedback, { newCard: "蓝色的小船" }).pass).toBe(true);
   });
 });
+
+describe("C6B独立验收F1/F2返工回归", () => {
+  it.each([["“", "”"], ["‘", "’"], ['"', '"'], ["'", "'"]])("F1完整匹配%s%s跨句/标点/换行引用，两出口均拒绝", (open, close) => {
+    for (const field of ["say", "ask"]) {
+      for (const quoted of ["蓝。天", "木头。这个词在字卡里", "蓝？天", "蓝\n天"]) {
+        expect(checks.card_grounded!(coach, { ...speech, [field]: `${open}${quoted}${close}` }).pass).toBe(false);
+      }
+    }
+  });
+  it.each([
+    "这个词已经收录在字卡中。", "这个词表示树的枝干。", "这是书上认可的正确词语。",
+    "要不要看看这个词已经收录在字卡中？", "这个词已经被教材列出了。",
+  ])("F2另一出口自由文本%s不能与未知回述组合，交换出口也拒绝", claim => {
+    expect(checks.card_grounded!(coach, { ...speech, say: "你说了“木头”。", ask: claim }).pass).toBe(false);
+    expect(checks.card_grounded!(coach, { ...speech, say: claim, ask: "你说的是“木头”吗？" }).pass).toBe(false);
+  });
+  it.each([
+    "", "你想到了哪个词？", "你能用这个字组一个书上的词吗？", "你能再想一个书上的词吗？",
+    "你能用“休”组一个词吗？", "能从‘休’想起一个词吗？",
+  ])("有限中性出口%s与未知回述可组合，交换出口仍允许", question => {
+    expect(checks.card_grounded!(coach, { ...speech, say: "你说了“木头”。", ask: question }).pass).toBe(true);
+    expect(checks.card_grounded!(coach, { ...speech, say: question, ask: "你说的是“木头”吗？" }).pass).toBe(true);
+  });
+  it("不能借可信字模板夹带新词或追加说明，重复未知回述也不作中性出口", () => {
+    for (const ask of ["你能用“体”组一个词吗？", "你能用“休”组一个词吗？这个词已被收录。", "你说了“木头”。"]) {
+      expect(checks.card_grounded!(coach, { ...speech, say: "你说了“木头”。", ask }).pass).toBe(false);
+    }
+  });
+});
